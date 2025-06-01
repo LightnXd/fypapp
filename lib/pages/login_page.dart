@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/register_page.dart';
+import 'package:fypapp2/pages/register_page.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/question_box.dart';
 
@@ -56,6 +56,7 @@ class _LoginPageState extends State<LoginPage> {
               ElevatedButton(
                 onPressed: () {
                   // Add login logic here
+
                 setState(() {
                   final email = emailController.text;
                   emailError = email.contains('@') ? null : 'Invalid email address';

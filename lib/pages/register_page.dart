@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
-import 'widget/question_box.dart';
-import 'widget/date_picker.dart';
-import 'widget/empty_box.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../services/authentication.dart';
+import '../widget/otp_confirmation.dart';
+import '../widget/question_box.dart';
+import '../widget/date_picker.dart';
+import '../widget/empty_box.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,6 +14,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final AuthenticationService _authService = AuthenticationService();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final confirmEmailController = TextEditingController();
@@ -28,24 +32,32 @@ class _RegisterPageState extends State<RegisterPage> {
   String? confirmEmailError;
   String? confirmPasswordError;
 
-  void validateInputs() {
-    setState(() {
-      final name = nameController.text;
-      final email = emailController.text;
-      final password = passwordController.text;
-      final confirmEmail = confirmEmailController.text;
-      final confirmPassword = confirmPasswordController.text;
+  bool validateInputs() {
+    final name = nameController.text;
+    final email = emailController.text;
+    final password = passwordController.text;
+    final confirmEmail = confirmEmailController.text;
+    final confirmPassword = confirmPasswordController.text;
 
+    final passwordValid = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$');
+
+    setState(() {
       nameError = name.length >= 5 ? null : 'Name must be at least 5 characters';
       emailError = email.contains('@') ? null : 'Invalid email address';
       confirmEmailError = email == confirmEmail ? null : 'Email does not match';
-      final passwordValid = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$');
       passwordError = passwordValid.hasMatch(password)
           ? null
-          : 'Need to be within 8–24 character\n At least 1 uppercase\n At least 1 lowercase\n At least 1 number\n At least 1 symbol';
+          : 'Need to be within 8–24 characters\nAt least 1 uppercase\nAt least 1 lowercase\nAt least 1 number\nAt least 1 symbol';
       confirmPasswordError = password == confirmPassword ? null : 'Password does not match';
     });
+
+    return name.length >= 5 &&
+        email.contains('@') &&
+        email == confirmEmail &&
+        passwordValid.hasMatch(password) &&
+        password == confirmPassword;
   }
+
 
   @override
   void dispose() {
@@ -155,9 +167,56 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             gaph28,
             ElevatedButton(
-              onPressed: () {
-                validateInputs();
+        onPressed: () async {
+      if (validateInputs()) {
+        try {
+          final success = await _authService.signUp(
+            email: emailController.text.trim(),
+            password: passwordController.text.trim(),
+          );
+
+          if (!success) {
+            // Email already verified
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('User is already exist. Please log in.')),
+            );
+            return;
+          } if (success) {
+            await OtpDialog.show(
+              context: context,
+              onSubmitted: (otp, setError) async {
+                try {
+                  final response = await Supabase.instance.client.auth
+                      .verifyOTP(
+                    type: OtpType.email,
+                    email: emailController.text.trim(),
+                    token: otp,
+                  );
+
+                  if (response.user != null) {
+                    setError(null);
+                    if (context.mounted) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                            content: Text('Email verified successfully.')),
+                      );
+                    }
+                  } else {
+                    setError("Invalid OTP, try again.");
+                  }
+                } catch (e) {
+                  setError("Verification failed: ${e.toString()}");
+                }
               },
+            );
+          }
+        } catch (e) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Sign up failed: ${e.toString()}')),
+          );
+        }
+      }
+    },
               child: const Text("Register"),
             ),
           ],
