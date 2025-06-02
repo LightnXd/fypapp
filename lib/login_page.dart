@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/pages/register_page.dart';
+import 'package:fypapp2/contributor/pages/register.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/question_box.dart';
 

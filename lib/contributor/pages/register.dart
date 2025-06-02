@@ -1,13 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../services/authentication.dart';
-import '../widget/otp_confirmation.dart';
-import '../widget/question_box.dart';
-import '../widget/date_picker.dart';
-import '../widget/empty_box.dart';
+import '../../services/authentication.dart';
+import '../../widget/otp_confirmation.dart';
+import '../../widget/question_box.dart';
+import '../../widget/date_picker.dart';
+import '../../widget/empty_box.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -174,12 +173,10 @@ class _RegisterPageState extends State<RegisterPage> {
             ElevatedButton(
               onPressed: () async {
                 if (validateInputs()) {
-                  print("Email input: ${emailController.text}");
                   try {
                     final shouldVerify = await _authService.signUp(
                       emailController.text,
-                    ); // Calls your signUp function
-
+                    );
                     if (shouldVerify) {
                       await OtpDialog.show(
                         context: context,
@@ -196,10 +193,17 @@ class _RegisterPageState extends State<RegisterPage> {
                                 'type': 'email',
                               }),
                             );
-
                             final data = jsonDecode(response.body);
                             if (response.statusCode == 200) {
-                              onResult(null); // Success
+                              onResult(null);
+                              final success = await _authService.getSession(data['session_string']);
+                              if (success) {
+                                Navigator.pushReplacementNamed(context, '/home');
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to restore session')),
+                                );
+                              }
                             } else {
                               onResult(data['error'] ?? 'Verification failed');
                             }
@@ -209,7 +213,6 @@ class _RegisterPageState extends State<RegisterPage> {
                         },
                       );
                     } else {
-                      // You can show a message: "Email already confirmed"
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
                           content: Text('This email is already confirmed.'),
@@ -217,7 +220,6 @@ class _RegisterPageState extends State<RegisterPage> {
                       );
                     }
                   } catch (e) {
-                    // Handle error in signUp
                     ScaffoldMessenger.of(
                       context,
                     ).showSnackBar(SnackBar(content: Text('Signup error: $e')));

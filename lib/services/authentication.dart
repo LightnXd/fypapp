@@ -9,8 +9,19 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthenticationService {
   final SupabaseClient _client = Supabase.instance.client;
 
+  Future<bool> getSession(String? sessionString) async {
+    if (sessionString == null) return false;
+
+    try {
+      final recoveredSession = await _client.auth.recoverSession(sessionString);
+      return recoveredSession.session != null;
+    } catch (e) {
+      print('Error restoring session: $e');
+      return false;
+    }
+  }
+
   Future<bool> signUp(String email) async {
-    print('📤 signUp called with email: $email');
     final baseUrl = 'http://10.101.39.125:8000';
 
     // Step 1: Check status
