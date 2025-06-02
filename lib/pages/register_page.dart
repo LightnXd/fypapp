@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/authentication.dart';
 import '../widget/otp_confirmation.dart';
@@ -39,16 +42,22 @@ class _RegisterPageState extends State<RegisterPage> {
     final confirmEmail = confirmEmailController.text;
     final confirmPassword = confirmPasswordController.text;
 
-    final passwordValid = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$');
+    final passwordValid = RegExp(
+      r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$',
+    );
 
     setState(() {
-      nameError = name.length >= 5 ? null : 'Name must be at least 5 characters';
+      nameError = name.length >= 5
+          ? null
+          : 'Name must be at least 5 characters';
       emailError = email.contains('@') ? null : 'Invalid email address';
       confirmEmailError = email == confirmEmail ? null : 'Email does not match';
       passwordError = passwordValid.hasMatch(password)
           ? null
           : 'Need to be within 8–24 characters\nAt least 1 uppercase\nAt least 1 lowercase\nAt least 1 number\nAt least 1 symbol';
-      confirmPasswordError = password == confirmPassword ? null : 'Password does not match';
+      confirmPasswordError = password == confirmPassword
+          ? null
+          : 'Password does not match';
     });
 
     return name.length >= 5 &&
@@ -57,7 +66,6 @@ class _RegisterPageState extends State<RegisterPage> {
         passwordValid.hasMatch(password) &&
         password == confirmPassword;
   }
-
 
   @override
   void dispose() {
@@ -149,10 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: EdgeInsets.only(top: 15.0),
                       child: Text(
                         'Birthdate:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                     ),
                   ),
@@ -167,56 +172,58 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             gaph28,
             ElevatedButton(
-        onPressed: () async {
-      if (validateInputs()) {
-        try {
-          final success = await _authService.signUp(
-            email: emailController.text.trim(),
-            password: passwordController.text.trim(),
-          );
+              onPressed: () async {
+                if (validateInputs()) {
+                  print("Email input: ${emailController.text}");
+                  try {
+                    final shouldVerify = await _authService.signUp(
+                      emailController.text,
+                    ); // Calls your signUp function
 
-          if (!success) {
-            // Email already verified
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('User is already exist. Please log in.')),
-            );
-            return;
-          } if (success) {
-            await OtpDialog.show(
-              context: context,
-              onSubmitted: (otp, setError) async {
-                try {
-                  final response = await Supabase.instance.client.auth
-                      .verifyOTP(
-                    type: OtpType.email,
-                    email: emailController.text.trim(),
-                    token: otp,
-                  );
+                    if (shouldVerify) {
+                      await OtpDialog.show(
+                        context: context,
+                        onSubmitted: (otp, onResult) async {
+                          try {
+                            final response = await http.post(
+                              Uri.parse(
+                                "http://10.101.39.125:8000/auth/verify-otp",
+                              ),
+                              headers: {'Content-Type': 'application/json'},
+                              body: jsonEncode({
+                                'email': emailController.text,
+                                'token': otp,
+                                'type': 'email',
+                              }),
+                            );
 
-                  if (response.user != null) {
-                    setError(null);
-                    if (context.mounted) {
+                            final data = jsonDecode(response.body);
+                            if (response.statusCode == 200) {
+                              onResult(null); // Success
+                            } else {
+                              onResult(data['error'] ?? 'Verification failed');
+                            }
+                          } catch (e) {
+                            onResult('An error occurred: $e');
+                          }
+                        },
+                      );
+                    } else {
+                      // You can show a message: "Email already confirmed"
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Email verified successfully.')),
+                          content: Text('This email is already confirmed.'),
+                        ),
                       );
                     }
-                  } else {
-                    setError("Invalid OTP, try again.");
+                  } catch (e) {
+                    // Handle error in signUp
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('Signup error: $e')));
                   }
-                } catch (e) {
-                  setError("Verification failed: ${e.toString()}");
                 }
               },
-            );
-          }
-        } catch (e) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Sign up failed: ${e.toString()}')),
-          );
-        }
-      }
-    },
               child: const Text("Register"),
             ),
           ],

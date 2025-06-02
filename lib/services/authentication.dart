@@ -1,4 +1,7 @@
 //import 'package:flutter/material.dart';
+import 'dart:convert';
+
+import 'package:http/http.dart' as http show post;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -6,26 +9,43 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class AuthenticationService {
   final SupabaseClient _client = Supabase.instance.client;
 
-  Future<bool> signUp({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final response = await Supabase.instance.client.auth.signUp(
-        email: email,
-        password: password,
-        emailRedirectTo: 'io.supabase.flutter://callback',
+  Future<bool> signUp(String email) async {
+    print('📤 signUp called with email: $email');
+    final baseUrl = 'http://10.101.39.125:8000';
+
+    // Step 1: Check status
+    final statusResponse = await http.post(
+      Uri.parse('$baseUrl/auth/check-status'),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+    print(statusResponse);
+    print(statusResponse.statusCode);
+    print(statusResponse.body);
+
+    if (statusResponse.statusCode != 200) {
+      throw Exception('Failed to check email: ${statusResponse.body}');
+    }
+
+    final statusData = jsonDecode(statusResponse.body);
+    final shouldSendOtp = statusData['status'] == true;
+
+    // Step 2: If true, trigger Supabase OTP email
+    if (shouldSendOtp) {
+      final otpResponse = await http.post(
+        Uri.parse('$baseUrl/auth/send-otp'),
+        headers: {'Content-Type': 'application/json'},
+        body: jsonEncode({'email': email}),
       );
 
-      return true;
-    } on AuthException catch (e) {
-      if (e.message.toLowerCase().contains('user already registered')) {
-        return false; // user already exists
+      if (otpResponse.statusCode != 200) {
+        throw Exception('Failed to send OTP: ${otpResponse.body}');
       }
-      throw Exception('Sign up error: ${e.message}');
-    } catch (e) {
-      rethrow;
+
+      return true; // Proceed with OTP
     }
+
+    return false; // Email already confirmed
   }
 
 
@@ -82,11 +102,6 @@ class AuthenticationService {
     await _client.auth.signOut();
   }
 
- /* Future<void> sendotp2({required String email}) async {
-    EmailAuth emailAuth =  new EmailAuth(sessionName: "Sample session");
-    bool result = await emailAuth.sendOtp(
-        recipientMail: email, otpLength: 6
-    );
-  }*/
+
 }
 
