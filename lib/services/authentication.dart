@@ -1,7 +1,7 @@
 //import 'package:flutter/material.dart';
 import 'dart:convert';
-
-import 'package:http/http.dart' as http show post;
+import 'package:fypapp2/services/url.dart';
+import 'package:http/http.dart' as http show post, Response;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 
@@ -22,17 +22,12 @@ class AuthenticationService {
   }
 
   Future<bool> signUp(String email) async {
-    final baseUrl = 'http://10.101.39.125:8000';
-
     // Step 1: Check status
     final statusResponse = await http.post(
-      Uri.parse('$baseUrl/auth/check-status'),
+      Uri.parse(checkStatusurl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
-    print(statusResponse);
-    print(statusResponse.statusCode);
-    print(statusResponse.body);
 
     if (statusResponse.statusCode != 200) {
       throw Exception('Failed to check email: ${statusResponse.body}');
@@ -41,78 +36,57 @@ class AuthenticationService {
     final statusData = jsonDecode(statusResponse.body);
     final shouldSendOtp = statusData['status'] == true;
 
-    // Step 2: If true, trigger Supabase OTP email
+    // Step 2: If true, send OTP
     if (shouldSendOtp) {
-      final otpResponse = await http.post(
-        Uri.parse('$baseUrl/auth/send-otp'),
-        headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'email': email}),
-      );
-
-      if (otpResponse.statusCode != 200) {
-        throw Exception('Failed to send OTP: ${otpResponse.body}');
-      }
-
-      return true; // Proceed with OTP
+      return await sendOTP(email);
     }
 
     return false; // Email already confirmed
   }
 
-
-
-
-  Future<void> signIn({
-    required String email,
-    required String password,
-  }) async {
-    try {
-      final response = await _client.auth.signInWithPassword(
-        email: email,
-        password: password,
-      );
-
-      if (response.user == null) {
-        throw Exception('Invalid credentials.');
-      }
-
-      await sendOtp(email: email);
-    } on AuthException catch (e) {
-      throw Exception(e.message);
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  Future<void> sendOtp({
-    required String email,
-  }) async {
-    try {
-      await _client.auth.signInWithOtp(
-        email: email,
-        emailRedirectTo: 'io.supabase.flutter://callback',
-      );
-    } on AuthException catch (e) {
-      throw Exception('Failed to send OTP: ${e.message}');
-    }
-  }
-
-  Future<bool> verifyOtp({
-    required String email,
-    required String token,
-  }) async {
-    final response = await _client.auth.verifyOTP(
-      type: OtpType.email,
-      email: email,
-      token: token,
+  Future<Map<String, dynamic>> verifyUser(String email, String password) async {
+    final response = await http.post(
+      Uri.parse(verifyUserUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email, 'password': password}),
     );
-    return response.user != null;
+
+    final data = jsonDecode(response.body);
+    return {
+      'status': response.statusCode == 200 && data['status'] == true,
+      'message': data['message'] ?? 'An unknown error occurred',
+    };
   }
 
-  Future<void> logOut() async {
-    await _client.auth.signOut();
+  Future<bool> sendOTP(String email) async {
+    final otpResponse = await http.post(
+      Uri.parse(sendOTPurl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({'email': email}),
+    );
+
+    if (otpResponse.statusCode != 200) {
+      throw Exception('Failed to send OTP: ${otpResponse.body}');
+    }
+
+    return true;
   }
 
+  Future<http.Response> verifyOTP({
+    required String email,
+    required String otp,
+  }) async {
+    final response = await http.post(
+      Uri.parse(verifyOTPurl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'token': otp,
+        'type': 'email',
+      }),
+    );
+    return response;
+  }
 
 }
 

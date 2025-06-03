@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:fypapp2/services/url.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../../services/authentication.dart';
@@ -182,16 +183,9 @@ class _RegisterPageState extends State<RegisterPage> {
                         context: context,
                         onSubmitted: (otp, onResult) async {
                           try {
-                            final response = await http.post(
-                              Uri.parse(
-                                "http://10.101.39.125:8000/auth/verify-otp",
-                              ),
-                              headers: {'Content-Type': 'application/json'},
-                              body: jsonEncode({
-                                'email': emailController.text,
-                                'token': otp,
-                                'type': 'email',
-                              }),
+                            final response = await _authService.verifyOTP(
+                              email: emailController.text,
+                              otp: otp,
                             );
                             final data = jsonDecode(response.body);
                             if (response.statusCode == 200) {
