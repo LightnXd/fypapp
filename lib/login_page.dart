@@ -78,12 +78,12 @@ class _LoginPageState extends State<LoginPage> {
                 controller: passwordController,
                 errorText: passwordError,
               ),
-              if (errordata != null)
                 gaph10,
-              Text(
-                errordata!,
-                style: const TextStyle(color: Colors.red, fontSize: 14),
-              ),
+              if (errordata != null)
+                Text(
+                  errordata!,
+                  style: const TextStyle(color: Colors.red, fontSize: 14),
+                ),
               gaph28,
               ElevatedButton(
                 onPressed: () async {
