@@ -1,7 +1,13 @@
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'widget/question_box.dart';
-import 'widget/date_picker.dart';
-import 'widget/empty_box.dart';
+import 'package:fypapp2/services/url.dart';
+import 'package:http/http.dart' as http;
+import 'package:supabase_flutter/supabase_flutter.dart';
+import '../../services/authentication.dart';
+import '../../widget/otp_confirmation.dart';
+import '../../widget/question_box.dart';
+import '../../widget/date_picker.dart';
+import '../../widget/empty_box.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({super.key});
@@ -11,6 +17,7 @@ class RegisterPage extends StatefulWidget {
 }
 
 class _RegisterPageState extends State<RegisterPage> {
+  final AuthenticationService _authService = AuthenticationService();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final confirmEmailController = TextEditingController();
@@ -28,23 +35,36 @@ class _RegisterPageState extends State<RegisterPage> {
   String? confirmEmailError;
   String? confirmPasswordError;
 
-  void validateInputs() {
-    setState(() {
-      final name = nameController.text;
-      final email = emailController.text;
-      final password = passwordController.text;
-      final confirmEmail = confirmEmailController.text;
-      final confirmPassword = confirmPasswordController.text;
+  bool validateInputs() {
+    final name = nameController.text;
+    final email = emailController.text;
+    final password = passwordController.text;
+    final confirmEmail = confirmEmailController.text;
+    final confirmPassword = confirmPasswordController.text;
 
-      nameError = name.length >= 5 ? null : 'Name must be at least 5 characters';
+    final passwordValid = RegExp(
+      r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$',
+    );
+
+    setState(() {
+      nameError = name.length >= 5
+          ? null
+          : 'Name must be at least 5 characters';
       emailError = email.contains('@') ? null : 'Invalid email address';
       confirmEmailError = email == confirmEmail ? null : 'Email does not match';
-      final passwordValid = RegExp(r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$');
       passwordError = passwordValid.hasMatch(password)
           ? null
-          : 'Need to be within 8–24 character\n At least 1 uppercase\n At least 1 lowercase\n At least 1 number\n At least 1 symbol';
-      confirmPasswordError = password == confirmPassword ? null : 'Password does not match';
+          : 'Need to be within 8–24 characters\nAt least 1 uppercase\nAt least 1 lowercase\nAt least 1 number\nAt least 1 symbol';
+      confirmPasswordError = password == confirmPassword
+          ? null
+          : 'Password does not match';
     });
+
+    return name.length >= 5 &&
+        email.contains('@') &&
+        email == confirmEmail &&
+        passwordValid.hasMatch(password) &&
+        password == confirmPassword;
   }
 
   @override
@@ -137,10 +157,7 @@ class _RegisterPageState extends State<RegisterPage> {
                       padding: EdgeInsets.only(top: 15.0),
                       child: Text(
                         'Birthdate:',
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.black,
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.black),
                       ),
                     ),
                   ),
@@ -155,8 +172,53 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             gaph28,
             ElevatedButton(
-              onPressed: () {
-                validateInputs();
+              onPressed: () async {
+                if (validateInputs()) {
+                  try {
+                    final shouldVerify = await _authService.signUp(
+                      emailController.text,
+                    );
+                    if (shouldVerify) {
+                      await OtpDialog.show(
+                        context: context,
+                        onSubmitted: (otp, onResult) async {
+                          try {
+                            final response = await _authService.verifyOTP(
+                              email: emailController.text,
+                              otp: otp,
+                            );
+                            final data = jsonDecode(response.body);
+                            if (response.statusCode == 200) {
+                              onResult(null);
+                              final success = await _authService.getSession(data['session_string']);
+                              if (success) {
+                                Navigator.pushReplacementNamed(context, '/home');
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(content: Text('Failed to restore session')),
+                                );
+                              }
+                            } else {
+                              onResult(data['error'] ?? 'Verification failed');
+                            }
+                          } catch (e) {
+                            onResult('An error occurred: $e');
+                          }
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('This email is already confirmed.'),
+                        ),
+                      );
+                    }
+                  } catch (e) {
+                    ScaffoldMessenger.of(
+                      context,
+                    ).showSnackBar(SnackBar(content: Text('Signup error: $e')));
+                  }
+                }
               },
               child: const Text("Register"),
             ),
