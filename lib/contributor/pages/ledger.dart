@@ -1,6 +1,12 @@
+import 'dart:io';
+
+import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../widget/empty_box.dart';
 import 'ledger_details.dart';
 
 class LedgerPage extends StatefulWidget {
@@ -38,9 +44,15 @@ class _LedgerPageState extends State<LedgerPage> {
               'OID: ${widget.oid}',
               style: const TextStyle(fontWeight: FontWeight.bold),
             ),
-            const SizedBox(height: 8),
+            gaph8,
             const Text('Related ledger entries:'),
-            const SizedBox(height: 16),
+            gaph8,
+            ElevatedButton.icon(
+              icon: const Icon(Icons.download),
+              label: const Text('Export as Excel'),
+              onPressed: () => _downloadAsExcel(context),
+            ),
+            gaph16,
             Expanded(
               child: StreamBuilder<List<Map<String, dynamic>>>(
                 stream: _ledgerStream,
@@ -101,5 +113,66 @@ class _LedgerPageState extends State<LedgerPage> {
         ),
       ),
     );
+  }
+
+  Future<void> _downloadAsExcel(BuildContext context) async {
+    final snapshot = await _ledgerStream.first;
+
+    if (snapshot.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('No data to export.')));
+      return;
+    }
+
+    final excel = Excel.createExcel(); // Default sheet is created
+    final String sheetName = excel.getDefaultSheet()!;
+    final Sheet sheet = excel.sheets[sheetName]!;
+
+    // Add header row
+    sheet.appendRow([
+      TextCellValue('Index'),
+      TextCellValue('Hash'),
+      TextCellValue('PreviousHash'),
+      TextCellValue('CID'),
+      TextCellValue('OID'),
+      TextCellValue('Amount'),
+      TextCellValue('CreationDate'),
+    ]);
+
+    for (final entry in snapshot) {
+      sheet.appendRow([
+        TextCellValue(entry['Index']?.toString() ?? ''),
+        TextCellValue(entry['Hash']?.toString() ?? ''),
+        TextCellValue(entry['PreviousHash']?.toString() ?? ''),
+        TextCellValue(entry['CID']?.toString() ?? ''),
+        TextCellValue(entry['OID']?.toString() ?? ''),
+        TextCellValue(entry['Amount']?.toString() ?? ''),
+        TextCellValue(entry['CreationDate']?.toString() ?? ''),
+      ]);
+    }
+
+    // Save the Excel to a temp file
+    final bytes = excel.encode()!;
+    final tempDir = await getTemporaryDirectory();
+    final tempPath = '${tempDir.path}/ledger.xlsx';
+    final tempFile = File(tempPath);
+    await tempFile.writeAsBytes(bytes);
+    print('File saved to: $tempPath');
+
+    // Prompt user to save via FlutterFileDialog
+    final savedPath = await FlutterFileDialog.saveFile(
+      params: SaveFileDialogParams(sourceFilePath: tempPath),
+    );
+
+    if (savedPath != null) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Excel saved to: $savedPath')));
+    } else {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Save cancelled.')));
+    }
   }
 }
