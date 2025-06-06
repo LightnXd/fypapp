@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/Organization/confirm_transaction.dart';
 import 'package:fypapp2/contributor/pages/ledger.dart';
 import 'contributor/pages/home.dart';
 import 'login_page.dart';
@@ -24,7 +25,7 @@ class MyApp extends StatelessWidget {
       initialRoute: '/',
       routes: {
         '/': (context) => const OpenPage(),
-        '/login': (context) => const LedgerPage(), //LoginPage(),
+        '/login': (context) => const ConfirmTransactionPage(), //LoginPage(),
         '/home': (context) => const HomePage(),
       },
     );
