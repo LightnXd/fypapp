@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
+import 'package:fypapp2/contributor/pages/verify_ledger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -12,7 +13,7 @@ import 'ledger_details.dart';
 class LedgerPage extends StatefulWidget {
   final String oid;
 
-  const LedgerPage({super.key, this.oid = 'id111'});
+  const LedgerPage({super.key, this.oid = 'id552'});
 
   @override
   State<LedgerPage> createState() => _LedgerPageState();
@@ -28,7 +29,7 @@ class _LedgerPageState extends State<LedgerPage> {
         .from('ledger')
         .stream(primaryKey: ['LedgerID'])
         .eq('OID', widget.oid)
-        .order('Index', ascending: false);
+        .order('TransactionNumber', ascending: false);
   }
 
   @override
@@ -46,6 +47,16 @@ class _LedgerPageState extends State<LedgerPage> {
             ),
             gaph8,
             const Text('Related ledger entries:'),
+            gaph8,
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (_) => const VerifyLedgerPage()),
+                );
+              },
+              child: const Text('switch page'),
+            ),
             gaph8,
             ElevatedButton.icon(
               icon: const Icon(Icons.download),
@@ -74,7 +85,9 @@ class _LedgerPageState extends State<LedgerPage> {
                     separatorBuilder: (_, __) => const Divider(),
                     itemBuilder: (context, index) {
                       final entry = entries[index];
-                      final Index = entry['Index'] ?? 'Unknown';
+                      final ledgerid = entry['LedgerID'] ?? 'Unknown';
+                      final transactionNumber =
+                          entry['TransactionNumber'] ?? 'Unknown';
                       final rowOid = entry['OID'] ?? 'Unknown';
                       final cid = entry['CID'] ?? 'Unknown';
                       final amount = entry['Amount'] == null
@@ -92,7 +105,8 @@ class _LedgerPageState extends State<LedgerPage> {
                         subtitle: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Index: $Index'),
+                            Text('LedgerID: $ledgerid'),
+                            Text('TransactionNumber: $transactionNumber'),
                             Text('CID: $cid'),
                             Text(
                               amount == 'Genesis Block'
@@ -143,7 +157,8 @@ class _LedgerPageState extends State<LedgerPage> {
 
     // Add header row
     sheet.appendRow([
-      TextCellValue('Index'),
+      TextCellValue('LedgerID'),
+      TextCellValue('TransactionNumber'),
       TextCellValue('Hash'),
       TextCellValue('PreviousHash'),
       TextCellValue('CID'),
@@ -154,7 +169,8 @@ class _LedgerPageState extends State<LedgerPage> {
 
     for (final entry in snapshot) {
       sheet.appendRow([
-        TextCellValue(entry['Index']?.toString() ?? ''),
+        TextCellValue(entry['LedgerID']?.toString() ?? ''),
+        TextCellValue(entry['TransactionNumber']?.toString() ?? ''),
         TextCellValue(entry['Hash']?.toString() ?? ''),
         TextCellValue(entry['PreviousHash']?.toString() ?? ''),
         TextCellValue(entry['CID']?.toString() ?? ''),

@@ -6,3 +6,4 @@ const sendOTPurl = '$auth/send-otp';
 const verifyOTPurl = '$auth/verify-otp';
 const verifyUserUrl = '$auth/verify-user';
 const addBlockUrl = '$ledger/add-block';
+const verifyBlockurl = '$ledger/confirm-block-integrity';
