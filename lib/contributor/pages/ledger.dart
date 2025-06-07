@@ -7,6 +7,8 @@ import 'package:fypapp2/contributor/pages/verify_ledger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../../Organization/transaction_list.dart';
+import '../../services/ledger.dart';
 import '../../widget/empty_box.dart';
 import 'ledger_details.dart';
 
@@ -52,7 +54,9 @@ class _LedgerPageState extends State<LedgerPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const VerifyLedgerPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const TransactionListPage(),
+                  ),
                 );
               },
               child: const Text('switch page'),
