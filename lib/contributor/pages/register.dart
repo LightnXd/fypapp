@@ -24,7 +24,6 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final countryController = TextEditingController();
-  final ageController = TextEditingController();
   final birthdateController = TextEditingController();
 
   bool showPassword = false;
@@ -69,12 +68,12 @@ class _RegisterPageState extends State<RegisterPage> {
 
   @override
   void dispose() {
+    nameController.dispose();
     emailController.dispose();
     confirmEmailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
     countryController.dispose();
-    ageController.dispose();
     birthdateController.dispose();
     super.dispose();
   }
@@ -136,7 +135,7 @@ class _RegisterPageState extends State<RegisterPage> {
               image: const AssetImage('assets/images/test.webp'),
               label: 'Country:',
               hint: 'Enter your country',
-              // controller: countryController,
+              controller: countryController,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -188,14 +187,42 @@ class _RegisterPageState extends State<RegisterPage> {
                               otp: otp,
                             );
                             final data = jsonDecode(response.body);
+
                             if (response.statusCode == 200) {
                               onResult(null);
-                              final success = await _authService.getSession(data['session_string']);
+
+                              final success = await _authService.getSession(
+                                data['session_string'],
+                              );
+
                               if (success) {
-                                Navigator.pushReplacementNamed(context, '/home');
+                                final creationSuccess = await _authService
+                                    .createContributor(
+                                      email: emailController.text,
+                                      name: nameController.text,
+                                      country: countryController.text,
+                                      birthdate: birthdateController.text,
+                                    );
+
+                                if (creationSuccess) {
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/home',
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text(
+                                        'Failed to create contributor',
+                                      ),
+                                    ),
+                                  );
+                                }
                               } else {
                                 ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(content: Text('Failed to restore session')),
+                                  const SnackBar(
+                                    content: Text('Failed to restore session'),
+                                  ),
                                 );
                               }
                             } else {

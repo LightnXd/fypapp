@@ -4,8 +4,6 @@ import 'package:fypapp2/services/url.dart';
 import 'package:http/http.dart' as http show post, Response;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-
-
 class AuthenticationService {
   final SupabaseClient _client = Supabase.instance.client;
 
@@ -79,14 +77,31 @@ class AuthenticationService {
     final response = await http.post(
       Uri.parse(verifyOTPurl),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'email': email,
-        'token': otp,
-        'type': 'email',
-      }),
+      body: jsonEncode({'email': email, 'token': otp, 'type': 'email'}),
     );
     return response;
   }
 
-}
+  Future<bool> createContributor({
+    required String email,
+    required String name,
+    required String country,
+    required String birthdate,
+  }) async {
+    final creationResponse = await http.post(
+      Uri.parse(createContributorUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'name': name,
+        'country': country,
+        'birthdate': birthdate,
+      }),
+    );
 
+    if (creationResponse.statusCode == 200)
+      return true;
+    else
+      return false;
+  }
+}
