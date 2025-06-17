@@ -5,5 +5,6 @@ const checkStatusurl = '$auth/check-status';
 const sendOTPurl = '$auth/send-otp';
 const verifyOTPurl = '$auth/verify-otp';
 const verifyUserUrl = '$auth/verify-user';
+const createContributorUrl = '$auth/create-contributor';
 const addBlockUrl = '$ledger/add-block';
 const verifyBlockurl = '$ledger/confirm-block-integrity';
