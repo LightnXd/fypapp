@@ -2,12 +2,16 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fypapp2/services/url.dart';
+import 'package:fypapp2/widget/navigation_bar.dart';
+import 'package:fypapp2/widget/side_bar.dart';
 import 'package:http/http.dart' as http;
 
 import '../contributor/pages/ledger.dart';
+import '../widget/app_bar.dart';
 
 class ConfirmTransactionPage extends StatelessWidget {
-  const ConfirmTransactionPage({super.key});
+  final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  ConfirmTransactionPage({super.key});
 
   Future<void> _sendTransaction(BuildContext context) async {
     const OID = 'id552'; // You can pass this dynamically
@@ -42,7 +46,11 @@ class ConfirmTransactionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Confirm Transaction')),
+      key: _scaffoldKey,
+      appBar: CustomAppBar(title: 'Test', type: 1),
+      bottomNavigationBar: CustomNavigationBar(navType: 5, fontSize: 16),
+      drawerEnableOpenDragGesture: false,
+      drawer: CustomSideBar(navType: 4),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -59,7 +67,8 @@ class ConfirmTransactionPage extends StatelessWidget {
               child: const Text('switch page'),
             ),
             ElevatedButton(
-              onPressed: () => _sendTransaction(context),
+              onPressed: () => _scaffoldKey.currentState
+                  ?.openDrawer(), //_sendTransaction(context),
               child: const Text('Confirm'),
             ),
           ],
