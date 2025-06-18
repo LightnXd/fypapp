@@ -1,4 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:fypapp2/services/url.dart';
+import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OpenPage extends StatefulWidget {
@@ -22,7 +26,28 @@ class _OpenPageState extends State<OpenPage> {
     final session = supabase.auth.currentSession;
 
     if (session != null) {
-      Navigator.pushReplacementNamed(context, '/home');
+      final email = session.user?.email;
+
+      try {
+        final response = await http.post(
+          Uri.parse(checkUserCreatedUrl),
+          headers: {'Content-Type': 'application/json'},
+          body: jsonEncode({'email': email}),
+        );
+
+        final data = jsonDecode(response.body);
+        final isRegistered = data['created'] == true;
+
+        if (isRegistered) {
+          Navigator.pushReplacementNamed(context, '/home');
+        } else {
+          Navigator.pushReplacementNamed(context, '/login');
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error checking registration: $e')),
+        );
+      }
     } else {
       Navigator.pushReplacementNamed(context, '/login');
     }
@@ -30,8 +55,6 @@ class _OpenPageState extends State<OpenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(child: CircularProgressIndicator()),
-    );
+    return Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }
