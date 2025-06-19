@@ -196,6 +196,18 @@ class _RegisterPageState extends State<RegisterPage> {
                               );
 
                               if (success) {
+                                final passwordSet = await _authService
+                                    .setPassword(passwordController.text);
+                                if (!passwordSet) {
+                                  // Handle password update failure
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text("Failed to set password"),
+                                    ),
+                                  );
+                                  return;
+                                }
+
                                 final creationSuccess = await _authService
                                     .createContributor(
                                       email: emailController.text,

@@ -39,7 +39,7 @@ class AuthenticationService {
       return await sendOTP(email);
     }
 
-    return false; // Email already confirmed
+    return false;
   }
 
   Future<Map<String, dynamic>> verifyUser(String email, String password) async {
@@ -80,6 +80,13 @@ class AuthenticationService {
       body: jsonEncode({'email': email, 'token': otp, 'type': 'email'}),
     );
     return response;
+  }
+
+  Future<bool> setPassword(String password) async {
+    final response = await Supabase.instance.client.auth.updateUser(
+      UserAttributes(password: password),
+    );
+    return response.user != null;
   }
 
   Future<bool> createContributor({
