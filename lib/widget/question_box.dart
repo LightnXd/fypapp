@@ -42,11 +42,7 @@ class QuestionBox extends StatelessWidget {
           if (image != null)
             Padding(
               padding: const EdgeInsets.only(right: 8.0, top: 7),
-              child: Image(
-                image: image!,
-                width: 40,
-                height: 40,
-              ),
+              child: Image(image: image!, width: 40, height: 40),
             ),
           SizedBox(
             width: labelWidth,
@@ -54,16 +50,12 @@ class QuestionBox extends StatelessWidget {
               padding: const EdgeInsets.only(top: 15.0),
               child: Text(
                 label,
-                style: TextStyle(
-                  fontSize: fontSize,
-                  color: textColor,
-                ),
+                style: TextStyle(fontSize: fontSize, color: textColor),
               ),
             ),
           ),
           Expanded(
             child: Column(
-              
               children: [
                 Theme(
                   data: Theme.of(context).copyWith(
@@ -86,22 +78,20 @@ class QuestionBox extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     keyboardType: keyboardType,
+                    maxLines: 10,
                     obscureText: hidden && !showPassword,
-                    style: TextStyle(
-                      color: textColor,
-                      fontSize: fontSize,
-                    ),
+                    style: TextStyle(color: textColor, fontSize: fontSize),
                     decoration: InputDecoration(
                       hintText: hint,
                       suffixIcon: hidden
                           ? IconButton(
-                        icon: Icon(
-                          showPassword
-                              ? Icons.visibility
-                              : Icons.visibility_off,
-                        ),
-                        onPressed: onTogglePassword,
-                      )
+                              icon: Icon(
+                                showPassword
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                              ),
+                              onPressed: onTogglePassword,
+                            )
                           : null,
                     ),
                   ),

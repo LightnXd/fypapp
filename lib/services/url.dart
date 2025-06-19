@@ -7,5 +7,6 @@ const verifyOTPurl = '$auth/verify-otp';
 const verifyUserUrl = '$auth/verify-user';
 const checkUserCreatedUrl = '$auth/check-user-created';
 const createContributorUrl = '$auth/create-contributor';
+const createOrganizationUrl = '$auth/create-organization';
 const addBlockUrl = '$ledger/add-block';
 const verifyBlockurl = '$ledger/confirm-block-integrity';

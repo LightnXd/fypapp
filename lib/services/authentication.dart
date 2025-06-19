@@ -111,4 +111,27 @@ class AuthenticationService {
     else
       return false;
   }
+
+  Future<bool> createOrganization({
+    required String email,
+    required String name,
+    required String country,
+    required String description,
+  }) async {
+    final creationResponse = await http.post(
+      Uri.parse(createOrganizationUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'name': name,
+        'country': country,
+        'description': description,
+      }),
+    );
+
+    if (creationResponse.statusCode == 200)
+      return true;
+    else
+      return false;
+  }
 }

@@ -14,7 +14,6 @@ class LoginPage extends StatefulWidget {
   State<LoginPage> createState() => _LoginPageState();
 }
 
-
 class _LoginPageState extends State<LoginPage> {
   final AuthenticationService _authService = AuthenticationService();
   final emailController = TextEditingController();
@@ -22,6 +21,7 @@ class _LoginPageState extends State<LoginPage> {
   String? emailError;
   String? passwordError;
   String? errordata;
+  bool showPassword = false;
 
   @override
   void dispose() {
@@ -42,7 +42,7 @@ class _LoginPageState extends State<LoginPage> {
           ? null
           : 'Need to be within 8–24 characters\nAt least 1 uppercase\nAt least 1 lowercase\nAt least 1 number\nAt least 1 symbol';
     });
-        return email.contains('@');
+    return email.contains('@');
   }
 
   @override
@@ -60,25 +60,29 @@ class _LoginPageState extends State<LoginPage> {
                 textAlign: TextAlign.center,
               ),
               gaph40,
-              /*Image.asset(
-                'assets/logo.png', // Place your logo in the assets folder
+              Image.asset(
+                'assets/images/test.webp', // Place your logo in the assets folder
                 height: 100,
-              ),*/
+              ),
               gaph40,
               QuestionBox(
-                  label: 'Email',
-                  hint: 'Enter your email',
-                  controller: emailController,
-                  keyboardType: TextInputType.emailAddress,
-                  errorText: emailError,
+                label: 'Email',
+                hint: 'Enter your email',
+                controller: emailController,
+                keyboardType: TextInputType.emailAddress,
+                errorText: emailError,
               ),
               QuestionBox(
-                label: 'Password',
+                label: 'Password:',
                 hint: 'Enter your password',
                 controller: passwordController,
+                hidden: true,
+                showPassword: showPassword,
+                onTogglePassword: () =>
+                    setState(() => showPassword = !showPassword),
                 errorText: passwordError,
               ),
-                gaph10,
+              gaph10,
               if (errordata != null)
                 Text(
                   errordata!,
@@ -94,7 +98,10 @@ class _LoginPageState extends State<LoginPage> {
                     final email = emailController.text.trim();
                     final password = passwordController.text;
                     try {
-                      final result = await _authService.verifyUser(email, password);
+                      final result = await _authService.verifyUser(
+                        email,
+                        password,
+                      );
                       final verified = result['status'];
 
                       if (!verified) {
@@ -117,16 +124,27 @@ class _LoginPageState extends State<LoginPage> {
 
                               if (response.statusCode == 200) {
                                 onResult(null);
-                                final success = await _authService.getSession(data['session_string']);
+                                final success = await _authService.getSession(
+                                  data['session_string'],
+                                );
                                 if (success) {
-                                  Navigator.pushReplacementNamed(context, '/home');
+                                  Navigator.pushReplacementNamed(
+                                    context,
+                                    '/home',
+                                  );
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(content: Text('Failed to restore session')),
+                                    const SnackBar(
+                                      content: Text(
+                                        'Failed to restore session',
+                                      ),
+                                    ),
                                   );
                                 }
                               } else {
-                                onResult(data['error'] ?? 'Verification failed');
+                                onResult(
+                                  data['error'] ?? 'Verification failed',
+                                );
                               }
                             } catch (e) {
                               onResult('An error occurred: $e');
@@ -162,8 +180,7 @@ class _LoginPageState extends State<LoginPage> {
                 onPressed: () async {
                   await OtpDialog.show(
                     context: context,
-                    onSubmitted: (otp, onResult) async {
-                    },
+                    onSubmitted: (otp, onResult) async {},
                   );
                 },
                 child: const Text("Test"),
@@ -175,4 +192,3 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
-

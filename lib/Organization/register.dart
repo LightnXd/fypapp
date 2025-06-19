@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import '../../services/authentication.dart';
 import '../../widget/otp_confirmation.dart';
 import '../../widget/question_box.dart';
-import '../../widget/date_picker.dart';
 import '../../widget/empty_box.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -21,7 +20,8 @@ class _RegisterPageState extends State<RegisterPage> {
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
   final countryController = TextEditingController();
-  final birthdateController = TextEditingController();
+  final addressController = TextEditingController();
+  final descriptionController = TextEditingController();
 
   bool showPassword = false;
   bool showConfirmPassword = false;
@@ -30,7 +30,9 @@ class _RegisterPageState extends State<RegisterPage> {
   String? passwordError;
   String? confirmEmailError;
   String? confirmPasswordError;
+  String? addressError;
   String? countryError;
+  String? descriptionError;
 
   bool validateInputs() {
     final name = nameController.text;
@@ -39,6 +41,8 @@ class _RegisterPageState extends State<RegisterPage> {
     final confirmEmail = confirmEmailController.text;
     final confirmPassword = confirmPasswordController.text;
     final confirmCountry = countryController.text;
+    final confirmAddress = addressController.text;
+    final confirmDescription = descriptionController.text;
 
     final passwordValid = RegExp(
       r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$',
@@ -56,9 +60,17 @@ class _RegisterPageState extends State<RegisterPage> {
       confirmPasswordError = password == confirmPassword
           ? null
           : 'Password does not match';
+
+      // NEW: Empty field validations
       countryError = confirmCountry.isNotEmpty
           ? null
           : 'Country must not be empty';
+      addressError = confirmAddress.isNotEmpty
+          ? null
+          : 'Address must not be empty';
+      descriptionError = confirmDescription.isNotEmpty
+          ? null
+          : 'Description must not be empty';
     });
 
     return name.length >= 5 &&
@@ -66,7 +78,9 @@ class _RegisterPageState extends State<RegisterPage> {
         email == confirmEmail &&
         passwordValid.hasMatch(password) &&
         password == confirmPassword &&
-        confirmCountry.isNotEmpty;
+        confirmCountry.isNotEmpty &&
+        confirmAddress.isNotEmpty &&
+        confirmDescription.isNotEmpty;
   }
 
   @override
@@ -76,8 +90,9 @@ class _RegisterPageState extends State<RegisterPage> {
     confirmEmailController.dispose();
     passwordController.dispose();
     confirmPasswordController.dispose();
+    addressController.dispose();
     countryController.dispose();
-    birthdateController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
@@ -136,43 +151,26 @@ class _RegisterPageState extends State<RegisterPage> {
             ),
             QuestionBox(
               image: const AssetImage('assets/images/test.webp'),
+              label: 'Address:',
+              hint: 'Enter your address',
+              controller: addressController,
+              errorText: addressError,
+            ),
+            QuestionBox(
+              image: const AssetImage('assets/images/test.webp'),
               label: 'Country:',
               hint: 'Enter your country',
               controller: countryController,
               errorText: countryError,
             ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8.0, top: 7),
-                    child: Image(
-                      image: AssetImage('assets/images/test.webp'),
-                      width: 40,
-                      height: 40,
-                    ),
-                  ),
-                  const SizedBox(
-                    width: 100,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 15.0),
-                      child: Text(
-                        'Birthdate:',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: DatePickerDropdown(
-                      hint: "Select your birthdate",
-                      controller: birthdateController,
-                    ),
-                  ),
-                ],
-              ),
+            QuestionBox(
+              image: const AssetImage('assets/images/test.webp'),
+              label: 'Description:',
+              hint: 'Description',
+              controller: descriptionController,
+              errorText: descriptionError,
             ),
+
             gaph28,
             ElevatedButton(
               onPressed: () async {
@@ -212,11 +210,11 @@ class _RegisterPageState extends State<RegisterPage> {
                                 }
 
                                 final creationSuccess = await _authService
-                                    .createContributor(
+                                    .createOrganization(
                                       email: emailController.text,
                                       name: nameController.text,
                                       country: countryController.text,
-                                      birthdate: birthdateController.text,
+                                      description: descriptionController.text,
                                     );
 
                                 if (creationSuccess) {
