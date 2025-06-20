@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fypapp2/Organization/confirm_transaction.dart';
 import 'package:fypapp2/contributor/pages/ledger.dart';
+import 'package:fypapp2/contributor/pages/profile.dart';
 import 'contributor/pages/home.dart';
 import 'login_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';

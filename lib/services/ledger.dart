@@ -18,7 +18,7 @@ Future<String> pickAndUploadLedgerFile() async {
 
   if (fileBytes == null) return "File bytes are null";
 
-  var request = http.MultipartRequest('POST', Uri.parse(verifyBlockurl));
+  var request = http.MultipartRequest('POST', Uri.parse(verifyBlockUrl));
 
   request.files.add(
     http.MultipartFile.fromBytes(

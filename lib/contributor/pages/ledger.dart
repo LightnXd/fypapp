@@ -154,12 +154,10 @@ class _LedgerPageState extends State<LedgerPage> {
       ).showSnackBar(const SnackBar(content: Text('No data to export.')));
       return;
     }
-
-    final excel = Excel.createExcel(); // Default sheet is created
+    final excel = Excel.createExcel();
     final String sheetName = excel.getDefaultSheet()!;
     final Sheet sheet = excel.sheets[sheetName]!;
 
-    // Add header row
     sheet.appendRow([
       TextCellValue('LedgerID'),
       TextCellValue('TransactionNumber'),
@@ -184,7 +182,6 @@ class _LedgerPageState extends State<LedgerPage> {
       ]);
     }
 
-    // Save the Excel to a temp file
     final bytes = excel.encode()!;
     final tempDir = await getTemporaryDirectory();
     final tempPath = '${tempDir.path}/ledger.xlsx';
@@ -192,7 +189,6 @@ class _LedgerPageState extends State<LedgerPage> {
     await tempFile.writeAsBytes(bytes);
     print('File saved to: $tempPath');
 
-    // Prompt user to save via FlutterFileDialog
     final savedPath = await FlutterFileDialog.saveFile(
       params: SaveFileDialogParams(sourceFilePath: tempPath),
     );

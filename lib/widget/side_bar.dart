@@ -84,7 +84,6 @@ class CustomSideBar extends StatelessWidget {
                     child: horizontalIcon(
                       imagePath: iconPaths[index],
                       text: labels[index],
-                      textColor: Colors.black,
                       textSize: fontSize,
                     ),
                   );

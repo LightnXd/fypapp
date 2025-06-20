@@ -58,7 +58,7 @@ class ProposalInfo extends StatelessWidget {
             ),
             gaph8,
             // HorizontalBox
-            HorizontalBox(
+            HorizontalBox3(
               yesText: '${countYes.toInt()}% yes',
               noText: '${countNo.toInt()}% no',
               yetText: '${notVoted.toInt()}% yet',

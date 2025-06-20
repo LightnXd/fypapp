@@ -9,6 +9,7 @@ class QuestionBox extends StatelessWidget {
   final TextInputType keyboardType;
   final String hint;
   final bool hidden;
+  final int maxline;
   final TextEditingController? controller;
   final String? errorText;
   final bool showPassword;
@@ -25,6 +26,7 @@ class QuestionBox extends StatelessWidget {
     this.keyboardType = TextInputType.text,
     required this.hint,
     this.hidden = false,
+    this.maxline = 1,
     this.controller,
     this.errorText,
     this.showPassword = false,
@@ -78,7 +80,7 @@ class QuestionBox extends StatelessWidget {
                   child: TextField(
                     controller: controller,
                     keyboardType: keyboardType,
-                    maxLines: 10,
+                    maxLines: maxline,
                     obscureText: hidden && !showPassword,
                     style: TextStyle(color: textColor, fontSize: fontSize),
                     decoration: InputDecoration(

@@ -167,6 +167,7 @@ class _RegisterPageState extends State<RegisterPage> {
               image: const AssetImage('assets/images/test.webp'),
               label: 'Description:',
               hint: 'Description',
+              maxline: 10,
               controller: descriptionController,
               errorText: descriptionError,
             ),
@@ -215,6 +216,7 @@ class _RegisterPageState extends State<RegisterPage> {
                                       name: nameController.text,
                                       country: countryController.text,
                                       description: descriptionController.text,
+                                      address: addressController.text,
                                     );
 
                                 if (creationSuccess) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/contributor/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class HomePage extends StatelessWidget {
@@ -25,8 +26,23 @@ class HomePage extends StatelessWidget {
           ),
         ],
       ),
-      body: Center(
-        child: Text('Welcome, $userEmail'),
+      body: Column(
+        children: [
+          Text('Welcome, $userEmail'),
+          Center(
+            child: ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (_) => const ContributorProfilePage(),
+                  ),
+                );
+              },
+              child: Text('Centered Button'),
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -7,21 +7,28 @@ Widget verticalIcon({
   required String text,
   Color textColor = Colors.black,
   double textSize = 16.0,
-  VoidCallback? onTap, // Optional tap handler
+  VoidCallback? onTap,
+  double? spacing, // optional spacing box after this widget
 }) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(imagePath, width: 45, height: 45),
-        gaph4,
-        Text(
-          text,
-          style: TextStyle(color: textColor, fontSize: textSize),
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      GestureDetector(
+        onTap: onTap,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(imagePath, width: 45, height: 45),
+            gaph4,
+            Text(
+              text,
+              style: TextStyle(color: textColor, fontSize: textSize),
+            ),
+          ],
         ),
-      ],
-    ),
+      ),
+      if (spacing != null) SizedBox(height: spacing),
+    ],
   );
 }
 
@@ -30,20 +37,27 @@ Widget horizontalIcon({
   required String text,
   Color textColor = Colors.black,
   double textSize = 16.0,
-  VoidCallback? onTap, // Optional tap handler
+  VoidCallback? onTap,
+  double? spacing, // optional spacing box after this widget
 }) {
-  return GestureDetector(
-    onTap: onTap,
-    child: Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        Image.asset(imagePath, width: 45, height: 45),
-        gapw8,
-        Text(
-          text,
-          style: TextStyle(color: textColor, fontSize: textSize),
+  return Column(
+    mainAxisSize: MainAxisSize.min,
+    children: [
+      GestureDetector(
+        onTap: onTap,
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Image.asset(imagePath, width: 45, height: 45),
+            gapw20,
+            Text(
+              text,
+              style: TextStyle(color: textColor, fontSize: textSize),
+            ),
+          ],
         ),
-      ],
-    ),
+      ),
+      if (spacing != null) SizedBox(height: spacing),
+    ],
   );
 }

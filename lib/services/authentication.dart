@@ -22,7 +22,7 @@ class AuthenticationService {
   Future<bool> signUp(String email) async {
     // Step 1: Check status
     final statusResponse = await http.post(
-      Uri.parse(checkStatusurl),
+      Uri.parse(checkStatusUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
@@ -58,7 +58,7 @@ class AuthenticationService {
 
   Future<bool> sendOTP(String email) async {
     final otpResponse = await http.post(
-      Uri.parse(sendOTPurl),
+      Uri.parse(sendOTPUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
@@ -117,6 +117,7 @@ class AuthenticationService {
     required String name,
     required String country,
     required String description,
+    required String address,
   }) async {
     final creationResponse = await http.post(
       Uri.parse(createOrganizationUrl),
@@ -126,6 +127,7 @@ class AuthenticationService {
         'name': name,
         'country': country,
         'description': description,
+        'address': address,
       }),
     );
 

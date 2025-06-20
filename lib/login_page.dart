@@ -76,6 +76,7 @@ class _LoginPageState extends State<LoginPage> {
                 label: 'Password:',
                 hint: 'Enter your password',
                 controller: passwordController,
+                maxline: 1,
                 hidden: true,
                 showPassword: showPassword,
                 onTogglePassword: () =>
