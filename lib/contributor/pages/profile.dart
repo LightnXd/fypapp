@@ -3,6 +3,7 @@ import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
 import '../../widget/profile_head.dart';
+import 'edit_profile.dart';
 
 class ContributorProfilePage extends StatefulWidget {
   const ContributorProfilePage({super.key});
@@ -12,10 +13,10 @@ class ContributorProfilePage extends StatefulWidget {
 }
 
 class _ContributorProfilePageState extends State<ContributorProfilePage> {
-  String username = 'aa';
-  String id = 'aa';
-  String country = 'aa';
-  String birthDate = 'aa';
+  String username = '';
+  String id = '';
+  String country = '';
+  String birthDate = '';
   String? profileImage;
   String? backgroundImage;
   bool isLoading = false;
@@ -77,6 +78,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         horizontalIcon(
                           imagePath: 'assets/images/test.webp',
@@ -102,9 +104,20 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
                         Center(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Handle press
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => ContributorEditProfile(
+                                    id: id,
+                                    username: username,
+                                    country: country,
+                                    profileImage: profileImage,
+                                    backgroundImage: backgroundImage,
+                                  ),
+                                ),
+                              );
                             },
-                            child: Text('Centered Button'),
+                            child: Text('Edit Profile'),
                           ),
                         ),
                         gaph24,

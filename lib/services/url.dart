@@ -13,3 +13,5 @@ const addBlockUrl = '$ledger/add-block';
 const verifyBlockUrl = '$ledger/confirm-block-integrity';
 const getContributorProfileUrl = '$profile/get-contributor-profile';
 const getOrganizationProfileUrl = '$profile/get-organization-profile';
+const editContributorProfileUrl = '$profile/edit-contributor-profile';
+const editOrganizationProfileUrl = '$profile/edit-organization-profile';

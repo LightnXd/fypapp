@@ -4,6 +4,7 @@ import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
 import '../widget/horizontal_box.dart';
 import '../widget/profile_head.dart';
+import 'edit_profile.dart';
 
 class OrganizationProfilePage extends StatefulWidget {
   const OrganizationProfilePage({super.key});
@@ -78,12 +79,15 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
           ? const Center(child: CircularProgressIndicator()) // loading spinner
           : SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   ProfileHeader(
                     profileUrl: profileImage,
                     backgroundUrl: backgroundImage,
                   ),
+
                   SizedBox(height: screenWidth / 4.3),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
@@ -143,9 +147,22 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                   Center(
                     child: ElevatedButton(
                       onPressed: () {
-                        // Handle press
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => OrganizationEditProfile(
+                              id: id,
+                              username: username,
+                              country: country,
+                              profileImage: profileImage,
+                              backgroundImage: backgroundImage,
+                              address: address,
+                              description: description,
+                            ),
+                          ),
+                        );
                       },
-                      child: Text('Centered Button'),
+                      child: Text('Edit Profile'),
                     ),
                   ),
                   gaph24,

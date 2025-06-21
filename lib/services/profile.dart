@@ -36,3 +36,49 @@ Future<Map<String, dynamic>> fetchOrganizationProfile() async {
     throw Exception(err["error"] ?? "Unknown error occurred.");
   }
 }
+
+Future<bool> editContributorProfile({
+  required String id,
+  required String username,
+  required String country,
+}) async {
+  final response = await http.post(
+    Uri.parse(editContributorProfileUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'id': id, 'username': username, 'country': country}),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['success'] == true;
+  } else {
+    return false;
+  }
+}
+
+Future<bool> editOrganizationProfile({
+  required String id,
+  required String username,
+  required String address,
+  required String description,
+  required String country,
+}) async {
+  final response = await http.post(
+    Uri.parse(editOrganizationProfileUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'id': id,
+      'username': username,
+      'address': address,
+      'description': description,
+      'country': country,
+    }),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    return data['success'] == true;
+  } else {
+    return false;
+  }
+}
