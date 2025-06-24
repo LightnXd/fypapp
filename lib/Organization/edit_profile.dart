@@ -3,6 +3,7 @@ import '../../services/profile.dart';
 import '../../widget/profile_head.dart';
 import '../../widget/question_box.dart';
 import '../services/authentication.dart';
+import '../widget/app_bar.dart';
 import '../widget/checkbox.dart';
 import '../widget/dropdown_label.dart';
 import '../widget/empty_box.dart';
@@ -69,7 +70,11 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
         isLoading = false;
       });
     } catch (e) {
-      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
       setState(() => isLoading = false);
     }
   }
@@ -114,12 +119,7 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width.floor();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Edit Profile'),
-        backgroundColor: Colors.white,
-        foregroundColor: Colors.black,
-        elevation: 0,
-      ),
+      appBar: CustomAppBar(title: 'Edit Profile', type: 2),
       body: isLoading
           ? const CircularProgressIndicator()
           : SingleChildScrollView(
@@ -131,7 +131,6 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                   ),
                   SizedBox(height: screenWidth / 4.3),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Name:',
                     hint: 'Enter your name',
                     controller: nameController,
@@ -139,7 +138,6 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                   ),
                   DropdownLabel(
                     label: "Change your types",
-                    imagePath: 'assets/images/test.webp',
                     textColor: Colors.black,
                     errorText: typeError,
                     onPressed: () {
@@ -147,21 +145,18 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                     },
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Country:',
                     hint: 'Enter your country',
                     controller: countryController,
                     errorText: countryError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Address:',
                     hint: 'Enter your address',
                     controller: addressController,
                     errorText: addressError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Description:',
                     hint: 'Enter your description',
                     controller: descriptionController,
@@ -208,7 +203,6 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
   }
 
   void showCheckboxDialog(BuildContext context) {
-    print(selectedTID);
     List<String> tempSelected = List.from(selectedTID);
     showDialog(
       context: context,

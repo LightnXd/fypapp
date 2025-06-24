@@ -24,11 +24,8 @@ class _OpenPageState extends State<OpenPage> {
   }
 
   Future<void> _checkSession() async {
-    print("called");
-    final supabase = Supabase.instance.client;
-    final session = supabase.auth.currentSession;
     final authService = AuthenticationService();
-    print('session: $session');
+    final session = authService.client.auth.currentSession;
 
     if (session == null) {
       if (!mounted) return;
@@ -38,51 +35,37 @@ class _OpenPageState extends State<OpenPage> {
 
     try {
       final email = session.user?.email;
-      print('email: $email');
 
       if (email == null) {
-        print('Email is null!');
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/login');
         return;
       }
 
-      print('Sending request to $checkUserCreatedUrl');
       final response = await http.post(
         Uri.parse(checkUserCreatedUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );
 
-      print('response status: ${response.statusCode}');
-      print('response body: ${response.body}');
-
       if (response.statusCode != 200) {
         throw Exception('Failed to check user registration');
       }
 
       final data = jsonDecode(response.body);
-      print('data: $data');
       final isRegistered = data['created'] == true;
 
       if (!isRegistered) {
-        print('User is not registered');
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/login');
         return;
       }
 
       final uid = session.user.id;
-      print('uid: $uid');
-
       final id = await authService.getCurrentUserID(uid);
-      print('id: $id');
-
       if (id == null || !mounted) return;
 
       final userRole = await getUserRole(id);
-      print('userRole: $userRole');
-
       if (!mounted) return;
 
       switch (userRole) {
@@ -93,14 +76,12 @@ class _OpenPageState extends State<OpenPage> {
           Navigator.pushReplacementNamed(context, '/organization-home');
           break;
         default:
-          print('Unknown role');
           ScaffoldMessenger.of(
             context,
           ).showSnackBar(const SnackBar(content: Text('Role not found')));
           Navigator.pushReplacementNamed(context, '/login');
       }
     } catch (e, stack) {
-      print('Error in _checkSession: $e');
       print(stack);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -111,7 +92,6 @@ class _OpenPageState extends State<OpenPage> {
 
   @override
   Widget build(BuildContext context) {
-    print("openpage");
     return const Scaffold(body: Center(child: CircularProgressIndicator()));
   }
 }

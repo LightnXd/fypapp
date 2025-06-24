@@ -15,7 +15,6 @@ class AuthenticationService {
       final recoveredSession = await _client.auth.recoverSession(sessionString);
       return recoveredSession.session != null;
     } catch (e) {
-      print('Error restoring session: $e');
       return false;
     }
   }
@@ -154,7 +153,6 @@ class AuthenticationService {
     if (creationResponse.statusCode == 200)
       return true;
     else
-      print(creationResponse.body);
     return false;
   }
 
@@ -165,16 +163,12 @@ class AuthenticationService {
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);
         if (data['status'] == true && data['data'] != null) {
-          print(data);
-          print("sssdfghjobject");
-          print(data['data']['ID'] as String);
           return data['data']['ID'] as String;
         } else {
           print('Error: ${data['message']}');
         }
       } else {
         print('Failed with status code: ${response.statusCode}');
-        print(response.body);
       }
     } catch (e) {
       print('Exception occurred: $e');

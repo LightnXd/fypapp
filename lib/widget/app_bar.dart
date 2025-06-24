@@ -30,9 +30,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 }
               },
               child: Image.asset(
-                type == 1
-                    ? 'assets/images/test.webp'
-                    : 'assets/images/test.webp',
+                type == 1 ? 'assets/images/menu.png' : 'assets/images/back.png',
                 width: 40,
                 height: 32,
               ),

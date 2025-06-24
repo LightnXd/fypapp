@@ -64,7 +64,7 @@ class _LoginPageState extends State<LoginPage> {
               ),
               gaph40,
               Image.asset(
-                'assets/images/test.webp', // Place your logo in the assets folder
+                'assets/images/sdg.png', // logo here
                 height: 100,
               ),
               gaph40,
@@ -188,7 +188,11 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }
                     } catch (e) {
-                      print("Error: $e");
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text('Error: $e'),
+                        ),
+                      );
                     }
                   }
                 },

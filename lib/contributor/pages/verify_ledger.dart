@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../services/ledger.dart';
+import '../../widget/app_bar.dart';
 
 class VerifyLedgerPage extends StatefulWidget {
   const VerifyLedgerPage({super.key});
@@ -20,7 +21,7 @@ class _VerifyLedgerPageState extends State<VerifyLedgerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Verify Ledger")),
+      appBar: CustomAppBar(title: 'Verify Ledger', type: 2),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

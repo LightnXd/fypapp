@@ -91,14 +91,14 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
         child: Column(
           children: [
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/rounded_profile.png'),
               label: 'Name:',
               hint: 'Enter your name',
               controller: nameController,
               errorText: nameError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/email.png'),
               label: 'Email:',
               hint: 'Enter your email',
               controller: emailController,
@@ -106,7 +106,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
               errorText: emailError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/email.png'),
               label: 'Confirm Email:',
               hint: 'Re-enter your email',
               controller: confirmEmailController,
@@ -114,7 +114,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
               errorText: confirmEmailError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/password.png'),
               label: 'Password:',
               hint: 'Enter your password',
               controller: passwordController,
@@ -125,7 +125,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
               errorText: passwordError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/password.png'),
               label: 'Confirm Password:',
               hint: 'Re-enter your password',
               controller: confirmPasswordController,
@@ -136,7 +136,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
               errorText: confirmPasswordError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/country.png'),
               label: 'Country:',
               hint: 'Enter your country',
               controller: countryController,
@@ -150,7 +150,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
                   const Padding(
                     padding: EdgeInsets.only(right: 8.0, top: 7),
                     child: Image(
-                      image: AssetImage('assets/images/test.webp'),
+                      image: AssetImage('assets/images/birthdate.png'),
                       width: 40,
                       height: 40,
                     ),

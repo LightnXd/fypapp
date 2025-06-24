@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../services/authentication.dart';
 import '../services/profile.dart';
 import '../widget/app_bar.dart';
+import '../widget/navigation_bar.dart';
 
 class OrganizationHomePage extends StatefulWidget {
   const OrganizationHomePage({super.key});
@@ -15,7 +16,6 @@ class OrganizationHomePage extends StatefulWidget {
 }
 
 class _OrganizationHomePageState extends State<OrganizationHomePage> {
-  final supabase = Supabase.instance.client;
   final AuthenticationService _authService = AuthenticationService();
 
   String? status;
@@ -30,26 +30,32 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
   }
 
   Future<void> fetchUserStatus() async {
-    final user = supabase.auth.currentUser;
+    final user = _authService.client.auth.currentUser;
     if (user == null) {
-      print('User is null');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('user not found'),
+        ),
+      );
       setState(() => isLoading = false);
       return;
     }
 
     final uid = user.id;
     userEmail = user.email;
-    print('UID: $uid, Email: $userEmail');
 
     id = await _authService.getCurrentUserID(uid);
     if (id == null) {
-      print('UserID not found');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('user id not found'),
+        ),
+      );
       setState(() => isLoading = false);
       return;
     }
 
     final userStatus = await getUserStatus(id!);
-    print('UserStatus: $userStatus');
 
     if (mounted) {
       setState(() {
@@ -66,8 +72,10 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
     }
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Organization Home (change later)', type: 1),
-      drawer: OrganizationSideBar(userId: id!), // ✅ Use real id
+      appBar: CustomAppBar(title: 'Home', type: 1),
+      bottomNavigationBar: OrganizationNavBar(),
+      drawerEnableOpenDragGesture: false,
+      drawer: OrganizationSideBar(userId: id!),
       body: status == 'Pending'
           ? const Center(child: Text('Your account has not been approved'))
           : Column(

@@ -81,23 +81,21 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
+                          imagePath: 'assets/images/border_profile.png',
                           text: username,
+                          spacing: 6,
+                        ),
+                        horizontalIcon(text: id, spacing: 12, textSize: 14),
+                        horizontalIcon(
+                          imagePath: 'assets/images/country.png',
+                          text: "Country:",
+                          extraText: country,
                           spacing: 12,
                         ),
                         horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
-                          text: id,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
-                          text: country,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
-                          text: birthDate,
+                          imagePath: 'assets/images/birthdate.png',
+                          text: "Birthdate:",
+                          extraText: birthDate,
                           spacing: 12,
                         ),
                         gaph24,

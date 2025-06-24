@@ -79,14 +79,12 @@ class _ContributorEditProfileState extends State<ContributorEditProfile> {
               child: Column(
                 children: [
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Name:',
                     hint: 'Enter your name',
                     controller: nameController,
                     errorText: nameError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Country:',
                     hint: 'Enter your country',
                     controller: countryController,

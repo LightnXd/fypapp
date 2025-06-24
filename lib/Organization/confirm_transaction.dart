@@ -1,13 +1,12 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fypapp2/services/url.dart';
-import 'package:fypapp2/widget/navigation_bar.dart';
-import 'package:fypapp2/widget/side_bar.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 import '../contributor/pages/ledger.dart';
 import '../services/authentication.dart';
 import '../widget/app_bar.dart';
+import '../widget/empty_box.dart';
 
 class ConfirmTransactionPage extends StatefulWidget {
   const ConfirmTransactionPage({super.key});
@@ -77,30 +76,26 @@ class _ConfirmTransactionPageState extends State<ConfirmTransactionPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: CustomAppBar(title: 'Test', type: 1),
-      bottomNavigationBar: CustomNavigationBar(navType: 5, fontSize: 16),
-      drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: oid),
+      appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('Do you want to confirm this transaction?'),
-            const SizedBox(height: 16),
+            gaph16,
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const LedgerPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const ContributorLedgerPage(),
+                  ),
                 );
               },
               child: const Text('Switch Page'),
             ),
             ElevatedButton(
-              onPressed: () => _scaffoldKey.currentState?.openDrawer(),
-              // or use this to perform the transaction:
-              // onPressed: () => _sendTransaction(context),
+              onPressed: () => _sendTransaction(context),
               child: const Text('Confirm'),
             ),
           ],

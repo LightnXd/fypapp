@@ -3,6 +3,7 @@ import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
+import '../widget/app_bar.dart';
 import '../widget/horizontal_box.dart';
 import '../widget/profile_head.dart';
 import 'edit_profile.dart';
@@ -80,15 +81,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width.floor();
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '<  Organization profile',
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 0,
-      ),
+      appBar: CustomAppBar(title: 'Profile', type: 2),
       body: isLoading
           ? const Center(child: CircularProgressIndicator()) // loading spinner
           : SingleChildScrollView(
@@ -114,27 +107,24 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                               onPressed: () {
                                 // Handle first button press
                               },
-                              child: Text('Button 1'),
+                              child: Text('View ledger'),
                             ),
                             ElevatedButton(
                               onPressed: () {
                                 // Handle second button press
                               },
-                              child: Text('Button 2'),
+                              child: Text('Verify account'),
                             ),
                           ],
                         ),
                         gaph16,
+                        //add is verified later
                         horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
+                          imagePath: 'assets/images/border_profile.png',
                           text: username,
-                          spacing: 12,
+                          spacing: 6,
                         ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
-                          text: id,
-                          spacing: 12,
-                        ),
+                        horizontalIcon(text: id, textSize: 14, spacing: 12),
                         CustomHorizontalBox(items: type, textSize: 13),
                         gaph12,
                         horizontalIcon(
@@ -144,19 +134,19 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                           spacing: 12,
                         ),
                         horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
+                          imagePath: 'assets/images/calendar.png',
                           text: "Joined on:",
                           extraText: formatDate(creationDate),
                           spacing: 12,
                         ),
                         horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
+                          imagePath: 'assets/images/country.png',
                           text: "Country of origin:",
                           extraText: country,
                           spacing: 12,
                         ),
                         horizontalIcon(
-                          imagePath: 'assets/images/test.webp',
+                          imagePath: 'assets/images/address.png',
                           text: "Address:",
                           extraText: address,
                           spacing: 12,

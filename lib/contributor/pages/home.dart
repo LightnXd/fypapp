@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:fypapp2/contributor/pages/profile.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../services/authentication.dart';
 
 class ContributorHomePage extends StatelessWidget {
   const ContributorHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    final supabase = Supabase.instance.client;
-    final userEmail = supabase.auth.currentUser?.email ?? 'No email found';
+    final authService = AuthenticationService();
+    final userEmail =
+        authService.client.auth.currentUser?.email ?? 'No email found';
 
     return Scaffold(
       appBar: AppBar(
@@ -17,7 +19,7 @@ class ContributorHomePage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.logout),
             onPressed: () async {
-              await supabase.auth.signOut();
+              await authService.client.auth.signOut();
               // Navigate to login page after logout
               if (context.mounted) {
                 Navigator.pushReplacementNamed(context, '/login');

@@ -24,7 +24,7 @@ class ProfileHeader extends StatelessWidget {
                 fit: BoxFit.cover,
               )
             : Image.asset(
-                'assets/images/test.webp',
+                'assets/images/profile_background.jpg',
                 height: screenHeight / 3.1,
                 width: double.infinity,
                 fit: BoxFit.cover,
@@ -45,14 +45,7 @@ class ProfileHeader extends StatelessWidget {
                   backgroundImage:
                       (profileUrl != null && profileUrl!.isNotEmpty)
                       ? NetworkImage(profileUrl!)
-                      : const AssetImage('assets/images/test.webp'),
-                  child: (profileUrl == null || profileUrl!.isEmpty)
-                      ? const Text(
-                          'Profile image',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(color: Colors.white, fontSize: 12),
-                        )
-                      : null,
+                      : const AssetImage('assets/images/profile.png'),
                 ),
               ),
               const Spacer(),

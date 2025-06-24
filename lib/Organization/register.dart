@@ -5,6 +5,7 @@ import '../../services/authentication.dart';
 import '../../widget/otp_confirmation.dart';
 import '../../widget/question_box.dart';
 import '../../widget/empty_box.dart';
+import '../widget/app_bar.dart';
 import '../widget/dropdown_label.dart';
 
 class OrganizationRegisterPage extends StatefulWidget {
@@ -55,7 +56,11 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
         isLoading = false;
       });
     } catch (e) {
-      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error: $e'),
+        ),
+      );
       setState(() => isLoading = false);
     }
   }
@@ -130,7 +135,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
+      appBar: CustomAppBar(title: 'Organization Registration', type: 2),
       body: isLoading
           ? const CircularProgressIndicator()
           : SingleChildScrollView(
@@ -138,14 +143,16 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
               child: Column(
                 children: [
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage(
+                      'assets/images/rounded_profile.png',
+                    ),
                     label: 'Name:',
                     hint: 'Enter your name',
                     controller: nameController,
                     errorText: nameError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage('assets/images/email.png'),
                     label: 'Email:',
                     hint: 'Enter your email',
                     controller: emailController,
@@ -153,7 +160,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                     errorText: emailError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage('assets/images/test.png'),
                     label: 'Confirm Email:',
                     hint: 'Re-enter your email',
                     controller: confirmEmailController,
@@ -161,7 +168,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                     errorText: confirmEmailError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage('assets/images/test.png'),
                     label: 'Password:',
                     hint: 'Enter your password',
                     controller: passwordController,
@@ -172,7 +179,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                     errorText: passwordError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage('assets/images/test.png'),
                     label: 'Confirm Password:',
                     hint: 'Re-enter your password',
                     controller: confirmPasswordController,
@@ -186,7 +193,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                   gaph4,
                   DropdownLabel(
                     label: "Select Types",
-                    imagePath: 'assets/images/test.webp',
+                    imagePath: 'assets/images/sdg.png',
                     textColor: Colors.black,
                     errorText: typeError,
                     onPressed: () {
@@ -195,21 +202,20 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                   ),
                   gaph4,
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage('assets/images/address.png'),
                     label: 'Address:',
                     hint: 'Enter your address',
                     controller: addressController,
                     errorText: addressError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
+                    image: const AssetImage('assets/images/country.png'),
                     label: 'Country:',
                     hint: 'Enter your country',
                     controller: countryController,
                     errorText: countryError,
                   ),
                   QuestionBox(
-                    image: const AssetImage('assets/images/test.webp'),
                     label: 'Description:',
                     hint: 'Description',
                     maxline: 10,

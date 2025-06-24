@@ -144,7 +144,6 @@ Future<String?> getUserStatus(String id) async {
 
     if (response.statusCode == 200) {
       final data = jsonDecode(response.body);
-      print(data['Status'] as String);
       return data['Status'] as String?;
     } else {
       print('Failed to fetch status: ${response.body}');
