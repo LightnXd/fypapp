@@ -1,27 +1,57 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:fypapp2/services/url.dart';
-import 'package:fypapp2/widget/navigation_bar.dart';
-import 'package:fypapp2/widget/side_bar.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:supabase_flutter/supabase_flutter.dart';
 import '../contributor/pages/ledger.dart';
+import '../services/authentication.dart';
 import '../widget/app_bar.dart';
+import '../widget/empty_box.dart';
 
-class ConfirmTransactionPage extends StatelessWidget {
+class ConfirmTransactionPage extends StatefulWidget {
+  const ConfirmTransactionPage({super.key});
+
+  @override
+  State<ConfirmTransactionPage> createState() => _ConfirmTransactionPageState();
+}
+
+class _ConfirmTransactionPageState extends State<ConfirmTransactionPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
-  ConfirmTransactionPage({super.key});
+  final supabase = Supabase.instance.client;
+  final AuthenticationService _authService = AuthenticationService();
+
+  late String oid;
+  late double amount;
+
+  @override
+  void initState() {
+    super.initState();
+    fetchUser();
+  }
+
+  Future<void> fetchUser() async {
+    final user = supabase.auth.currentUser;
+    if (user == null) return;
+
+    final uid = user.id;
+    final id = await _authService.getCurrentUserID(uid);
+    if (id == null) {
+      return;
+    }
+
+    if (mounted) {
+      setState(() {
+        oid = id;
+      });
+    }
+  }
 
   Future<void> _sendTransaction(BuildContext context) async {
-    const OID = 'id552'; // You can pass this dynamically
-    const amount = 250.75;
-
     try {
       final response = await http.post(
         Uri.parse(addBlockUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'OID': OID, 'Amount': amount}),
+        body: jsonEncode({'OID': oid, 'Amount': amount}),
       );
 
       final data = jsonDecode(response.body);
@@ -46,29 +76,26 @@ class ConfirmTransactionPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      key: _scaffoldKey,
-      appBar: CustomAppBar(title: 'Test', type: 1),
-      bottomNavigationBar: CustomNavigationBar(navType: 5, fontSize: 16),
-      drawerEnableOpenDragGesture: false,
-      drawer: CustomSideBar(navType: 4),
+      appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
       body: Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             const Text('Do you want to confirm this transaction?'),
-            const SizedBox(height: 16),
+            gaph16,
             ElevatedButton(
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const LedgerPage()),
+                  MaterialPageRoute(
+                    builder: (_) => const ContributorLedgerPage(),
+                  ),
                 );
               },
-              child: const Text('switch page'),
+              child: const Text('Switch Page'),
             ),
             ElevatedButton(
-              onPressed: () => _scaffoldKey.currentState
-                  ?.openDrawer(), //_sendTransaction(context),
+              onPressed: () => _sendTransaction(context),
               child: const Text('Confirm'),
             ),
           ],

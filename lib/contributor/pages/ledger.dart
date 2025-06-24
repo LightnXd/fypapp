@@ -12,16 +12,16 @@ import '../../services/ledger.dart';
 import '../../widget/empty_box.dart';
 import 'ledger_details.dart';
 
-class LedgerPage extends StatefulWidget {
+class ContributorLedgerPage extends StatefulWidget {
   final String oid;
 
-  const LedgerPage({super.key, this.oid = 'id552'});
+  const ContributorLedgerPage({super.key, this.oid = 'id552'});
 
   @override
-  State<LedgerPage> createState() => _LedgerPageState();
+  State<ContributorLedgerPage> createState() => _ContributorLedgerPageState();
 }
 
-class _LedgerPageState extends State<LedgerPage> {
+class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   late Stream<List<Map<String, dynamic>>> _ledgerStream;
 
   @override
@@ -126,7 +126,7 @@ class _LedgerPageState extends State<LedgerPage> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => LedgerDetailPage(
+                              builder: (_) => ContributorLedgerDetailPage(
                                 oid: rowOid,
                                 title: cid.toString(),
                               ),
@@ -154,12 +154,10 @@ class _LedgerPageState extends State<LedgerPage> {
       ).showSnackBar(const SnackBar(content: Text('No data to export.')));
       return;
     }
-
-    final excel = Excel.createExcel(); // Default sheet is created
+    final excel = Excel.createExcel();
     final String sheetName = excel.getDefaultSheet()!;
     final Sheet sheet = excel.sheets[sheetName]!;
 
-    // Add header row
     sheet.appendRow([
       TextCellValue('LedgerID'),
       TextCellValue('TransactionNumber'),
@@ -184,15 +182,17 @@ class _LedgerPageState extends State<LedgerPage> {
       ]);
     }
 
-    // Save the Excel to a temp file
     final bytes = excel.encode()!;
     final tempDir = await getTemporaryDirectory();
     final tempPath = '${tempDir.path}/ledger.xlsx';
     final tempFile = File(tempPath);
     await tempFile.writeAsBytes(bytes);
-    print('File saved to: $tempPath');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text('File saved to: $tempPath'),
+      ),
+    );
 
-    // Prompt user to save via FlutterFileDialog
     final savedPath = await FlutterFileDialog.saveFile(
       params: SaveFileDialogParams(sourceFilePath: tempPath),
     );

@@ -58,14 +58,11 @@ class ProposalInfo extends StatelessWidget {
             ),
             gaph8,
             // HorizontalBox
-            HorizontalBox(
+            HorizontalBox3(
               yesText: '${countYes.toInt()}% yes',
               noText: '${countNo.toInt()}% no',
               yetText: '${notVoted.toInt()}% yet',
               textSize: textSize,
-              color1: Colors.teal,
-              color2: Colors.deepOrange,
-              color3: Colors.blueGrey,
             ),
           ],
         ),

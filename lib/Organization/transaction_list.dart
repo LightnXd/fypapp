@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:fypapp2/widget/Proposal_information.dart';
+import 'package:fypapp2/widget/proposal_information.dart';
 
 import '../contributor/pages/ledger.dart';
+import '../widget/app_bar.dart';
+import '../widget/empty_box.dart';
 
 class TransactionListPage extends StatefulWidget {
   const TransactionListPage({super.key});
@@ -33,7 +35,7 @@ class _TransactionListPageState extends State<TransactionListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Proposal Info')),
+      appBar: CustomAppBar(title: 'Transaction List', type: 2),
       body: FutureBuilder<List<Map<String, dynamic>>>(
         future: _proposals,
         builder: (context, snapshot) {
@@ -53,12 +55,14 @@ class _TransactionListPageState extends State<TransactionListPage> {
             padding: const EdgeInsets.all(12),
             children: [
               const Text('Proposal info list', style: TextStyle(fontSize: 16)),
-              const SizedBox(height: 16),
+              gaph16,
               ElevatedButton(
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const LedgerPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const ContributorLedgerPage(),
+                    ),
                   );
                 },
                 child: const Text('Switch Page'),
