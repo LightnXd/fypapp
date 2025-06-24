@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fypapp2/contributor/pages/profile.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-class HomePage extends StatelessWidget {
-  const HomePage({super.key});
+class ContributorHomePage extends StatelessWidget {
+  const ContributorHomePage({super.key});
 
   @override
   Widget build(BuildContext context) {

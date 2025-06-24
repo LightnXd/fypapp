@@ -20,7 +20,7 @@ class QuestionBox extends StatelessWidget {
     super.key,
     required this.label,
     this.labelWidth = 100.0,
-    this.fontSize = 14.0,
+    this.fontSize = 16.0,
     this.textColor = Colors.black,
     this.borderColor = Colors.grey,
     this.keyboardType = TextInputType.text,

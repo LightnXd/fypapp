@@ -3,13 +3,23 @@ import 'package:fypapp2/services/url.dart';
 import 'package:http/http.dart' as http;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-Future<Map<String, dynamic>> fetchContributorProfile() async {
+import 'authentication.dart';
+
+Future<Map<String, dynamic>> getContributorProfile() async {
   final uid = Supabase.instance.client.auth.currentUser?.id;
+
   if (uid == null) {
+    throw Exception("No session found.");
+  }
+
+  final AuthenticationService authService = AuthenticationService();
+  final id = await authService.getCurrentUserID(uid);
+
+  if (id == null) {
     throw Exception("No user found.");
   }
 
-  final Uri url = Uri.parse('$getContributorProfileUrl?uid=$uid');
+  final Uri url = Uri.parse('$getContributorProfileUrl?id=$id');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -20,13 +30,21 @@ Future<Map<String, dynamic>> fetchContributorProfile() async {
   }
 }
 
-Future<Map<String, dynamic>> fetchOrganizationProfile() async {
+Future<Map<String, dynamic>> getOrganizationProfile() async {
   final uid = Supabase.instance.client.auth.currentUser?.id;
+
   if (uid == null) {
+    throw Exception("No session found.");
+  }
+
+  final AuthenticationService authService = AuthenticationService();
+  final id = await authService.getCurrentUserID(uid);
+
+  if (id == null) {
     throw Exception("No user found.");
   }
 
-  final Uri url = Uri.parse('$getOrganizationProfileUrl?uid=$uid');
+  final Uri url = Uri.parse('$getOrganizationProfileUrl?id=$id');
   final response = await http.get(url);
 
   if (response.statusCode == 200) {
@@ -81,4 +99,59 @@ Future<bool> editOrganizationProfile({
   } else {
     return false;
   }
+}
+
+Future<String?> getUserRole(String id) async {
+  try {
+    final response = await http.get(Uri.parse('$getRoleUrl?id=$id'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['Role'] as String?;
+    } else {
+      print('Failed to fetch status: ${response.body}');
+    }
+  } catch (e) {
+    print('Exception in getUserStatus: $e');
+  }
+
+  return null;
+}
+
+Future<Map<String, String>?> getUserImages(String id) async {
+  try {
+    final response = await http.get(Uri.parse('$getImageUrl?id=$id'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return {
+        'ProfileImage': data['ProfileImage'] ?? '',
+        'BackgroundImage': data['BackgroundImage'] ?? '',
+      };
+    } else {
+      print('Failed to fetch images: ${response.body}');
+    }
+  } catch (e) {
+    print('Exception in getUserImages: $e');
+  }
+
+  return null;
+}
+
+Future<String?> getUserStatus(String id) async {
+  try {
+    final response = await http.get(Uri.parse('$getStatusUrl?id=$id'));
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      print(data['Status'] as String);
+      return data['Status'] as String?;
+    } else {
+      print('Failed to fetch status: ${response.body}');
+    }
+  } catch (e) {
+    print('Exception in getUserStatus: $e');
+  }
+
+  return null;
 }

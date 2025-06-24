@@ -1,20 +1,11 @@
 import 'package:flutter/material.dart';
-
 import 'empty_box.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final int type; // 1 or 2 (default is 2)
+  final int type; // 1 = open drawer, 2 = pop
   final String title;
-  final VoidCallback? onLeftPressed;
-  final VoidCallback? onRightPressed;
 
-  const CustomAppBar({
-    super.key,
-    this.type = 2,
-    required this.title,
-    this.onLeftPressed,
-    this.onRightPressed,
-  });
+  const CustomAppBar({super.key, this.type = 2, required this.title});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -28,20 +19,25 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            // Left icon (only if type 1)
-            if (type == 1)
-              GestureDetector(
-                onTap: onLeftPressed,
-                child: Image.asset(
-                  'assets/images/test.webp',
-                  width: 40,
-                  height: 32,
-                ),
-              )
-            else
-              gapw40, // Keep spacing for alignment
+            // Left icon (always shown)
+            GestureDetector(
+              onTap: () {
+                if (type == 1) {
+                  Scaffold.of(context).openDrawer(); // open drawer
+                } else {
+                  Navigator.pop(context); // pop page
+                }
+              },
+              child: Image.asset(
+                type == 1
+                    ? 'assets/images/test.webp'
+                    : 'assets/images/test.webp',
+                width: 40,
+                height: 32,
+              ),
+            ),
+
             // Center title
             Expanded(
               child: Center(
@@ -55,16 +51,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 ),
               ),
             ),
-
-            // Right icon (always shown)
-            GestureDetector(
-              onTap: onRightPressed ?? () => Navigator.pop(context),
-              child: Image.asset(
-                'assets/images/test.webp',
-                width: 40,
-                height: 32,
-              ),
-            ),
+            gapw40,
           ],
         ),
       ),

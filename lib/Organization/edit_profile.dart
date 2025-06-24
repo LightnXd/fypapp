@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import '../../services/profile.dart';
 import '../../widget/profile_head.dart';
 import '../../widget/question_box.dart';
+import '../services/authentication.dart';
+import '../widget/checkbox.dart';
+import '../widget/dropdown_label.dart';
 import '../widget/empty_box.dart';
 
 class OrganizationEditProfile extends StatefulWidget {
@@ -12,6 +15,7 @@ class OrganizationEditProfile extends StatefulWidget {
   final String country;
   final String? profileImage;
   final String? backgroundImage;
+  final List<String> tid;
 
   const OrganizationEditProfile({
     super.key,
@@ -22,6 +26,7 @@ class OrganizationEditProfile extends StatefulWidget {
     required this.country,
     this.profileImage,
     this.backgroundImage,
+    required this.tid,
   });
 
   @override
@@ -30,15 +35,20 @@ class OrganizationEditProfile extends StatefulWidget {
 }
 
 class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
+  final AuthenticationService _authService = AuthenticationService();
   late TextEditingController nameController;
   late TextEditingController countryController;
   late TextEditingController addressController;
   late TextEditingController descriptionController;
+  List<String> selectedTID = [];
+  List<Map<String, String>> organizationTypes = [];
+  bool isLoading = true;
 
   String? nameError;
   String? countryError;
   String? addressError;
   String? descriptionError;
+  String? typeError;
 
   @override
   void initState() {
@@ -47,12 +57,29 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
     countryController = TextEditingController(text: widget.country);
     addressController = TextEditingController(text: widget.address);
     descriptionController = TextEditingController(text: widget.description);
+    selectedTID = List.from(widget.tid);
+    loadTypes();
+  }
+
+  Future<void> loadTypes() async {
+    try {
+      final types = await _authService.getOrganizationTypes();
+      setState(() {
+        organizationTypes = types;
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error: $e');
+      setState(() => isLoading = false);
+    }
   }
 
   @override
   void dispose() {
     nameController.dispose();
     countryController.dispose();
+    addressController.dispose();
+    descriptionController.dispose();
     super.dispose();
   }
 
@@ -71,12 +98,16 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
       descriptionError = description.isNotEmpty
           ? null
           : 'Description is required';
+      typeError = selectedTID.isNotEmpty
+          ? null
+          : 'At least 1 type must be selected';
     });
 
     return nameError == null &&
         countryError == null &&
         addressError == null &&
-        descriptionError == null;
+        descriptionError == null &&
+        typeError == null;
   }
 
   @override
@@ -89,73 +120,122 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
         foregroundColor: Colors.black,
         elevation: 0,
       ),
-      body: SingleChildScrollView(
-        child: Column(
-          children: [
-            ProfileHeader(
-              profileUrl: widget.profileImage,
-              backgroundUrl: widget.backgroundImage,
-            ),
-            SizedBox(height: screenWidth / 4.3),
-            QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
-              label: 'Name:',
-              hint: 'Enter your name',
-              controller: nameController,
-              errorText: nameError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
-              label: 'Country:',
-              hint: 'Enter your country',
-              controller: countryController,
-              errorText: countryError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
-              label: 'Address:',
-              hint: 'Enter your address',
-              controller: addressController,
-              errorText: addressError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
-              label: 'Description:',
-              hint: 'Enter your description',
-              controller: descriptionController,
-              errorText: descriptionError,
-            ),
-            gaph24,
-            ElevatedButton(
-              onPressed: () async {
-                if (validateInputs()) {
-                  final success = await editOrganizationProfile(
-                    id: widget.id,
-                    username: nameController.text,
-                    country: countryController.text,
-                    address: addressController.text,
-                    description: descriptionController.text,
-                  );
+      body: isLoading
+          ? const CircularProgressIndicator()
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  ProfileHeader(
+                    profileUrl: widget.profileImage,
+                    backgroundUrl: widget.backgroundImage,
+                  ),
+                  SizedBox(height: screenWidth / 4.3),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/test.webp'),
+                    label: 'Name:',
+                    hint: 'Enter your name',
+                    controller: nameController,
+                    errorText: nameError,
+                  ),
+                  DropdownLabel(
+                    label: "Change your types",
+                    imagePath: 'assets/images/test.webp',
+                    textColor: Colors.black,
+                    errorText: typeError,
+                    onPressed: () {
+                      showCheckboxDialog(context);
+                    },
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/test.webp'),
+                    label: 'Country:',
+                    hint: 'Enter your country',
+                    controller: countryController,
+                    errorText: countryError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/test.webp'),
+                    label: 'Address:',
+                    hint: 'Enter your address',
+                    controller: addressController,
+                    errorText: addressError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/test.webp'),
+                    label: 'Description:',
+                    hint: 'Enter your description',
+                    controller: descriptionController,
+                    errorText: descriptionError,
+                  ),
+                  gaph24,
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (validateInputs()) {
+                        final success = await editOrganizationProfile(
+                          id: widget.id,
+                          username: nameController.text,
+                          country: countryController.text,
+                          address: addressController.text,
+                          description: descriptionController.text,
+                        );
 
-                  if (success) {
-                    // Show success message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Profile updated successfully'),
-                      ),
-                    );
-                  } else {
-                    // Show error message
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to update profile')),
-                    );
-                  }
-                }
-              },
-              child: const Text('Save'),
+                        if (success) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Profile updated successfully'),
+                            ),
+                          );
+                          Navigator.pushReplacementNamed(
+                            context,
+                            '/organization-home',
+                          );
+                        } else {
+                          // Show error message
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                              content: Text('Failed to update profile'),
+                            ),
+                          );
+                        }
+                      }
+                    },
+                    child: const Text('Save'),
+                  ),
+                ],
+              ),
             ),
-          ],
+    );
+  }
+
+  void showCheckboxDialog(BuildContext context) {
+    print(selectedTID);
+    List<String> tempSelected = List.from(selectedTID);
+    showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: Text("Select Organization Types"),
+        content: SingleChildScrollView(
+          child: CustomCheckbox(
+            types: organizationTypes,
+            initialSelectedTIDs: tempSelected,
+            onSelectionChanged: (selected) {
+              tempSelected = selected;
+            },
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text("Cancel"),
+          ),
+          ElevatedButton(
+            onPressed: () {
+              setState(() => selectedTID = tempSelected);
+              Navigator.pop(context);
+            },
+            child: Text("Confirm"),
+          ),
+        ],
       ),
     );
   }

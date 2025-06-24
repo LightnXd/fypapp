@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:fypapp2/widget/Proposal_information.dart';
+import 'package:fypapp2/widget/proposal_information.dart';
 
 import '../contributor/pages/ledger.dart';
 

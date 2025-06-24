@@ -29,7 +29,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
 
   Future<void> loadContributorProfile() async {
     try {
-      final data = await fetchContributorProfile();
+      final data = await getContributorProfile();
       setState(() {
         id = data['ID'].toString();
         username = data['Username'];

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-
 import 'empty_box.dart';
 
 Widget verticalIcon({
-  required String imagePath,
+  String? imagePath, // made optional
   required String text,
   Color textColor = Colors.black,
   double textSize = 16.0,
   VoidCallback? onTap,
-  double? spacing, // optional spacing box after this widget
+  double? spacing,
 }) {
   return Column(
     mainAxisSize: MainAxisSize.min,
@@ -18,11 +17,13 @@ Widget verticalIcon({
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Image.asset(imagePath, width: 45, height: 45),
-            gaph4,
+            if (imagePath != null && imagePath.isNotEmpty)
+              Image.asset(imagePath, width: 45, height: 45),
+            if (imagePath != null && imagePath.isNotEmpty) gaph4,
             Text(
               text,
               style: TextStyle(color: textColor, fontSize: textSize),
+              textAlign: TextAlign.center,
             ),
           ],
         ),
@@ -33,12 +34,14 @@ Widget verticalIcon({
 }
 
 Widget horizontalIcon({
-  required String imagePath,
+  String? imagePath, // made optional
   required String text,
+  String? extraText,
   Color textColor = Colors.black,
   double textSize = 16.0,
   VoidCallback? onTap,
-  double? spacing, // optional spacing box after this widget
+  double? spacing,
+  MainAxisAlignment alignment = MainAxisAlignment.center,
 }) {
   return Column(
     mainAxisSize: MainAxisSize.min,
@@ -47,13 +50,27 @@ Widget horizontalIcon({
         onTap: onTap,
         child: Row(
           mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: alignment,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Image.asset(imagePath, width: 45, height: 45),
-            gapw20,
+            if (imagePath != null && imagePath.isNotEmpty)
+              Image.asset(imagePath, width: 45, height: 45),
+            if (imagePath != null && imagePath.isNotEmpty) gapw20,
             Text(
               text,
               style: TextStyle(color: textColor, fontSize: textSize),
             ),
+            if (extraText != null) ...[
+              gapw10,
+              Flexible(
+                child: Text(
+                  extraText,
+                  style: TextStyle(color: textColor, fontSize: textSize),
+                  softWrap: true,
+                  overflow: TextOverflow.visible,
+                ),
+              ),
+            ],
           ],
         ),
       ),

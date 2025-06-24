@@ -1,11 +1,12 @@
 //import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:fypapp2/services/url.dart';
-import 'package:http/http.dart' as http show post, Response;
+import 'package:http/http.dart' as http show post, Response, get;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthenticationService {
   final SupabaseClient _client = Supabase.instance.client;
+  SupabaseClient get client => _client;
 
   Future<bool> getSession(String? sessionString) async {
     if (sessionString == null) return false;
@@ -16,6 +17,23 @@ class AuthenticationService {
     } catch (e) {
       print('Error restoring session: $e');
       return false;
+    }
+  }
+
+  Future<List<Map<String, String>>> getOrganizationTypes() async {
+    final response = await http.get(Uri.parse(getOrganizationTypeUrl));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      return data.map<Map<String, String>>((item) {
+        return {
+          'TID': item['TID'].toString(),
+          'TypeName': item['TypeName'] ?? '',
+        };
+      }).toList();
+    } else {
+      throw Exception('Failed to load organization types: ${response.body}');
     }
   }
 
@@ -118,6 +136,7 @@ class AuthenticationService {
     required String country,
     required String description,
     required String address,
+    required List<String> type,
   }) async {
     final creationResponse = await http.post(
       Uri.parse(createOrganizationUrl),
@@ -128,12 +147,39 @@ class AuthenticationService {
         'country': country,
         'description': description,
         'address': address,
+        'type': type,
       }),
     );
 
     if (creationResponse.statusCode == 200)
       return true;
     else
-      return false;
+      print(creationResponse.body);
+    return false;
+  }
+
+  Future<String?> getCurrentUserID(String uid) async {
+    try {
+      final response = await http.get(Uri.parse('$getCurrentIDUrl?uid=$uid'));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == true && data['data'] != null) {
+          print(data);
+          print("sssdfghjobject");
+          print(data['data']['ID'] as String);
+          return data['data']['ID'] as String;
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+        print(response.body);
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+    }
+
+    return null;
   }
 }

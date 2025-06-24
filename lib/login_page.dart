@@ -3,9 +3,12 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:fypapp2/contributor/pages/register.dart';
 import 'package:fypapp2/services/authentication.dart';
+import 'package:fypapp2/services/profile.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/otp_confirmation.dart';
 import 'package:fypapp2/widget/question_box.dart';
+
+import 'Organization/register.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -129,10 +132,37 @@ class _LoginPageState extends State<LoginPage> {
                                   data['session_string'],
                                 );
                                 if (success) {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/home',
-                                  );
+                                  final session =
+                                      _authService.client.auth.currentSession;
+                                  final uid = session?.user.id;
+                                  final id = await _authService
+                                      .getCurrentUserID(uid!);
+                                  if (id == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(
+                                        content: Text('id(uid) not found'),
+                                      ),
+                                    );
+                                  }
+                                  final userRole = await getUserRole(id!);
+
+                                  if (userRole == 'Contributor') {
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      '/contributor-home',
+                                    );
+                                  }
+                                  if (userRole == 'Organization') {
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      '/organization-home',
+                                    );
+                                  }
+                                  if (userRole == null) {
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      SnackBar(content: Text('Role not found')),
+                                    );
+                                  }
                                 } else {
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -169,11 +199,28 @@ class _LoginPageState extends State<LoginPage> {
                 onTap: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (_) => const RegisterPage()),
+                    MaterialPageRoute(
+                      builder: (_) => const ContributorRegisterPage(),
+                    ),
                   );
                 },
                 child: const Text(
-                  'No account? Register now',
+                  'No account? Register as a user now now',
+                  style: TextStyle(color: Colors.blue),
+                ),
+              ),
+              gaph10,
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const OrganizationRegisterPage(),
+                    ),
+                  );
+                },
+                child: const Text(
+                  'Request to join as organization',
                   style: TextStyle(color: Colors.blue),
                 ),
               ),

@@ -6,14 +6,15 @@ import '../../widget/question_box.dart';
 import '../../widget/date_picker.dart';
 import '../../widget/empty_box.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class ContributorRegisterPage extends StatefulWidget {
+  const ContributorRegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<ContributorRegisterPage> createState() =>
+      _ContributorRegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
   final AuthenticationService _authService = AuthenticationService();
   final nameController = TextEditingController();
   final emailController = TextEditingController();

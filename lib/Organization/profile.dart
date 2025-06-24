@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
@@ -26,19 +27,19 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
   String? backgroundImage;
   String? walletAddress;
   String? walletBalance;
-
+  List<String> tid = [];
+  List<String> type = [];
   bool isLoading = true; // <-- Add loading state
 
   @override
   void initState() {
     super.initState();
-    // Uncomment this when testing with real data
-    // loadOrganizationProfile();
+    loadOrganizationProfile();
   }
 
   Future<void> loadOrganizationProfile() async {
     try {
-      final data = await fetchOrganizationProfile();
+      final data = await getOrganizationProfile();
       setState(() {
         id = data['ID'].toString();
         username = data['Username'];
@@ -51,10 +52,23 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
         isVerified = data['isVerified'];
         walletAddress = data['WalletAddress'];
         walletBalance = data['WalletBalance']?.toString();
+        final dynamicTypes = data['TypeName'];
+        if (dynamicTypes != null && dynamicTypes is List) {
+          type = List<String>.from(dynamicTypes.map((e) => e.toString()));
+        } else {
+          type = [];
+        }
+        final dynamicTID = data['TID'];
+        if (dynamicTID != null && dynamicTID is List) {
+          tid = List<String>.from(dynamicTID.map((e) => e.toString()));
+        } else {
+          tid = [];
+        }
+
         isLoading = false; // done loading
       });
     } catch (e) {
-      setState(() => isLoading = false); // also stop loading on error
+      setState(() => isLoading = false);
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
@@ -88,60 +102,67 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
 
                   SizedBox(height: screenWidth / 4.3),
 
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle first button press
-                        },
-                        child: Text('Button 1'),
-                      ),
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle second button press
-                        },
-                        child: Text('Button 2'),
-                      ),
-                    ],
-                  ),
-                  gaph16,
-                  CustomHorizontalBox(
-                    items: ['Alice', 'Bob', 'Charlie', 'David'],
-                  ),
-                  gaph16,
-                  horizontalIcon(
-                    imagePath: 'assets/images/test.webp',
-                    text: username,
-                    spacing: 12,
-                  ),
-                  horizontalIcon(
-                    imagePath: 'assets/images/test.webp',
-                    text: id,
-                    spacing: 12,
-                  ),
-                  //3icon
-                  gaph12,
-                  Text(
-                    description,
-                    style: const TextStyle(fontSize: 16, color: Colors.black),
-                    softWrap: true,
-                  ),
-                  gaph12,
-                  horizontalIcon(
-                    imagePath: 'assets/images/test.webp',
-                    text: creationDate,
-                    spacing: 12,
-                  ),
-                  horizontalIcon(
-                    imagePath: 'assets/images/test.webp',
-                    text: country,
-                    spacing: 12,
-                  ),
-                  horizontalIcon(
-                    imagePath: 'assets/images/test.webp',
-                    text: address,
-                    spacing: 12,
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            ElevatedButton(
+                              onPressed: () {
+                                // Handle first button press
+                              },
+                              child: Text('Button 1'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                // Handle second button press
+                              },
+                              child: Text('Button 2'),
+                            ),
+                          ],
+                        ),
+                        gaph16,
+                        horizontalIcon(
+                          imagePath: 'assets/images/test.webp',
+                          text: username,
+                          spacing: 12,
+                        ),
+                        horizontalIcon(
+                          imagePath: 'assets/images/test.webp',
+                          text: id,
+                          spacing: 12,
+                        ),
+                        CustomHorizontalBox(items: type, textSize: 13),
+                        gaph12,
+                        horizontalIcon(
+                          alignment: MainAxisAlignment.start,
+                          text: "Description:",
+                          extraText: description,
+                          spacing: 12,
+                        ),
+                        horizontalIcon(
+                          imagePath: 'assets/images/test.webp',
+                          text: "Joined on:",
+                          extraText: formatDate(creationDate),
+                          spacing: 12,
+                        ),
+                        horizontalIcon(
+                          imagePath: 'assets/images/test.webp',
+                          text: "Country of origin:",
+                          extraText: country,
+                          spacing: 12,
+                        ),
+                        horizontalIcon(
+                          imagePath: 'assets/images/test.webp',
+                          text: "Address:",
+                          extraText: address,
+                          spacing: 12,
+                        ),
+                      ],
+                    ),
                   ),
                   gaph24,
                   Center(
@@ -158,6 +179,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                               backgroundImage: backgroundImage,
                               address: address,
                               description: description,
+                              tid: tid,
                             ),
                           ),
                         );
