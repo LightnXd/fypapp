@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import '../../services/authentication.dart';
+import '../../widget/app_bar.dart';
 import '../../widget/otp_confirmation.dart';
 import '../../widget/question_box.dart';
 import '../../widget/date_picker.dart';
@@ -85,7 +86,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
+      appBar: CustomAppBar(title: "Register"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(

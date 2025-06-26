@@ -1,21 +1,20 @@
 import 'dart:io';
-
 import 'package:excel/excel.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
-import 'package:fypapp2/contributor/pages/verify_ledger.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
 import '../../Organization/transaction_list.dart';
-import '../../services/ledger.dart';
+import '../../widget/app_bar.dart';
 import '../../widget/empty_box.dart';
-import 'ledger_details.dart';
+import '../../widget/ledger_list.dart';
+import '../../widget/navigation_bar.dart';
+import '../../widget/side_bar.dart';
 
 class ContributorLedgerPage extends StatefulWidget {
   final String oid;
 
-  const ContributorLedgerPage({super.key, this.oid = 'id552'});
+  const ContributorLedgerPage({super.key, this.oid = 'Or0000001'});
 
   @override
   State<ContributorLedgerPage> createState() => _ContributorLedgerPageState();
@@ -37,7 +36,10 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Ledger Records')),
+      appBar: CustomAppBar(title: "Home", type: 1),
+      bottomNavigationBar: ContributorNavBar(),
+      drawerEnableOpenDragGesture: false,
+      drawer: ContributorSideBar(userId: widget.oid),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -89,51 +91,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
                     separatorBuilder: (_, __) => const Divider(),
                     itemBuilder: (context, index) {
                       final entry = entries[index];
-                      final ledgerid = entry['LedgerID'] ?? 'Unknown';
-                      final transactionNumber =
-                          entry['TransactionNumber'] ?? 'Unknown';
-                      final rowOid = entry['OID'] ?? 'Unknown';
-                      final cid = entry['CID'] ?? 'Unknown';
-                      final amount = entry['Amount'] == null
-                          ? 'Unknown'
-                          : entry['Amount'] == 0
-                          ? 'Genesis Block'
-                          : entry['Amount'].toString();
-                      final hash = entry['Hash'] ?? 'No Hash';
-                      final previousHash =
-                          entry['PreviousHash'] ?? 'No Previous Hash';
-                      final creationDate = entry['CreationDate'] ?? 'No date';
-
-                      return ListTile(
-                        title: Text('OID: $rowOid'),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('LedgerID: $ledgerid'),
-                            Text('TransactionNumber: $transactionNumber'),
-                            Text('CID: $cid'),
-                            Text(
-                              amount == 'Genesis Block'
-                                  ? 'Data: $amount'
-                                  : 'Amount: $amount',
-                            ),
-                            Text('Hash: $hash'),
-                            Text('Previous Hash: $previousHash'),
-                            Text('Creation date: $creationDate'),
-                          ],
-                        ),
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ContributorLedgerDetailPage(
-                                oid: rowOid,
-                                title: cid.toString(),
-                              ),
-                            ),
-                          );
-                        },
-                      );
+                      return LedgerList(entry: entry);
                     },
                   );
                 },
@@ -187,11 +145,9 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
     final tempPath = '${tempDir.path}/ledger.xlsx';
     final tempFile = File(tempPath);
     await tempFile.writeAsBytes(bytes);
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text('File saved to: $tempPath'),
-      ),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text('File saved to: $tempPath')));
 
     final savedPath = await FlutterFileDialog.saveFile(
       params: SaveFileDialogParams(sourceFilePath: tempPath),

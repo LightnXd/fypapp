@@ -19,6 +19,7 @@ class ContributorSideBar extends StatefulWidget {
 
 class _ContributorSideBarState extends State<ContributorSideBar> {
   String? backgroundImage;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -34,6 +35,9 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
         backgroundImage = image;
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -48,18 +52,19 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top image
-            SizedBox(
-              width: double.infinity,
-              height: 150,
-              child: backgroundImage != null
-                  ? Image.network(backgroundImage!, fit: BoxFit.cover)
-                  : Image.asset(
-                      'assets/images/side_background.jpg',
-                      fit: BoxFit.cover,
-                    ),
-            ),
-            gaph16,
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: backgroundImage != null
+                        ? Image.network(backgroundImage!, fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/images/side_background.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+            gaph32,
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -101,6 +106,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/verification.png',
                         text: "Verify ledger",
+                        spacing: 32,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -140,6 +146,7 @@ class OrganizationSideBar extends StatefulWidget {
 
 class _OrganizationSideBarState extends State<OrganizationSideBar> {
   String? backgroundImage;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -155,6 +162,9 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
         backgroundImage = image;
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -169,17 +179,18 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top image
-            SizedBox(
-              width: double.infinity,
-              height: 150,
-              child: backgroundImage != null
-                  ? Image.network(backgroundImage!, fit: BoxFit.cover)
-                  : Image.asset(
-                      'assets/images/side_background.jpg',
-                      fit: BoxFit.cover,
-                    ),
-            ),
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: backgroundImage != null
+                        ? Image.network(backgroundImage!, fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/images/side_background.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
             gaph32,
             Expanded(
               child: SingleChildScrollView(
@@ -209,16 +220,9 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/use_fund.png',
-                        text: "Use fund",
+                        text: "Create proposal",
                         spacing: 32,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const ConfirmTransactionPage(),
-                            ),
-                          );
-                        },
+                        onTap: () {},
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/ledger.png',

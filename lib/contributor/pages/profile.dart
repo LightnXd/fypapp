@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
+import '../../widget/app_bar.dart';
 import '../../widget/profile_head.dart';
 import 'edit_profile.dart';
 
@@ -53,15 +54,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width.floor();
     return Scaffold(
-      appBar: AppBar(
-        title: const Text(
-          '<  contributor profile',
-          style: TextStyle(color: Colors.black),
-        ),
-        backgroundColor: Colors.white,
-        iconTheme: const IconThemeData(color: Colors.black),
-        elevation: 0,
-      ),
+      appBar: CustomAppBar(title: "Profile"),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(

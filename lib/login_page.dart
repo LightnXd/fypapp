@@ -188,11 +188,9 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }
                     } catch (e) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
-                          content: Text('Error: $e'),
-                        ),
-                      );
+                      ScaffoldMessenger.of(
+                        context,
+                      ).showSnackBar(SnackBar(content: Text('Error: $e')));
                     }
                   }
                 },
@@ -227,15 +225,6 @@ class _LoginPageState extends State<LoginPage> {
                   'Request to join as organization',
                   style: TextStyle(color: Colors.blue),
                 ),
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  await OtpDialog.show(
-                    context: context,
-                    onSubmitted: (otp, onResult) async {},
-                  );
-                },
-                child: const Text("Test"),
               ),
             ],
           ),

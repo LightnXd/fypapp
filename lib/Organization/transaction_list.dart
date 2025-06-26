@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:fypapp2/Organization/confirm_transaction.dart';
 import 'package:fypapp2/widget/proposal_information.dart';
 
 import '../contributor/pages/ledger.dart';
+import '../services/authentication.dart';
+import '../services/ledger.dart';
 import '../widget/app_bar.dart';
-import '../widget/empty_box.dart';
+import '../widget/navigation_bar.dart';
+import '../widget/side_bar.dart';
 
 class TransactionListPage extends StatefulWidget {
   const TransactionListPage({super.key});
@@ -14,71 +17,94 @@ class TransactionListPage extends StatefulWidget {
 }
 
 class _TransactionListPageState extends State<TransactionListPage> {
-  final String oid = 'id111';
+  String? oid;
   late Future<List<Map<String, dynamic>>> _proposals;
+  bool isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    _proposals = fetchProposals();
+    loadProposals();
   }
 
-  Future<List<Map<String, dynamic>>> fetchProposals() async {
-    final response = await Supabase.instance.client
-        .from('proposal')
-        .select()
-        .eq('OID', oid);
+  void loadProposals() async {
+    try {
+      final AuthenticationService authService = AuthenticationService();
+      final uid = authService.client.auth.currentUser!.id;
+      oid = await authService.getCurrentUserID(uid);
+      final proposals = getActiveProposal(oid!);
 
-    return List<Map<String, dynamic>>.from(response);
+      setState(() {
+        _proposals = proposals;
+        isLoading = false;
+      });
+    } catch (e) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Failed to load proposals: $e')));
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Transaction List', type: 2),
-      body: FutureBuilder<List<Map<String, dynamic>>>(
-        future: _proposals,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
+      appBar: CustomAppBar(title: 'Transaction List', type: 1),
+      bottomNavigationBar: OrganizationNavBar(),
+      drawerEnableOpenDragGesture: false,
+      drawer: oid == null ? null : OrganizationSideBar(userId: oid!),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : FutureBuilder<List<Map<String, dynamic>>>(
+              future: _proposals,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                }
 
-          if (snapshot.hasError ||
-              !snapshot.hasData ||
-              snapshot.data!.isEmpty) {
-            return const Center(child: Text('No proposals found.'));
-          }
+                if (snapshot.hasError ||
+                    !snapshot.hasData ||
+                    snapshot.data!.isEmpty) {
+                  return const Center(child: Text('No proposals found.'));
+                }
 
-          final proposals = snapshot.data!;
+                final proposals = snapshot.data!;
 
-          return ListView(
-            padding: const EdgeInsets.all(12),
-            children: [
-              const Text('Proposal info list', style: TextStyle(fontSize: 16)),
-              gaph16,
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => const ContributorLedgerPage(),
-                    ),
-                  );
-                },
-                child: const Text('Switch Page'),
-              ),
-              const SizedBox(height: 16),
-              ...proposals.map((row) {
-                return ProposalInfo(
-                  title: row['Title'] ?? 'No title',
-                  orgName: oid,
-                  fundAmount: row['Amount']?.toString() ?? '0',
+                return ListView(
+                  padding: const EdgeInsets.all(12),
+                  children: [
+                    const SizedBox(height: 16),
+                    ...proposals.map((row) {
+                      return ProposalInfo(
+                        orgImage: row['Image'],
+                        title: row['Title'] ?? 'No title',
+                        orgName: row['Username'] ?? 'Name not found',
+                        limit: '${row['Limit']} day',
+                        fundAmount: row['Amount']?.toString() ?? '0',
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ConfirmTransactionPage(
+                                oid: oid!,
+                                name: row['Username'] ?? '',
+                                image: row['Image'] ?? '',
+                                title: row['Title'] ?? '',
+                                description: row['Desc'] ?? '',
+                                amount: row['Amount']?.toString() ?? '',
+                                creationDate: row['CreationDate'] ?? '',
+                                limit: '${row['Limit']} day',
+                                status: row['Status'] ?? '',
+                              ),
+                            ),
+                          );
+                        },
+                      );
+                    }).toList(),
+                  ],
                 );
-              }).toList(),
-            ],
-          );
-        },
-      ),
+              },
+            ),
     );
   }
 }

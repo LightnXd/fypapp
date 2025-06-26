@@ -44,3 +44,18 @@ Future<String> pickAndUploadLedgerFile() async {
     return "Error: ${response.body}";
   }
 }
+
+Future<List<Map<String, dynamic>>> getActiveProposal(String oid) async {
+  // Replace with your actual server URL
+  final response = await http.get(
+    Uri.parse('$getActiveProposalListUrl?oid=$oid'),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load proposals: ${error['error']}');
+  }
+}

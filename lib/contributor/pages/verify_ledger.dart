@@ -21,24 +21,26 @@ class _VerifyLedgerPageState extends State<VerifyLedgerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Verify Ledger', type: 2),
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton.icon(
-              onPressed: handleUpload,
-              icon: const Icon(Icons.upload_file),
-              label: const Text("Upload Excel File"),
-            ),
-            const SizedBox(height: 20),
-            SelectableText(
-              statusMessage,
-              textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 16),
-            ),
-          ],
+      appBar: CustomAppBar(title: 'Verify Ledger'),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              ElevatedButton.icon(
+                onPressed: handleUpload,
+                icon: const Icon(Icons.upload_file),
+                label: const Text("Upload Excel File"),
+              ),
+              const SizedBox(height: 20),
+              SelectableText(
+                statusMessage,
+                textAlign: TextAlign.center,
+                style: const TextStyle(fontSize: 16),
+              ),
+            ],
+          ),
         ),
       ),
     );
