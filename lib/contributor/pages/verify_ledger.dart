@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../services/ledger.dart';
+import '../../services/transaction.dart';
 import '../../widget/app_bar.dart';
 
 class VerifyLedgerPage extends StatefulWidget {

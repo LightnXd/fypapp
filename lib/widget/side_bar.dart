@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/Organization/confirm_transaction.dart';
-import 'package:fypapp2/Organization/transaction_list.dart';
+import 'package:fypapp2/Organization/confirm_proposal.dart';
+import 'package:fypapp2/Organization/proposal_list.dart';
 import 'package:fypapp2/contributor/pages/profile.dart';
 import 'package:fypapp2/contributor/pages/verify_ledger.dart';
 import 'package:fypapp2/widget/empty_box.dart';
@@ -220,9 +220,16 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/use_fund.png',
-                        text: "Create proposal",
+                        text: "Proposal list",
                         spacing: 32,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ProposalListPage(),
+                            ),
+                          );
+                        },
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/ledger.png',
@@ -232,7 +239,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const TransactionListPage(),
+                              builder: (_) => const ProposalListPage(),
                             ),
                           );
                         },

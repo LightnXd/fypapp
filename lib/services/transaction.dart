@@ -59,3 +59,30 @@ Future<List<Map<String, dynamic>>> getActiveProposal(String oid) async {
     throw Exception('Failed to load proposals: ${error['error']}');
   }
 }
+
+Future<void> createProposalRequest({
+  required String oid,
+  required String title,
+  required String description,
+  required double amount,
+  required String endDate,
+}) async {
+  final response = await http.post(
+    Uri.parse(createProposalUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({
+      'oid': oid,
+      'title': title,
+      'description': description,
+      'amount': amount,
+      'endDate': endDate,
+    }),
+  );
+
+  if (response.statusCode == 201) {
+    final data = jsonDecode(response.body);
+  } else {
+    final error = jsonDecode(response.body);
+    throw Exception('Failed to create proposal: ${error['error']}');
+  }
+}

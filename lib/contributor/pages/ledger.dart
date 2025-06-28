@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../Organization/transaction_list.dart';
+import '../../Organization/proposal_list.dart';
 import '../../widget/app_bar.dart';
 import '../../widget/empty_box.dart';
 import '../../widget/ledger_list.dart';
@@ -56,9 +56,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(
-                    builder: (_) => const TransactionListPage(),
-                  ),
+                  MaterialPageRoute(builder: (_) => const ProposalListPage()),
                 );
               },
               child: const Text('switch page'),

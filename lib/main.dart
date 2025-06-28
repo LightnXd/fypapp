@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/Organization/confirm_transaction.dart';
+import 'package:fypapp2/Organization/confirm_proposal.dart';
 import 'package:fypapp2/contributor/pages/ledger.dart';
 import 'package:fypapp2/contributor/pages/profile.dart';
 import 'Organization/home.dart';

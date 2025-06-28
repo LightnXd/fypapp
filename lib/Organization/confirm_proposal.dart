@@ -7,7 +7,7 @@ import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
 import '../widget/icon_box.dart';
 
-class ConfirmTransactionPage extends StatefulWidget {
+class ConfirmProposalPage extends StatefulWidget {
   final String oid;
   final String name;
   final String image;
@@ -18,7 +18,7 @@ class ConfirmTransactionPage extends StatefulWidget {
   final String limit;
   final String status;
 
-  const ConfirmTransactionPage({
+  const ConfirmProposalPage({
     super.key,
     required this.oid,
     required this.name,
@@ -32,10 +32,10 @@ class ConfirmTransactionPage extends StatefulWidget {
   });
 
   @override
-  State<ConfirmTransactionPage> createState() => _ConfirmTransactionPageState();
+  State<ConfirmProposalPage> createState() => _ConfirmProposalPageState();
 }
 
-class _ConfirmTransactionPageState extends State<ConfirmTransactionPage> {
+class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isSending = false;
 

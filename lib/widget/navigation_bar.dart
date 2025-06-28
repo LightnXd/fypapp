@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/Organization/create_proposal.dart';
 import 'package:fypapp2/Organization/home.dart';
-import 'package:fypapp2/Organization/transaction_list.dart';
+import 'package:fypapp2/Organization/proposal_list.dart';
 import 'package:fypapp2/contributor/pages/home.dart';
 import 'package:fypapp2/contributor/pages/ledger.dart';
 
@@ -149,14 +150,14 @@ class _OrganizationNavBarState extends State<OrganizationNavBar> {
           ),
           verticalIcon(
             imagePath: 'assets/images/ledger.png',
-            text: 'Proposal',
+            text: 'Create Proposal',
             textColor: selectedIndex == 4 ? Colors.blue : Colors.grey,
             textSize: widget.fontSize,
             onTap: () {
               setState(() => selectedIndex = 4);
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (_) => const TransactionListPage()),
+                MaterialPageRoute(builder: (_) => const CreateProposalPage()),
               );
             },
           ),
