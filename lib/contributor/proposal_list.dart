@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/Organization/confirm_proposal.dart';
+import 'package:fypapp2/contributor/proposal_details.dart';
 import 'package:fypapp2/widget/proposal_information.dart';
 import '../services/authentication.dart';
 import '../services/transaction.dart';
@@ -7,17 +7,17 @@ import '../widget/app_bar.dart';
 import '../widget/navigation_bar.dart';
 import '../widget/side_bar.dart';
 
-class OrganizationProposalListPage extends StatefulWidget {
-  const OrganizationProposalListPage({super.key});
+class ContributorProposalListPage extends StatefulWidget {
+  const ContributorProposalListPage({super.key});
 
   @override
-  State<OrganizationProposalListPage> createState() =>
-      _OrganizationProposalListPageState();
+  State<ContributorProposalListPage> createState() =>
+      _ContributorProposalListPageState();
 }
 
-class _OrganizationProposalListPageState
-    extends State<OrganizationProposalListPage> {
-  String? oid;
+class _ContributorProposalListPageState
+    extends State<ContributorProposalListPage> {
+  String? cid;
   late Future<List<Map<String, dynamic>>> _proposals;
   bool isLoading = true;
 
@@ -31,8 +31,8 @@ class _OrganizationProposalListPageState
     try {
       final AuthenticationService authService = AuthenticationService();
       final uid = authService.client.auth.currentUser!.id;
-      oid = await authService.getCurrentUserID(uid);
-      final proposals = getActiveProposal(oid!);
+      cid = await authService.getCurrentUserID(uid);
+      final proposals = getActiveProposalsByFollower(cid!);
 
       setState(() {
         _proposals = proposals;
@@ -52,7 +52,7 @@ class _OrganizationProposalListPageState
       appBar: CustomAppBar(title: 'Proposal List', type: 1),
       bottomNavigationBar: OrganizationNavBar(),
       drawerEnableOpenDragGesture: false,
-      drawer: oid == null ? null : OrganizationSideBar(userId: oid!),
+      drawer: cid == null ? null : OrganizationSideBar(userId: cid!),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<List<Map<String, dynamic>>>(
@@ -85,9 +85,9 @@ class _OrganizationProposalListPageState
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => ConfirmProposalPage(
-                                oid: oid!,
+                              builder: (_) => ProposalDetailsPage(
                                 proposalid: row['ProposalID'] ?? '',
+                                oid: row['OID'] ?? '',
                                 name: row['Username'] ?? '',
                                 image: row['Image'] ?? '',
                                 title: row['Title'] ?? '',
@@ -96,6 +96,7 @@ class _OrganizationProposalListPageState
                                 creationDate: row['CreationDate'] ?? '',
                                 limit: '${row['Limit']} day',
                                 status: row['Status'] ?? '',
+                                cid: cid!,
                               ),
                             ),
                           );

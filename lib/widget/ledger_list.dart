@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../contributor/pages/ledger_details.dart';
+import '../contributor/ledger_details.dart';
 import 'empty_box.dart';
 
 class LedgerList extends StatelessWidget {

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../services/transaction.dart';
-import '../../widget/app_bar.dart';
+import '../services/transaction.dart';
+import '../widget/app_bar.dart';
 
 class VerifyLedgerPage extends StatefulWidget {
   const VerifyLedgerPage({super.key});

@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:fypapp2/Organization/create_proposal.dart';
 import 'package:fypapp2/Organization/home.dart';
 import 'package:fypapp2/Organization/proposal_list.dart';
-import 'package:fypapp2/contributor/pages/home.dart';
-import 'package:fypapp2/contributor/pages/ledger.dart';
+import 'package:fypapp2/contributor/home.dart';
+import 'package:fypapp2/contributor/ledger.dart';
 
 import 'icon_box.dart';
 

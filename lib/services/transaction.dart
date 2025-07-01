@@ -60,6 +60,22 @@ Future<List<Map<String, dynamic>>> getActiveProposal(String oid) async {
   }
 }
 
+Future<List<Map<String, dynamic>>> getActiveProposalsByFollower(
+  String cid,
+) async {
+  final url = Uri.parse('$getActiveProposalListbyFollowerUrl?cid=$cid');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load proposals: ${error['error']}');
+  }
+}
+
 Future<void> createProposalRequest({
   required String oid,
   required String title,
@@ -84,5 +100,41 @@ Future<void> createProposalRequest({
   } else {
     final error = jsonDecode(response.body);
     throw Exception('Failed to create proposal: ${error['error']}');
+  }
+}
+
+Future<Map<String, dynamic>> getVote({
+  required String proposalId,
+  required String cid,
+}) async {
+  final url = Uri.parse('$getVoteUrl?proposalid=$proposalId&cid=$cid');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final data = json.decode(response.body);
+    return {'voteid': data['voteid'], 'vote': data['vote']};
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load vote: ${error['error']}');
+  }
+}
+
+Future<Map<String, dynamic>> changeProposalStatus({
+  required String proposalid,
+  required String status,
+}) async {
+  final url = Uri.parse(changeProposalStatusUrl);
+
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'proposalid': proposalid, 'status': status}),
+  );
+
+  if (response.statusCode == 200) {
+    return jsonDecode(response.body);
+  } else {
+    throw Exception('Failed to confirm proposal status: ${response.body}');
   }
 }

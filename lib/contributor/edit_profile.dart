@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fypapp2/widget/app_bar.dart';
-import '../../services/profile.dart';
-import '../../widget/empty_box.dart';
-import '../../widget/profile_head.dart';
-import '../../widget/question_box.dart';
+import '../services/profile.dart';
+import '../widget/empty_box.dart';
+import '../widget/profile_head.dart';
+import '../widget/question_box.dart';
 
 class ContributorEditProfile extends StatefulWidget {
   final String id;

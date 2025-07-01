@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:fypapp2/Organization/confirm_proposal.dart';
 import 'package:fypapp2/Organization/proposal_list.dart';
-import 'package:fypapp2/contributor/pages/profile.dart';
-import 'package:fypapp2/contributor/pages/verify_ledger.dart';
+import 'package:fypapp2/contributor/profile.dart';
+import 'package:fypapp2/contributor/proposal_list.dart';
+import 'package:fypapp2/contributor/verify_ledger.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 
@@ -98,10 +99,18 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         onTap: () {},
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/donate.png',
-                        text: "Donate",
+                        imagePath: 'assets/images/ledger.png',
+                        text: "View Proposal",
                         spacing: 32,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const ContributorProposalListPage(),
+                            ),
+                          );
+                        },
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/verification.png',
@@ -226,7 +235,8 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const ProposalListPage(),
+                              builder: (_) =>
+                                  const OrganizationProposalListPage(),
                             ),
                           );
                         },
@@ -239,7 +249,8 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const ProposalListPage(),
+                              builder: (_) =>
+                                  const OrganizationProposalListPage(),
                             ),
                           );
                         },

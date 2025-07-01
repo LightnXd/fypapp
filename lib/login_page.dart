@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:fypapp2/contributor/pages/register.dart';
+import 'package:fypapp2/contributor/register.dart';
 import 'package:fypapp2/services/authentication.dart';
 import 'package:fypapp2/services/profile.dart';
 import 'package:fypapp2/widget/empty_box.dart';

@@ -1,11 +1,11 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import '../../services/authentication.dart';
-import '../../widget/app_bar.dart';
-import '../../widget/otp_confirmation.dart';
-import '../../widget/question_box.dart';
-import '../../widget/date_picker.dart';
-import '../../widget/empty_box.dart';
+import '../services/authentication.dart';
+import '../widget/app_bar.dart';
+import '../widget/otp_confirmation.dart';
+import '../widget/question_box.dart';
+import '../widget/date_picker.dart';
+import '../widget/empty_box.dart';
 
 class ContributorRegisterPage extends StatefulWidget {
   const ContributorRegisterPage({super.key});

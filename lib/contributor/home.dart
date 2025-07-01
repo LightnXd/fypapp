@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/contributor/pages/profile.dart';
+import 'package:fypapp2/contributor/profile.dart';
 import 'package:fypapp2/widget/app_bar.dart';
 import 'package:fypapp2/widget/navigation_bar.dart';
 import 'package:fypapp2/widget/side_bar.dart';
 
-import '../../services/authentication.dart';
+import '../services/authentication.dart';
 
 class ContributorHomePage extends StatefulWidget {
   const ContributorHomePage({super.key});

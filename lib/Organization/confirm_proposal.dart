@@ -3,11 +3,13 @@ import 'package:flutter/material.dart';
 import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/services/url.dart';
 import 'package:http/http.dart' as http;
+import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
 import '../widget/icon_box.dart';
 
 class ConfirmProposalPage extends StatefulWidget {
+  final String proposalid;
   final String oid;
   final String name;
   final String image;
@@ -20,6 +22,7 @@ class ConfirmProposalPage extends StatefulWidget {
 
   const ConfirmProposalPage({
     super.key,
+    required this.proposalid,
     required this.oid,
     required this.name,
     required this.image,
@@ -39,9 +42,27 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   bool _isSending = false;
 
+  Future<void> changeStatus(BuildContext context, String change) async {
+    try {
+      final result = await changeProposalStatus(
+        proposalid: widget.proposalid,
+        status: change,
+      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Proposal successfully $change')));
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Unable to change status: $e')));
+    }
+  }
+
   Future<void> _sendTransaction(BuildContext context) async {
     setState(() => _isSending = true);
     try {
+      await changeStatus(context, "Confirmed"); // ✅ await it
+
       final response = await http.post(
         Uri.parse(addBlockUrl),
         headers: {'Content-Type': 'application/json'},
@@ -49,6 +70,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
       );
 
       final data = jsonDecode(response.body);
+
       if (response.statusCode == 200 && data['success'] == true) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -64,6 +86,15 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
       ScaffoldMessenger.of(
         context,
       ).showSnackBar(SnackBar(content: Text('Error: $e')));
+    } finally {
+      if (mounted) setState(() => _isSending = false);
+    }
+  }
+
+  Future<void> _cancelTransaction(BuildContext context) async {
+    setState(() => _isSending = true);
+    try {
+      await changeStatus(context, "Cancelled"); // ✅ await it
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -162,10 +193,16 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                       ),
                     if (widget.status == 'Waiting') const SizedBox(height: 20),
                     ElevatedButton(
-                      onPressed: () {
-                        // Cancel logic
-                      },
-                      child: Text('Cancel Transaction ${widget.oid}'),
+                      onPressed: _isSending
+                          ? null
+                          : () => _cancelTransaction(context),
+                      child: _isSending
+                          ? const SizedBox(
+                              width: 20,
+                              height: 20,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : Text('Cancel Transaction ${widget.oid}'),
                     ),
                     gaph40,
                   ],

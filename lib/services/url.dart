@@ -22,4 +22,8 @@ const getRoleUrl = '$profile/get-role';
 const getImageUrl = '$profile/get-image';
 const getStatusUrl = '$profile/get-status';
 const getActiveProposalListUrl = '$proposal/list-active-proposal';
+const getActiveProposalListbyFollowerUrl =
+    '$proposal/list-active-proposal-by-follower';
 const createProposalUrl = '$proposal/create-proposal';
+const getVoteUrl = '$proposal/get-vote';
+const changeProposalStatusUrl = '$proposal/confirm-proposal-status';
