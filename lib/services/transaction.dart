@@ -138,3 +138,25 @@ Future<Map<String, dynamic>> changeProposalStatus({
     throw Exception('Failed to confirm proposal status: ${response.body}');
   }
 }
+
+Future<void> castVote({
+  required String proposalid,
+  required String cid,
+  required bool vote,
+}) async {
+  final response = await http.post(
+    Uri.parse(castVoteUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'proposalid': proposalid, 'cid': cid, 'vote': vote}),
+  );
+
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body);
+    if (data['success'] == true) {
+    } else {
+      throw Exception('Vote failed: ${data['error'] ?? 'Unknown error'}');
+    }
+  } else {
+    throw Exception('Server error: ${response.statusCode} ${response.body}');
+  }
+}

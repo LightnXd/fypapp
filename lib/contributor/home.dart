@@ -45,33 +45,31 @@ class _ContributorHomePageState extends State<ContributorHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    if (isLoading) {
-      return const Scaffold(body: Center(child: CircularProgressIndicator()));
-    }
-
     return Scaffold(
       appBar: CustomAppBar(title: "Home", type: 1),
       bottomNavigationBar: ContributorNavBar(),
       drawerEnableOpenDragGesture: false,
       drawer: ContributorSideBar(userId: cid),
-      body: Column(
-        children: [
-          Text('Welcome, $cid, $userEmail'),
-          Center(
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const ContributorProfilePage(),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                Text('Welcome, $cid, $userEmail'),
+                Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const ContributorProfilePage(),
+                        ),
+                      );
+                    },
+                    child: const Text('Centered Button'),
                   ),
-                );
-              },
-              child: const Text('Centered Button'),
+                ),
+              ],
             ),
-          ),
-        ],
-      ),
     );
   }
 }

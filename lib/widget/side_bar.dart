@@ -11,7 +11,7 @@ import '../Organization/profile.dart';
 import '../services/profile.dart';
 
 class ContributorSideBar extends StatefulWidget {
-  final String userId;
+  final String? userId;
   const ContributorSideBar({super.key, required this.userId});
 
   @override
@@ -29,7 +29,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
   }
 
   Future<void> loadBackgroundImage() async {
-    final images = await getUserImages(widget.userId);
+    final images = await getUserImages(widget.userId!);
     final image = images?['BackgroundImage'];
     if (image != "") {
       setState(() {
@@ -146,7 +146,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
 }
 
 class OrganizationSideBar extends StatefulWidget {
-  final String userId;
+  final String? userId;
   const OrganizationSideBar({super.key, required this.userId});
 
   @override
@@ -164,7 +164,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
   }
 
   Future<void> loadBackgroundImage() async {
-    final images = await getUserImages(widget.userId);
+    final images = await getUserImages(widget.userId!);
     final image = images?['BackgroundImage'];
     if (image != "") {
       setState(() {
