@@ -3,19 +3,19 @@ import 'package:flutter/material.dart';
 import 'empty_box.dart';
 
 class AvatarBox extends StatelessWidget {
-  final String imageUrl;
+  final String? imageUrl;
   final String orgName;
   final String? desc;
-  final String? status;
+  final String? limit;
   final double textSize;
   final Color fontColor;
 
   const AvatarBox({
     super.key,
-    required this.imageUrl,
+    this.imageUrl,
     required this.orgName,
     this.desc,
-    required this.status,
+    required this.limit,
     this.textSize = 12,
     this.fontColor = Colors.black,
   });
@@ -25,15 +25,16 @@ class AvatarBox extends StatelessWidget {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        // Profile image
         CircleAvatar(
           radius: 30,
-          backgroundImage: (imageUrl.isNotEmpty && imageUrl.startsWith('http'))
-              ? NetworkImage(imageUrl)
-              : const AssetImage('assets/profile_photo.jpg') as ImageProvider,
+          backgroundImage:
+              (imageUrl != null &&
+                  imageUrl!.isNotEmpty &&
+                  imageUrl!.startsWith('http'))
+              ? NetworkImage(imageUrl!)
+              : const AssetImage('assets/images/profile.png') as ImageProvider,
         ),
-        gapw10,
-        // Name and fund amount
+        gapw12,
         Expanded(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -55,9 +56,9 @@ class AvatarBox extends StatelessWidget {
             ],
           ),
         ),
-        if (status != null)
+        if (limit != null)
           Text(
-            status!,
+            limit!,
             style: TextStyle(fontSize: textSize, color: fontColor),
           ),
       ],

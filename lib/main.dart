@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/Organization/confirm_transaction.dart';
-import 'package:fypapp2/contributor/pages/ledger.dart';
-import 'contributor/pages/home.dart';
+import 'package:fypapp2/Organization/confirm_proposal.dart';
+import 'package:fypapp2/contributor/ledger.dart';
+import 'package:fypapp2/contributor/profile.dart';
+import 'Organization/home.dart';
+import 'contributor/home.dart';
 import 'login_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -26,7 +28,8 @@ class MyApp extends StatelessWidget {
       routes: {
         '/': (context) => const OpenPage(),
         '/login': (context) => LoginPage(),
-        '/home': (context) => const HomePage(),
+        '/contributor-home': (context) => const ContributorHomePage(),
+        '/organization-home': (context) => const OrganizationHomePage(),
       },
     );
   }

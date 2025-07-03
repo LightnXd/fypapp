@@ -1,22 +1,21 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:fypapp2/services/url.dart';
-import 'package:http/http.dart' as http;
-import 'package:supabase_flutter/supabase_flutter.dart';
-import '../../services/authentication.dart';
-import '../../widget/otp_confirmation.dart';
-import '../../widget/question_box.dart';
-import '../../widget/date_picker.dart';
-import '../../widget/empty_box.dart';
+import '../services/authentication.dart';
+import '../widget/app_bar.dart';
+import '../widget/otp_confirmation.dart';
+import '../widget/question_box.dart';
+import '../widget/date_picker.dart';
+import '../widget/empty_box.dart';
 
-class RegisterPage extends StatefulWidget {
-  const RegisterPage({super.key});
+class ContributorRegisterPage extends StatefulWidget {
+  const ContributorRegisterPage({super.key});
 
   @override
-  State<RegisterPage> createState() => _RegisterPageState();
+  State<ContributorRegisterPage> createState() =>
+      _ContributorRegisterPageState();
 }
 
-class _RegisterPageState extends State<RegisterPage> {
+class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
   final AuthenticationService _authService = AuthenticationService();
   final nameController = TextEditingController();
   final emailController = TextEditingController();
@@ -33,6 +32,7 @@ class _RegisterPageState extends State<RegisterPage> {
   String? passwordError;
   String? confirmEmailError;
   String? confirmPasswordError;
+  String? countryError;
 
   bool validateInputs() {
     final name = nameController.text;
@@ -40,6 +40,7 @@ class _RegisterPageState extends State<RegisterPage> {
     final password = passwordController.text;
     final confirmEmail = confirmEmailController.text;
     final confirmPassword = confirmPasswordController.text;
+    final confirmCountry = countryController.text;
 
     final passwordValid = RegExp(
       r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$',
@@ -57,13 +58,17 @@ class _RegisterPageState extends State<RegisterPage> {
       confirmPasswordError = password == confirmPassword
           ? null
           : 'Password does not match';
+      countryError = confirmCountry.isNotEmpty
+          ? null
+          : 'Country must not be empty';
     });
 
     return name.length >= 5 &&
         email.contains('@') &&
         email == confirmEmail &&
         passwordValid.hasMatch(password) &&
-        password == confirmPassword;
+        password == confirmPassword &&
+        confirmCountry.isNotEmpty;
   }
 
   @override
@@ -81,20 +86,20 @@ class _RegisterPageState extends State<RegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Register")),
+      appBar: CustomAppBar(title: "Register"),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(24.0),
         child: Column(
           children: [
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/rounded_profile.png'),
               label: 'Name:',
               hint: 'Enter your name',
               controller: nameController,
               errorText: nameError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/email.png'),
               label: 'Email:',
               hint: 'Enter your email',
               controller: emailController,
@@ -102,7 +107,7 @@ class _RegisterPageState extends State<RegisterPage> {
               errorText: emailError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/email.png'),
               label: 'Confirm Email:',
               hint: 'Re-enter your email',
               controller: confirmEmailController,
@@ -110,7 +115,7 @@ class _RegisterPageState extends State<RegisterPage> {
               errorText: confirmEmailError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/password.png'),
               label: 'Password:',
               hint: 'Enter your password',
               controller: passwordController,
@@ -121,7 +126,7 @@ class _RegisterPageState extends State<RegisterPage> {
               errorText: passwordError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/password.png'),
               label: 'Confirm Password:',
               hint: 'Re-enter your password',
               controller: confirmPasswordController,
@@ -132,10 +137,11 @@ class _RegisterPageState extends State<RegisterPage> {
               errorText: confirmPasswordError,
             ),
             QuestionBox(
-              image: const AssetImage('assets/images/test.webp'),
+              image: const AssetImage('assets/images/country.png'),
               label: 'Country:',
               hint: 'Enter your country',
               controller: countryController,
+              errorText: countryError,
             ),
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 10.0),
@@ -145,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
                   const Padding(
                     padding: EdgeInsets.only(right: 8.0, top: 7),
                     child: Image(
-                      image: AssetImage('assets/images/test.webp'),
+                      image: AssetImage('assets/images/birthdate.png'),
                       width: 40,
                       height: 40,
                     ),
@@ -199,7 +205,6 @@ class _RegisterPageState extends State<RegisterPage> {
                                 final passwordSet = await _authService
                                     .setPassword(passwordController.text);
                                 if (!passwordSet) {
-                                  // Handle password update failure
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
                                       content: Text("Failed to set password"),

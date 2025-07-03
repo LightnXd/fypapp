@@ -1,98 +1,281 @@
 import 'package:flutter/material.dart';
-import 'empty_box.dart';
-import 'icon_box.dart';
+import 'package:fypapp2/Organization/confirm_proposal.dart';
+import 'package:fypapp2/Organization/proposal_list.dart';
+import 'package:fypapp2/contributor/profile.dart';
+import 'package:fypapp2/contributor/proposal_list.dart';
+import 'package:fypapp2/contributor/verify_ledger.dart';
+import 'package:fypapp2/widget/empty_box.dart';
+import 'package:fypapp2/widget/icon_box.dart';
 
-class CustomSideBar extends StatelessWidget {
-  final int navType; // number of icons (3, 4, 5)
-  final double fontSize;
-  final double iconSpacing;
+import '../Organization/profile.dart';
+import '../services/profile.dart';
 
-  const CustomSideBar({
-    super.key,
-    required this.navType,
-    this.fontSize = 14,
-    this.iconSpacing = 16,
-  });
+class ContributorSideBar extends StatefulWidget {
+  final String? userId;
+  const ContributorSideBar({super.key, required this.userId});
 
-  static const Map<int, List<String>> _iconPathsMap = {
-    3: [
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-    ],
-    4: [
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-    ],
-    5: [
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-      'assets/images/test.webp',
-    ],
-  };
+  @override
+  State<ContributorSideBar> createState() => _ContributorSideBarState();
+}
 
-  static const Map<int, List<String>> _labelMap = {
-    3: ['Home', 'Search', 'Profile'],
-    4: ['Home', 'Search', 'Alerts', 'Profile'],
-    5: ['Home', 'Search', 'Chat', 'Alerts', 'Profile'],
-  };
+class _ContributorSideBarState extends State<ContributorSideBar> {
+  String? backgroundImage;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadBackgroundImage();
+  }
+
+  Future<void> loadBackgroundImage() async {
+    final images = await getUserImages(widget.userId!);
+    final image = images?['BackgroundImage'];
+    if (image != "") {
+      setState(() {
+        backgroundImage = image;
+      });
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final iconPaths = _iconPathsMap[navType] ?? [];
-    final labels = _labelMap[navType] ?? [];
-
-    if (iconPaths.length != labels.length || iconPaths.isEmpty) {
-      return Container(
-        color: Colors.red,
-        alignment: Alignment.center,
-        child: const Text('Error: Invalid navType'),
-      );
-    }
-
     final screenWidth = MediaQuery.of(context).size.width;
     final sidebarWidth = screenWidth * 0.8;
 
-    return Container(
-      width: sidebarWidth,
-      color: Colors.white,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          // Top image (remains fixed)
-          SizedBox(
-            width: double.infinity,
-            child: Image.asset('assets/images/test.webp', fit: BoxFit.cover),
-          ),
-          gaph20,
-          // Scrollable icon list
-          Expanded(
-            child: SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: List.generate(iconPaths.length, (index) {
-                  return Padding(
-                    padding: EdgeInsets.only(
-                      bottom: iconSpacing,
-                      left: 20,
-                      right: 20,
-                    ),
-                    child: horizontalIcon(
-                      imagePath: iconPaths[index],
-                      text: labels[index],
-                      textColor: Colors.black,
-                      textSize: fontSize,
-                    ),
-                  );
-                }),
+    return Drawer(
+      child: Container(
+        width: sidebarWidth,
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: backgroundImage != null
+                        ? Image.network(backgroundImage!, fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/images/side_background.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+            gaph32,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      horizontalIcon(
+                        imagePath: 'assets/images/border_profile.png',
+                        text: "Profile",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const ContributorProfilePage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/follower.png',
+                        text: "Following list",
+                        spacing: 32,
+                        onTap: () {},
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/top_up.png',
+                        text: "Top up wallet",
+                        spacing: 32,
+                        onTap: () {},
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/ledger.png',
+                        text: "View Proposal",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const ContributorProposalListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/verification.png',
+                        text: "Verify ledger",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const VerifyLedgerPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/log_out.png',
+                        text: "Log out",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class OrganizationSideBar extends StatefulWidget {
+  final String? userId;
+  const OrganizationSideBar({super.key, required this.userId});
+
+  @override
+  State<OrganizationSideBar> createState() => _OrganizationSideBarState();
+}
+
+class _OrganizationSideBarState extends State<OrganizationSideBar> {
+  String? backgroundImage;
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    loadBackgroundImage();
+  }
+
+  Future<void> loadBackgroundImage() async {
+    final images = await getUserImages(widget.userId!);
+    final image = images?['BackgroundImage'];
+    if (image != "") {
+      setState(() {
+        backgroundImage = image;
+      });
+    }
+    setState(() {
+      isLoading = false;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final sidebarWidth = screenWidth * 0.9;
+
+    return Drawer(
+      child: Container(
+        width: sidebarWidth,
+        color: Colors.white,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: backgroundImage != null
+                        ? Image.network(backgroundImage!, fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/images/side_background.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+            gaph32,
+            Expanded(
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      horizontalIcon(
+                        imagePath: 'assets/images/border_profile.png',
+                        text: "Profile",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const OrganizationProfilePage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/follower.png',
+                        text: "Follower list",
+                        spacing: 32,
+                        onTap: () {},
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/use_fund.png',
+                        text: "Proposal list",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const OrganizationProposalListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/ledger.png',
+                        text: "View transaction list",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const OrganizationProposalListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/test.png',
+                        text: "Charity framework test",
+                        spacing: 32,
+                        onTap: () {},
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/log_out.png',
+                        text: "Log out",
+                        spacing: 32,
+                        onTap: () {
+                          Navigator.pushReplacementNamed(context, '/login');
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

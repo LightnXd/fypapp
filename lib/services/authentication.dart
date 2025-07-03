@@ -1,11 +1,12 @@
 //import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:fypapp2/services/url.dart';
-import 'package:http/http.dart' as http show post, Response;
+import 'package:http/http.dart' as http show post, Response, get;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthenticationService {
   final SupabaseClient _client = Supabase.instance.client;
+  SupabaseClient get client => _client;
 
   Future<bool> getSession(String? sessionString) async {
     if (sessionString == null) return false;
@@ -14,15 +15,31 @@ class AuthenticationService {
       final recoveredSession = await _client.auth.recoverSession(sessionString);
       return recoveredSession.session != null;
     } catch (e) {
-      print('Error restoring session: $e');
       return false;
+    }
+  }
+
+  Future<List<Map<String, String>>> getOrganizationTypes() async {
+    final response = await http.get(Uri.parse(getOrganizationTypeUrl));
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = jsonDecode(response.body);
+
+      return data.map<Map<String, String>>((item) {
+        return {
+          'TID': item['TID'].toString(),
+          'TypeName': item['TypeName'] ?? '',
+        };
+      }).toList();
+    } else {
+      throw Exception('Failed to load organization types: ${response.body}');
     }
   }
 
   Future<bool> signUp(String email) async {
     // Step 1: Check status
     final statusResponse = await http.post(
-      Uri.parse(checkStatusurl),
+      Uri.parse(checkStatusUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
@@ -58,7 +75,7 @@ class AuthenticationService {
 
   Future<bool> sendOTP(String email) async {
     final otpResponse = await http.post(
-      Uri.parse(sendOTPurl),
+      Uri.parse(sendOTPUrl),
       headers: {'Content-Type': 'application/json'},
       body: jsonEncode({'email': email}),
     );
@@ -110,5 +127,53 @@ class AuthenticationService {
       return true;
     else
       return false;
+  }
+
+  Future<bool> createOrganization({
+    required String email,
+    required String name,
+    required String country,
+    required String description,
+    required String address,
+    required List<String> type,
+  }) async {
+    final creationResponse = await http.post(
+      Uri.parse(createOrganizationUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'email': email,
+        'name': name,
+        'country': country,
+        'description': description,
+        'address': address,
+        'type': type,
+      }),
+    );
+
+    if (creationResponse.statusCode == 200)
+      return true;
+    else
+    return false;
+  }
+
+  Future<String?> getCurrentUserID(String uid) async {
+    try {
+      final response = await http.get(Uri.parse('$getCurrentIDUrl?uid=$uid'));
+
+      if (response.statusCode == 200) {
+        final data = jsonDecode(response.body);
+        if (data['status'] == true && data['data'] != null) {
+          return data['data']['ID'] as String;
+        } else {
+          print('Error: ${data['message']}');
+        }
+      } else {
+        print('Failed with status code: ${response.statusCode}');
+      }
+    } catch (e) {
+      print('Exception occurred: $e');
+    }
+
+    return null;
   }
 }
