@@ -28,3 +28,4 @@ const createProposalUrl = '$proposal/create-proposal';
 const getVoteUrl = '$proposal/get-vote';
 const changeProposalStatusUrl = '$proposal/confirm-proposal-status';
 const castVoteUrl = '$proposal/vote';
+const getVoteStatUrl = '$proposal/get-vote-count';

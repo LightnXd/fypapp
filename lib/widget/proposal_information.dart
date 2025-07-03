@@ -9,9 +9,9 @@ class ProposalInfo extends StatelessWidget {
   final double textSize;
   final Color fontColor;
   final String limit;
-  final double countYes;
-  final double countNo;
-  final double notVoted;
+  final String countYes;
+  final String countNo;
+  final String notVoted;
   final String orgName;
   final String fundAmount;
   final String title;
@@ -23,13 +23,13 @@ class ProposalInfo extends StatelessWidget {
     this.textSize = 14,
     this.fontColor = Colors.black,
     this.limit = "-1 days",
-    this.countYes = 40,
-    this.countNo = 30,
-    this.notVoted = 30,
+    this.countYes = "0%",
+    this.countNo = "0%",
+    this.notVoted = "0%",
     this.orgName = 'Organization Name',
     this.fundAmount = 'Fund amount',
     this.title = 'Fund usage title',
-    this.onTap, // <-- Add this
+    this.onTap,
   }) : super(key: key);
 
   @override
@@ -61,9 +61,9 @@ class ProposalInfo extends StatelessWidget {
               ),
               gaph8,
               HorizontalBox3(
-                yesText: '${countYes.toInt()}% yes',
-                noText: '${countNo.toInt()}% no',
-                yetText: '${notVoted.toInt()}% yet',
+                yesText: countYes,
+                noText: countNo,
+                yetText: notVoted,
                 textSize: textSize,
               ),
             ],

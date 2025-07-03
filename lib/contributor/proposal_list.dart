@@ -32,10 +32,22 @@ class _ContributorProposalListPageState
       final AuthenticationService authService = AuthenticationService();
       final uid = authService.client.auth.currentUser!.id;
       cid = await authService.getCurrentUserID(uid);
-      final proposals = getActiveProposalsByFollower(cid!);
+      final proposals = await getActiveProposalsByFollower(cid!);
+
+      // Fetch vote stats for each proposal
+      final proposalsWithVotes = await Future.wait(
+        proposals.map((proposal) async {
+          try {
+            final voteStats = await getVoteStat(proposal['ProposalID']);
+            return {...proposal, 'VoteStats': voteStats};
+          } catch (e) {
+            return {...proposal, 'VoteStats': null};
+          }
+        }),
+      );
 
       setState(() {
-        _proposals = proposals;
+        _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
       });
     } catch (e) {
@@ -49,10 +61,7 @@ class _ContributorProposalListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Proposal List', type: 1),
-      bottomNavigationBar: OrganizationNavBar(),
-      drawerEnableOpenDragGesture: false,
-      drawer: cid == null ? null : OrganizationSideBar(userId: cid!),
+      appBar: CustomAppBar(title: 'Proposal List'),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<List<Map<String, dynamic>>>(
@@ -75,12 +84,16 @@ class _ContributorProposalListPageState
                   children: [
                     const SizedBox(height: 16),
                     ...proposals.map((row) {
+                      final voteStats = row['VoteStats'];
                       return ProposalInfo(
                         orgImage: row['Image'],
                         title: row['Title'] ?? 'No title',
                         orgName: row['Username'] ?? 'Name not found',
                         limit: '${row['Limit']} day',
                         fundAmount: row['Amount']?.toString() ?? '0',
+                        countYes: voteStats?['YesVote'] ?? '0',
+                        countNo: voteStats?['NoVote'] ?? '0',
+                        notVoted: voteStats?['NotVoted'] ?? '0',
                         onTap: () {
                           Navigator.push(
                             context,
@@ -97,6 +110,9 @@ class _ContributorProposalListPageState
                                 limit: '${row['Limit']} day',
                                 status: row['Status'] ?? '',
                                 cid: cid!,
+                                yes: voteStats?['YesVote'] ?? '0',
+                                no: voteStats?['NoVote'] ?? '0',
+                                notVoted: voteStats?['NotVoted'] ?? '0',
                               ),
                             ),
                           );

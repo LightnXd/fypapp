@@ -160,3 +160,15 @@ Future<void> castVote({
     throw Exception('Server error: ${response.statusCode} ${response.body}');
   }
 }
+
+Future<Map<String, dynamic>> getVoteStat(String pid) async {
+  final uri = Uri.parse('$getVoteStatUrl?pid=$pid');
+
+  final response = await http.get(uri);
+
+  if (response.statusCode == 200) {
+    return json.decode(response.body);
+  } else {
+    throw Exception('Failed to load vote stats');
+  }
+}

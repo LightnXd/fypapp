@@ -21,6 +21,9 @@ class ProposalDetailsPage extends StatefulWidget {
   final String creationDate;
   final String limit;
   final String status;
+  final String yes;
+  final String no;
+  final String notVoted;
 
   const ProposalDetailsPage({
     super.key,
@@ -35,6 +38,9 @@ class ProposalDetailsPage extends StatefulWidget {
     required this.creationDate,
     required this.limit,
     required this.status,
+    required this.yes,
+    required this.no,
+    required this.notVoted,
   });
 
   @override
@@ -159,6 +165,21 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
                           horizontalIcon(
                             text: 'Creation date:',
                             extraText: formatDate(widget.creationDate),
+                            spacing: 16,
+                          ),
+                          horizontalIcon(
+                            text: 'Yes vote:',
+                            extraText: widget.description,
+                            spacing: 16,
+                          ),
+                          horizontalIcon(
+                            text: 'No vote:',
+                            extraText: widget.description,
+                            spacing: 16,
+                          ),
+                          horizontalIcon(
+                            text: 'Have not vote:',
+                            extraText: widget.description,
                             spacing: 16,
                           ),
                           horizontalIcon(

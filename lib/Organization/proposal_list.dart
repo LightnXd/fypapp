@@ -32,10 +32,21 @@ class _OrganizationProposalListPageState
       final AuthenticationService authService = AuthenticationService();
       final uid = authService.client.auth.currentUser!.id;
       oid = await authService.getCurrentUserID(uid);
-      final proposals = getActiveProposal(oid!);
+      final rawProposals = await getActiveProposal(oid!);
+
+      final proposalsWithVotes = await Future.wait(
+        rawProposals.map((proposal) async {
+          try {
+            final voteStats = await getVoteStat(proposal['ProposalID']);
+            return {...proposal, 'VoteStats': voteStats};
+          } catch (e) {
+            return {...proposal, 'VoteStats': null};
+          }
+        }),
+      );
 
       setState(() {
-        _proposals = proposals;
+        _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
       });
     } catch (e) {
@@ -75,12 +86,16 @@ class _OrganizationProposalListPageState
                   children: [
                     const SizedBox(height: 16),
                     ...proposals.map((row) {
+                      final voteStats = row['VoteStats'];
                       return ProposalInfo(
                         orgImage: row['Image'],
                         title: row['Title'] ?? 'No title',
                         orgName: row['Username'] ?? 'Name not found',
                         limit: '${row['Limit']} day',
                         fundAmount: row['Amount']?.toString() ?? '0',
+                        countYes: voteStats?['YesVote'] ?? '0',
+                        countNo: voteStats?['NoVote'] ?? '0',
+                        notVoted: voteStats?['NotVoted'] ?? '0',
                         onTap: () {
                           Navigator.push(
                             context,
@@ -96,6 +111,9 @@ class _OrganizationProposalListPageState
                                 creationDate: row['CreationDate'] ?? '',
                                 limit: '${row['Limit']} day',
                                 status: row['Status'] ?? '',
+                                yes: voteStats?['YesVote'] ?? '0',
+                                no: voteStats?['NoVote'] ?? '0',
+                                notVoted: voteStats?['NotVoted'] ?? '0',
                               ),
                             ),
                           );
