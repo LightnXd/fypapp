@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/Organization/confirm_transaction.dart';
-import 'package:fypapp2/Organization/transaction_list.dart';
-import 'package:fypapp2/contributor/pages/profile.dart';
-import 'package:fypapp2/contributor/pages/verify_ledger.dart';
+import 'package:fypapp2/Organization/confirm_proposal.dart';
+import 'package:fypapp2/Organization/proposal_list.dart';
+import 'package:fypapp2/contributor/profile.dart';
+import 'package:fypapp2/contributor/proposal_list.dart';
+import 'package:fypapp2/contributor/verify_ledger.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 
@@ -10,7 +11,7 @@ import '../Organization/profile.dart';
 import '../services/profile.dart';
 
 class ContributorSideBar extends StatefulWidget {
-  final String userId;
+  final String? userId;
   const ContributorSideBar({super.key, required this.userId});
 
   @override
@@ -19,6 +20,7 @@ class ContributorSideBar extends StatefulWidget {
 
 class _ContributorSideBarState extends State<ContributorSideBar> {
   String? backgroundImage;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -27,13 +29,16 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
   }
 
   Future<void> loadBackgroundImage() async {
-    final images = await getUserImages(widget.userId);
+    final images = await getUserImages(widget.userId!);
     final image = images?['BackgroundImage'];
     if (image != "") {
       setState(() {
         backgroundImage = image;
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -48,18 +53,19 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top image
-            SizedBox(
-              width: double.infinity,
-              height: 150,
-              child: backgroundImage != null
-                  ? Image.network(backgroundImage!, fit: BoxFit.cover)
-                  : Image.asset(
-                      'assets/images/side_background.jpg',
-                      fit: BoxFit.cover,
-                    ),
-            ),
-            gaph16,
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: backgroundImage != null
+                        ? Image.network(backgroundImage!, fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/images/side_background.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+            gaph32,
             Expanded(
               child: SingleChildScrollView(
                 child: Padding(
@@ -93,14 +99,23 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         onTap: () {},
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/donate.png',
-                        text: "Donate",
+                        imagePath: 'assets/images/ledger.png',
+                        text: "View Proposal",
                         spacing: 32,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const ContributorProposalListPage(),
+                            ),
+                          );
+                        },
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/verification.png',
                         text: "Verify ledger",
+                        spacing: 32,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -131,7 +146,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
 }
 
 class OrganizationSideBar extends StatefulWidget {
-  final String userId;
+  final String? userId;
   const OrganizationSideBar({super.key, required this.userId});
 
   @override
@@ -140,6 +155,7 @@ class OrganizationSideBar extends StatefulWidget {
 
 class _OrganizationSideBarState extends State<OrganizationSideBar> {
   String? backgroundImage;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -148,13 +164,16 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
   }
 
   Future<void> loadBackgroundImage() async {
-    final images = await getUserImages(widget.userId);
+    final images = await getUserImages(widget.userId!);
     final image = images?['BackgroundImage'];
     if (image != "") {
       setState(() {
         backgroundImage = image;
       });
     }
+    setState(() {
+      isLoading = false;
+    });
   }
 
   @override
@@ -169,17 +188,18 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Top image
-            SizedBox(
-              width: double.infinity,
-              height: 150,
-              child: backgroundImage != null
-                  ? Image.network(backgroundImage!, fit: BoxFit.cover)
-                  : Image.asset(
-                      'assets/images/side_background.jpg',
-                      fit: BoxFit.cover,
-                    ),
-            ),
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SizedBox(
+                    width: double.infinity,
+                    height: 150,
+                    child: backgroundImage != null
+                        ? Image.network(backgroundImage!, fit: BoxFit.cover)
+                        : Image.asset(
+                            'assets/images/side_background.jpg',
+                            fit: BoxFit.cover,
+                          ),
+                  ),
             gaph32,
             Expanded(
               child: SingleChildScrollView(
@@ -209,13 +229,14 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/use_fund.png',
-                        text: "Use fund",
+                        text: "Proposal list",
                         spacing: 32,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const ConfirmTransactionPage(),
+                              builder: (_) =>
+                                  const OrganizationProposalListPage(),
                             ),
                           );
                         },
@@ -228,7 +249,8 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const TransactionListPage(),
+                              builder: (_) =>
+                                  const OrganizationProposalListPage(),
                             ),
                           );
                         },

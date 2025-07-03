@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'empty_box.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final int type; // 1 = open drawer, 2 = pop
+  final int type;
   final String title;
 
   const CustomAppBar({super.key, this.type = 2, required this.title});

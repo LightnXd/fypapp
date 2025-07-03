@@ -32,12 +32,9 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
   Future<void> fetchUserStatus() async {
     final user = _authService.client.auth.currentUser;
     if (user == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('user not found'),
-        ),
-      );
-      setState(() => isLoading = false);
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('user not found')));
       return;
     }
 
@@ -46,11 +43,9 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
 
     id = await _authService.getCurrentUserID(uid);
     if (id == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('user id not found'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('user id not found')));
       setState(() => isLoading = false);
       return;
     }
@@ -75,7 +70,7 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
       appBar: CustomAppBar(title: 'Home', type: 1),
       bottomNavigationBar: OrganizationNavBar(),
       drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: id!),
+      drawer: id == null ? null : OrganizationSideBar(userId: id!),
       body: status == 'Pending'
           ? const Center(child: Text('Your account has not been approved'))
           : Column(

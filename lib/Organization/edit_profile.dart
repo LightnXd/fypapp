@@ -70,11 +70,9 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
         isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
       setState(() => isLoading = false);
     }
   }
@@ -119,7 +117,7 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width.floor();
     return Scaffold(
-      appBar: CustomAppBar(title: 'Edit Profile', type: 2),
+      appBar: CustomAppBar(title: 'Edit Profile'),
       body: isLoading
           ? const CircularProgressIndicator()
           : SingleChildScrollView(

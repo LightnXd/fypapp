@@ -4,24 +4,26 @@ class BuildingBox extends StatelessWidget {
   final String text;
   final Color color;
   final double textSize;
+  final double? width;
 
   const BuildingBox({
     super.key,
     required this.text,
-    required this.color,
+    this.color = const Color(0xFFBAFFC9),
     this.textSize = 10,
+    this.width,
   });
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: width,
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
       margin: const EdgeInsets.only(right: 15, bottom: 8),
       decoration: BoxDecoration(
         color: color,
         borderRadius: BorderRadius.circular(4),
       ),
-      // Don't set constraints or width here
       child: Text(
         text,
         style: TextStyle(color: Colors.black, fontSize: textSize),

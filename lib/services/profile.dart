@@ -6,15 +6,15 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'authentication.dart';
 
 Future<Map<String, dynamic>> getContributorProfile() async {
-  final uid = Supabase.instance.client.auth.currentUser?.id;
+  final AuthenticationService authService = AuthenticationService();
+  final uid = authService.client.auth.currentUser?.id; /////////
 
   if (uid == null) {
     throw Exception("No session found.");
   }
 
-  final AuthenticationService authService = AuthenticationService();
   final id = await authService.getCurrentUserID(uid);
-
+  print(id);
   if (id == null) {
     throw Exception("No user found.");
   }

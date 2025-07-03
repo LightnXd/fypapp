@@ -56,11 +56,9 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
         isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error: $e'),
-        ),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error: $e')));
       setState(() => isLoading = false);
     }
   }
@@ -135,7 +133,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Organization Registration', type: 2),
+      appBar: CustomAppBar(title: 'Organization Registration'),
       body: isLoading
           ? const CircularProgressIndicator()
           : SingleChildScrollView(

@@ -81,7 +81,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width.floor();
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Profile', type: 2),
+      appBar: CustomAppBar(title: 'Profile'),
       body: isLoading
           ? const Center(child: CircularProgressIndicator()) // loading spinner
           : SingleChildScrollView(

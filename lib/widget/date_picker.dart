@@ -4,12 +4,20 @@ import 'package:intl/intl.dart';
 class DatePickerDropdown extends StatelessWidget {
   final String hint;
   final TextEditingController controller;
+  final DateTime firstDate;
+  final DateTime initialDate;
+  final DateTime lastDate;
 
-  const DatePickerDropdown({
+  DatePickerDropdown({
     super.key,
     required this.hint,
     required this.controller,
-  });
+    DateTime? firstDate,
+    DateTime? initialDate,
+    DateTime? lastDate,
+  }) : firstDate = firstDate ?? DateTime(1900),
+       initialDate = initialDate ?? DateTime.now(),
+       lastDate = lastDate ?? DateTime.now();
 
   @override
   Widget build(BuildContext context) {
@@ -17,9 +25,9 @@ class DatePickerDropdown extends StatelessWidget {
       onTap: () async {
         final pickedDate = await showDatePicker(
           context: context,
-          initialDate: DateTime.now(),
-          firstDate: DateTime(1900),
-          lastDate: DateTime.now(),
+          initialDate: initialDate,
+          firstDate: firstDate,
+          lastDate: lastDate,
         );
         if (pickedDate != null) {
           controller.text = DateFormat('yyyy-MM-dd').format(pickedDate);
@@ -37,4 +45,8 @@ class DatePickerDropdown extends StatelessWidget {
       ),
     );
   }
+}
+
+DateTime daysLater(int days) {
+  return DateTime.now().add(Duration(days: days));
 }
