@@ -38,10 +38,9 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
       return;
     }
 
-    final uid = user.id;
     userEmail = user.email;
 
-    id = await _authService.getCurrentUserID(uid);
+    id = await _authService.getCurrentUserID();
     if (id == null) {
       ScaffoldMessenger.of(
         context,

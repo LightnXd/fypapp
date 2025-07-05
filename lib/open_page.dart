@@ -61,8 +61,7 @@ class _OpenPageState extends State<OpenPage> {
         return;
       }
 
-      final uid = session.user.id;
-      final id = await authService.getCurrentUserID(uid);
+      final id = await authService.getCurrentUserID();
       if (id == null || !mounted) return;
 
       final userRole = await getUserRole(id);

@@ -67,7 +67,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
   Future<void> _sendTransaction(BuildContext context) async {
     setState(() => _isSending = true);
     try {
-      await changeStatus(context, "Confirmed"); // ✅ await it
+      await changeStatus(context, "Confirmed");
 
       final response = await http.post(
         Uri.parse(addBlockUrl),

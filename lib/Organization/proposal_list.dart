@@ -30,8 +30,7 @@ class _OrganizationProposalListPageState
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
-      final uid = authService.client.auth.currentUser!.id;
-      oid = await authService.getCurrentUserID(uid);
+      oid = await authService.getCurrentUserID();
       final rawProposals = await getActiveProposal(oid!);
 
       final proposalsWithVotes = await Future.wait(

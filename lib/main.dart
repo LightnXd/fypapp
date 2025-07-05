@@ -4,6 +4,7 @@ import 'package:fypapp2/contributor/ledger.dart';
 import 'package:fypapp2/contributor/profile.dart';
 import 'Organization/home.dart';
 import 'contributor/home.dart';
+import 'contributor/make_donation.dart';
 import 'login_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -26,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => const OpenPage(),
+        '/': (context) => const MakeDonationPage(oid: 'Or0000001'),
         '/login': (context) => LoginPage(),
         '/contributor-home': (context) => const ContributorHomePage(),
         '/organization-home': (context) => const OrganizationHomePage(),

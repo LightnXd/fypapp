@@ -61,9 +61,9 @@ class ProposalInfo extends StatelessWidget {
               ),
               gaph8,
               HorizontalBox3(
-                yesText: countYes,
-                noText: countNo,
-                yetText: notVoted,
+                leftText: countYes,
+                midText: countNo,
+                rightText: notVoted,
                 textSize: textSize,
               ),
             ],

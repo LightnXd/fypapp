@@ -26,8 +26,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
   bool isVerified = false;
   String? profileImage;
   String? backgroundImage;
-  String? walletAddress;
-  String? walletBalance;
+  String? fund;
   List<String> tid = [];
   List<String> type = [];
   bool isLoading = true; // <-- Add loading state
@@ -51,8 +50,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
         description = data['Description'];
         address = data['Address'];
         isVerified = data['isVerified'];
-        walletAddress = data['WalletAddress'];
-        walletBalance = data['WalletBalance']?.toString();
+        fund = data['Fund']?.toString();
         final dynamicTypes = data['TypeName'];
         if (dynamicTypes != null && dynamicTypes is List) {
           type = List<String>.from(dynamicTypes.map((e) => e.toString()));
