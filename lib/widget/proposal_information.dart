@@ -15,7 +15,7 @@ class ProposalInfo extends StatelessWidget {
   final String orgName;
   final String fundAmount;
   final String title;
-  final VoidCallback? onTap; // <-- Add this
+  final VoidCallback? onTap;
 
   const ProposalInfo({
     Key? key,
@@ -35,7 +35,7 @@ class ProposalInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: onTap, // <-- Wrap with InkWell
+      onTap: onTap,
       borderRadius: BorderRadius.circular(12),
       child: Card(
         elevation: 2,

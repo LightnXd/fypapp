@@ -30,7 +30,6 @@ class ProfileHeader extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
 
-        // Profile image + followings
         Positioned(
           bottom: -profileRadius,
           left: 0,

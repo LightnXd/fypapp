@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 
-// Width gaps
 const gapw1 = SizedBox(width: 1);
 const gapw2 = SizedBox(width: 2);
 const gapw3 = SizedBox(width: 3);
@@ -20,7 +19,6 @@ const gapw40 = SizedBox(width: 40);
 const gapw48 = SizedBox(width: 48);
 const gapw60 = SizedBox(width: 60);
 
-// Height gaps
 const gaph1 = SizedBox(height: 1);
 const gaph2 = SizedBox(height: 2);
 const gaph3 = SizedBox(height: 3);

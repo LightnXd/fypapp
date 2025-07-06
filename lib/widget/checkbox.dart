@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class CustomCheckbox extends StatefulWidget {
   final List<Map<String, String>> types;
   final void Function(List<String> selectedTIDs)? onSelectionChanged;
-  final List<String>? initialSelectedTIDs; // <-- new parameter
+  final List<String>? initialSelectedTIDs;
 
   const CustomCheckbox({
     super.key,
     required this.types,
     this.onSelectionChanged,
-    this.initialSelectedTIDs, // <-- new parameter
+    this.initialSelectedTIDs,
   });
 
   @override
@@ -22,7 +22,6 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
   @override
   void initState() {
     super.initState();
-    // Initialize with pre-selected TIDs
     if (widget.initialSelectedTIDs != null) {
       selectedTIDs.addAll(
         widget.initialSelectedTIDs!.where(
@@ -41,7 +40,6 @@ class _CustomCheckboxState extends State<CustomCheckbox> {
       }
     });
 
-    // Notify parent of updated selection
     widget.onSelectionChanged?.call(selectedTIDs.toList());
   }
 

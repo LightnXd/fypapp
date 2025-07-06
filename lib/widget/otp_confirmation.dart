@@ -4,18 +4,20 @@ import 'package:pin_code_fields/pin_code_fields.dart';
 import 'empty_box.dart';
 
 class OtpDialog extends StatefulWidget {
-  final void Function(String otp, void Function(String? error) onResult) onSubmitted;
+  final void Function(String otp, void Function(String? error) onResult)
+  onSubmitted;
 
   const OtpDialog({super.key, required this.onSubmitted});
 
   static Future<void> show({
     required BuildContext context,
-    required void Function(String otp, void Function(String? error) onResult) onSubmitted,
+    required void Function(String otp, void Function(String? error) onResult)
+    onSubmitted,
   }) {
     return showModalBottomSheet(
       context: context,
-      isScrollControlled: true, // So it can grow based on content or keyboard
-      backgroundColor: Colors.transparent, // Remove default white background
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
       builder: (_) => OtpDialog(onSubmitted: onSubmitted),
     );
   }
@@ -48,7 +50,7 @@ class _OtpDialogState extends State<OtpDialog> {
         });
 
         if (error == null) {
-          Navigator.of(context).pop(); // Success
+          Navigator.of(context).pop();
         }
       }
     });
@@ -81,7 +83,6 @@ class _OtpDialogState extends State<OtpDialog> {
                 ),
                 gaph16,
                 PinCodeTextField(
-
                   appContext: context,
                   length: 6,
                   keyboardType: TextInputType.number,
@@ -96,7 +97,7 @@ class _OtpDialogState extends State<OtpDialog> {
                     shape: PinCodeFieldShape.box,
                     activeColor: Colors.black,
                     inactiveColor: Colors.grey,
-                    selectedColor: Colors.blue ,
+                    selectedColor: Colors.blue,
                     borderRadius: BorderRadius.circular(6),
                     fieldHeight: screenWidth * 0.13,
                     fieldWidth: screenWidth * 0.1,

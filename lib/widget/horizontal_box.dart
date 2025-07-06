@@ -5,7 +5,7 @@ class BuildingBox extends StatelessWidget {
   final Color color;
   final double textSize;
   final double? width;
-  final VoidCallback? onTap; // Optional onTap callback
+  final VoidCallback? onTap;
 
   const BuildingBox({
     super.key,
@@ -19,7 +19,7 @@ class BuildingBox extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: onTap, // Will be null if not provided
+      onTap: onTap,
       child: Container(
         width: width,
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),

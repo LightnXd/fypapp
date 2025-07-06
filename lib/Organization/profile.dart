@@ -64,7 +64,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
           tid = [];
         }
 
-        isLoading = false; // done loading
+        isLoading = false;
       });
     } catch (e) {
       setState(() => isLoading = false);
