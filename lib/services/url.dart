@@ -29,3 +29,6 @@ const getVoteUrl = '$proposal/get-vote';
 const changeProposalStatusUrl = '$proposal/confirm-proposal-status';
 const castVoteUrl = '$proposal/vote';
 const getVoteStatUrl = '$proposal/get-vote-count';
+const getPublicUrl = '$proposal/get-public';
+const makeDonationUrl = '$proposal/make-donation';
+const CreateChangeFundUrl = '$proposal/change-fund';

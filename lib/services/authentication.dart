@@ -6,6 +6,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 class AuthenticationService {
   final SupabaseClient _client = Supabase.instance.client;
+
   SupabaseClient get client => _client;
 
   Future<bool> getSession(String? sessionString) async {
@@ -153,12 +154,17 @@ class AuthenticationService {
     if (creationResponse.statusCode == 200)
       return true;
     else
-    return false;
+      return false;
   }
 
-  Future<String?> getCurrentUserID(String uid) async {
+  Future<String?> getCurrentUserID() async {
+    final user = _client.auth.currentUser;
+    if (user == null) return null;
+
     try {
-      final response = await http.get(Uri.parse('$getCurrentIDUrl?uid=$uid'));
+      final response = await http.get(
+        Uri.parse('$getCurrentIDUrl?uid=${user.id}'),
+      );
 
       if (response.statusCode == 200) {
         final data = jsonDecode(response.body);

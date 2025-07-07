@@ -13,7 +13,7 @@ Future<Map<String, dynamic>> getContributorProfile() async {
     throw Exception("No session found.");
   }
 
-  final id = await authService.getCurrentUserID(uid);
+  final id = await authService.getCurrentUserID();
   print(id);
   if (id == null) {
     throw Exception("No user found.");
@@ -31,14 +31,8 @@ Future<Map<String, dynamic>> getContributorProfile() async {
 }
 
 Future<Map<String, dynamic>> getOrganizationProfile() async {
-  final uid = Supabase.instance.client.auth.currentUser?.id;
-
-  if (uid == null) {
-    throw Exception("No session found.");
-  }
-
   final AuthenticationService authService = AuthenticationService();
-  final id = await authService.getCurrentUserID(uid);
+  final id = await authService.getCurrentUserID();
 
   if (id == null) {
     throw Exception("No user found.");

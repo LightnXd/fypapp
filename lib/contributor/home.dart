@@ -29,8 +29,7 @@ class _ContributorHomePageState extends State<ContributorHomePage> {
     final user = _authService.client.auth.currentUser;
     if (user != null) {
       userEmail = user.email ?? 'No email found';
-      final uid = user.id;
-      final fetchedCid = await _authService.getCurrentUserID(uid);
+      final fetchedCid = await _authService.getCurrentUserID();
       setState(() {
         cid = fetchedCid!;
         isLoading = false;

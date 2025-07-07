@@ -30,8 +30,7 @@ class _ContributorProposalListPageState
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
-      final uid = authService.client.auth.currentUser!.id;
-      cid = await authService.getCurrentUserID(uid);
+      cid = await authService.getCurrentUserID();
       final proposals = await getActiveProposalsByFollower(cid!);
 
       // Fetch vote stats for each proposal

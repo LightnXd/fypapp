@@ -20,13 +20,12 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
         padding: const EdgeInsets.symmetric(horizontal: 10),
         child: Row(
           children: [
-            // Left icon (always shown)
             GestureDetector(
               onTap: () {
                 if (type == 1) {
-                  Scaffold.of(context).openDrawer(); // open drawer
+                  Scaffold.of(context).openDrawer();
                 } else {
-                  Navigator.pop(context); // pop page
+                  Navigator.pop(context);
                 }
               },
               child: Image.asset(
@@ -35,8 +34,6 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
                 height: 32,
               ),
             ),
-
-            // Center title
             Expanded(
               child: Center(
                 child: Text(

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'empty_box.dart';
 
 Widget verticalIcon({
-  String? imagePath, // made optional
+  String? imagePath,
   required String text,
   Color textColor = Colors.black,
   double textSize = 16.0,
@@ -34,7 +34,7 @@ Widget verticalIcon({
 }
 
 Widget horizontalIcon({
-  String? imagePath, // made optional
+  String? imagePath,
   required String text,
   String? extraText,
   Color textColor = Colors.black,

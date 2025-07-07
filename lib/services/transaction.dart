@@ -172,3 +172,69 @@ Future<Map<String, dynamic>> getVoteStat(String pid) async {
     throw Exception('Failed to load vote stats');
   }
 }
+
+Future<String?> getPublicKey(String oid) async {
+  try {
+    final response = await http.get(Uri.parse('$getPublicUrl?oid=$oid'));
+    print(response.body);
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['publicKey'];
+    } else {
+      print('Error ${response.statusCode}: ${response.body}');
+      return null;
+    }
+  } catch (e) {
+    print('Exception while fetching public key: $e');
+    return null;
+  }
+}
+
+Future<void> changeFund({
+  required String oid,
+  required double amount,
+  required bool type, // true = add, false = use
+}) async {
+  final url = Uri.parse('https://your-server.com/change-fund');
+
+  final response = await http.post(
+    url,
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'oid': oid, 'amount': amount, 'type': type}),
+  );
+
+  final responseData = jsonDecode(response.body);
+
+  if (response.statusCode == 200) {
+    print(responseData['message']);
+    print('Updated data: ${responseData['data']}');
+  } else {
+    throw Exception('Failed to change fund: ${responseData['error']}');
+  }
+}
+
+Future<String?> makeDonation(int amount, String currency, String secret) async {
+  try {
+    final url = Uri.parse(makeDonationUrl);
+    final response = await http.post(
+      Uri.parse(makeDonationUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode({
+        'amount': amount,
+        'currency': currency,
+        'secret': secret,
+      }),
+    );
+
+    if (response.statusCode == 200) {
+      final data = jsonDecode(response.body);
+      return data['clientSecret'];
+    } else {
+      print("Failed to create intent: ${response.body}");
+      return null;
+    }
+  } catch (e) {
+    print("HTTP error: $e");
+    return null;
+  }
+}

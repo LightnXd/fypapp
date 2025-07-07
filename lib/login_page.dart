@@ -136,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                                       _authService.client.auth.currentSession;
                                   final uid = session?.user.id;
                                   final id = await _authService
-                                      .getCurrentUserID(uid!);
+                                      .getCurrentUserID();
                                   if (id == null) {
                                     ScaffoldMessenger.of(context).showSnackBar(
                                       SnackBar(
