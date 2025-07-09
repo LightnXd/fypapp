@@ -1,23 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/contributor/make_donation.dart';
 import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
-import '../contributor/ledger.dart';
+import '../services/authentication.dart';
+import '../services/follow.dart';
 import '../widget/app_bar.dart';
 import '../widget/horizontal_box.dart';
 import '../widget/profile_head.dart';
-import 'edit_profile.dart';
+import 'ledger.dart';
 
-class OrganizationProfilePage extends StatefulWidget {
-  const OrganizationProfilePage({super.key});
+class OrganizationDetailsPage extends StatefulWidget {
+  final String oid;
+  const OrganizationDetailsPage({super.key, required this.oid});
 
   @override
-  State<OrganizationProfilePage> createState() =>
-      _OrganizationProfilePageState();
+  State<OrganizationDetailsPage> createState() =>
+      _OrganizationDetailsPageState();
 }
 
-class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
+class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
+  final AuthenticationService _authService = AuthenticationService();
   String username = '';
   String id = '';
   String country = '';
@@ -30,17 +34,27 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
   String? fund;
   List<String> tid = [];
   List<String> type = [];
-  bool isLoading = true; // <-- Add loading state
-
+  bool isLoading = true;
+  bool isFollowed = false;
+  String? cid;
+  int count = 0;
   @override
   void initState() {
     super.initState();
+    loadCount();
     loadOrganizationProfile();
+  }
+
+  Future<void> loadCount() async {
+    final result = await fetchCountByOID(widget.oid);
+    setState(() {
+      count = result!;
+    });
   }
 
   Future<void> loadOrganizationProfile() async {
     try {
-      final data = await getOrganizationProfile();
+      final data = await getOrganizationProfile(oid: widget.oid);
       setState(() {
         id = data['ID'].toString();
         username = data['Username'];
@@ -64,7 +78,12 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
         } else {
           tid = [];
         }
-
+      });
+      final getcid = await _authService.getCurrentUserID();
+      final followed = await isFollowing(widget.oid, getcid!);
+      setState(() {
+        isFollowed = followed;
+        cid = getcid;
         isLoading = false;
       });
     } catch (e) {
@@ -80,7 +99,7 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
     final screenWidth = MediaQuery.of(context).size.width.floor();
 
     return Scaffold(
-      appBar: CustomAppBar(title: 'Profile'),
+      appBar: CustomAppBar(title: 'Organization Details'),
       body: isLoading
           ? const Center(child: CircularProgressIndicator()) // loading spinner
           : SingleChildScrollView(
@@ -90,40 +109,52 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                   ProfileHeader(
                     profileUrl: profileImage,
                     backgroundUrl: backgroundImage,
+                    follower: "",
                   ),
 
-                  SizedBox(height: screenWidth / 4.3),
+                  SizedBox(height: screenWidth / 5.3),
 
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        ContributorLedgerPage(oid: id),
+                        Align(
+                          alignment: Alignment.centerRight,
+                          child: ElevatedButton(
+                            onPressed: () async {
+                              if (cid == null) return;
+
+                              bool success = isFollowed
+                                  ? await unfollowOrganization(widget.oid, cid!)
+                                  : await followOrganization(widget.oid, cid!);
+
+                              if (success) {
+                                loadCount();
+                                setState(() {
+                                  isFollowed = !isFollowed;
+                                });
+
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                    content: Text(
+                                      isFollowed
+                                          ? 'Followed successfully'
+                                          : 'Unfollowed successfully',
+                                    ),
                                   ),
                                 );
-                              },
-                              child: Text('View ledger'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                // Handle second button press
-                              },
-                              child: Text('Verify account'),
-                            ),
-                          ],
+                              } else {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  const SnackBar(
+                                    content: Text('Something went wrong.'),
+                                  ),
+                                );
+                              }
+                            },
+                            child: Text(isFollowed ? 'Unfollow' : 'Follow'),
+                          ),
                         ),
-                        gaph16,
-                        //add is verified later
                         horizontalIcon(
                           imagePath: 'assets/images/border_profile.png',
                           text: username,
@@ -154,32 +185,37 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                           imagePath: 'assets/images/address.png',
                           text: "Address:",
                           extraText: address,
-                          spacing: 12,
+                          spacing: 24,
+                        ),
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) =>
+                                      ContributorLedgerPage(oid: id),
+                                ),
+                              );
+                            },
+                            child: Text('View ledger'),
+                          ),
+                        ),
+                        gaph24,
+                        Center(
+                          child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => MakeDonationPage(oid: id),
+                                ),
+                              );
+                            },
+                            child: Text('Make Donation'),
+                          ),
                         ),
                       ],
-                    ),
-                  ),
-                  gaph24,
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OrganizationEditProfile(
-                              id: id,
-                              username: username,
-                              country: country,
-                              profileImage: profileImage,
-                              backgroundImage: backgroundImage,
-                              address: address,
-                              description: description,
-                              tid: tid,
-                            ),
-                          ),
-                        );
-                      },
-                      child: Text('Edit Profile'),
                     ),
                   ),
                   gaph24,

@@ -3,9 +3,14 @@ import 'package:flutter/material.dart';
 class ProfileHeader extends StatelessWidget {
   final String? profileUrl;
   final String? backgroundUrl;
-  final String follower = "0";
+  final String follower;
 
-  const ProfileHeader({super.key, this.profileUrl, this.backgroundUrl});
+  const ProfileHeader({
+    super.key,
+    this.profileUrl,
+    this.backgroundUrl,
+    this.follower = "0",
+  });
 
   @override
   Widget build(BuildContext context) {

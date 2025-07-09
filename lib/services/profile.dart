@@ -5,16 +5,16 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'authentication.dart';
 
-Future<Map<String, dynamic>> getContributorProfile() async {
-  final AuthenticationService authService = AuthenticationService();
-  final uid = authService.client.auth.currentUser?.id; /////////
+Future<Map<String, dynamic>> getContributorProfile({String? cid}) async {
+  final String? id;
 
-  if (uid == null) {
-    throw Exception("No session found.");
+  if (cid == null) {
+    final AuthenticationService authService = AuthenticationService();
+    id = await authService.getCurrentUserID();
+  } else {
+    id = cid;
   }
 
-  final id = await authService.getCurrentUserID();
-  print(id);
   if (id == null) {
     throw Exception("No user found.");
   }
@@ -30,9 +30,15 @@ Future<Map<String, dynamic>> getContributorProfile() async {
   }
 }
 
-Future<Map<String, dynamic>> getOrganizationProfile() async {
-  final AuthenticationService authService = AuthenticationService();
-  final id = await authService.getCurrentUserID();
+Future<Map<String, dynamic>> getOrganizationProfile({String? oid}) async {
+  final String? id;
+
+  if (oid == null) {
+    final AuthenticationService authService = AuthenticationService();
+    id = await authService.getCurrentUserID();
+  } else {
+    id = oid;
+  }
 
   if (id == null) {
     throw Exception("No user found.");

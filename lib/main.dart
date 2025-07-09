@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       initialRoute: '/',
       routes: {
-        '/': (context) => const MakeDonationPage(oid: 'Or0000001'),
+        '/': (context) => const OpenPage(),
         '/login': (context) => LoginPage(),
         '/contributor-home': (context) => const ContributorHomePage(),
         '/organization-home': (context) => const OrganizationHomePage(),

@@ -195,10 +195,8 @@ Future<void> changeFund({
   required double amount,
   required bool type, // true = add, false = use
 }) async {
-  final url = Uri.parse('https://your-server.com/change-fund');
-
   final response = await http.post(
-    url,
+    Uri.parse(createChangeFundUrl),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({'oid': oid, 'amount': amount, 'type': type}),
   );
@@ -215,15 +213,10 @@ Future<void> changeFund({
 
 Future<String?> makeDonation(int amount, String currency, String secret) async {
   try {
-    final url = Uri.parse(makeDonationUrl);
     final response = await http.post(
       Uri.parse(makeDonationUrl),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'amount': amount,
-        'currency': currency,
-        'secret': secret,
-      }),
+      body: jsonEncode({'amount': amount, 'currency': currency, 'oid': secret}),
     );
 
     if (response.statusCode == 200) {

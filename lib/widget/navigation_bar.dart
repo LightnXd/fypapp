@@ -56,12 +56,6 @@ class _ContributorNavBarState extends State<ContributorNavBar> {
             textSize: widget.fontSize,
             onTap: () {
               setState(() => selectedIndex = 2);
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (_) => const ContributorLedgerPage(),
-                ),
-              );
             },
           ),
           verticalIcon(

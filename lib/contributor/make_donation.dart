@@ -70,7 +70,7 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
       }
 
       int donate = (amount * 100).toInt();
-
+      print(donate);
       final clientSecret = await makeDonation(donate, "myr", widget.oid);
       if (clientSecret == null) {
         ScaffoldMessenger.of(context).showSnackBar(
