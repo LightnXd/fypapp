@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../services/profile.dart';
@@ -6,22 +7,22 @@ import '../widget/app_bar.dart';
 import '../widget/profile_head.dart';
 import 'edit_profile.dart';
 
-class ContributorProfilePage extends StatefulWidget {
+class FollowerDetailsPage extends StatefulWidget {
   final cid;
-  const ContributorProfilePage({super.key, required this.cid});
+  const FollowerDetailsPage({super.key, required this.cid});
 
   @override
-  State<ContributorProfilePage> createState() => _ContributorProfilePageState();
+  State<FollowerDetailsPage> createState() => _FollowerDetailsPageState();
 }
 
-class _ContributorProfilePageState extends State<ContributorProfilePage> {
+class _FollowerDetailsPageState extends State<FollowerDetailsPage> {
   String username = '';
   String id = '';
   String country = '';
   String birthDate = '';
   String? profileImage;
   String? backgroundImage;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -36,7 +37,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
         id = data['ID'].toString();
         username = data['Username'];
         country = data['Country'];
-        birthDate = data['Birthdate'].toString();
+        birthDate = formatDate(data['Birthdate']);
         profileImage = data['ProfileImage'];
         backgroundImage = data['BackgroundImage'];
         isLoading = false;

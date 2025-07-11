@@ -32,6 +32,7 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
     _initStripe();
   }
 
+  @override
   Future<void> _initStripe() async {
     final publishableKey = await getPublicKey(widget.oid);
     try {
@@ -104,6 +105,7 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
             SnackBar(
               content: Text(
                 'Transaction successful. LedgerID: ${data['LedgerID']}',
+                style: TextStyle(color: Colors.red),
               ),
             ),
           );

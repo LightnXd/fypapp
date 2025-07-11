@@ -231,3 +231,21 @@ Future<String?> makeDonation(int amount, String currency, String secret) async {
     return null;
   }
 }
+
+Future<String> changeOrganizationKey({
+  required String oid,
+  required String publicKey,
+  required String secretKey,
+}) async {
+  final response = await http.post(
+    Uri.parse(changeKeyUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'oid': oid, 'public': publicKey, 'secret': secretKey}),
+  );
+
+  if (response.statusCode == 200) {
+    return 'Success: ${jsonDecode(response.body)['message']}';
+  } else {
+    return ('Error:${response.statusCode} \n ${response.body}');
+  }
+}

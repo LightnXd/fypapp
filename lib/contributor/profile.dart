@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../services/profile.dart';
@@ -20,7 +21,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
   String birthDate = '';
   String? profileImage;
   String? backgroundImage;
-  bool isLoading = false;
+  bool isLoading = true;
 
   @override
   void initState() {
@@ -35,7 +36,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
         id = data['ID'].toString();
         username = data['Username'];
         country = data['Country'];
-        birthDate = data['Birthdate'].toString();
+        birthDate = formatDate(data['Birthdate']);
         profileImage = data['ProfileImage'];
         backgroundImage = data['BackgroundImage'];
         isLoading = false;

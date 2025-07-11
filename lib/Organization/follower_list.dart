@@ -5,6 +5,7 @@ import '../services/follow.dart';
 import '../widget/app_bar.dart';
 import '../widget/avatar_box.dart';
 import '../widget/empty_box.dart';
+import 'follower_details.dart';
 
 class FollowerListPage extends StatefulWidget {
   const FollowerListPage({super.key});
@@ -102,7 +103,7 @@ class _FollowerListPageState extends State<FollowerListPage> {
                           context,
                           MaterialPageRoute(
                             builder: (_) =>
-                                OrganizationDetailsPage(oid: user['ID']),
+                                FollowerDetailsPage(cid: user['ID']),
                           ),
                         );
                       },
