@@ -7,6 +7,7 @@ import '../widget/app_bar.dart';
 import '../widget/checkbox.dart';
 import '../widget/dropdown_label.dart';
 import '../widget/empty_box.dart';
+import '../widget/response_dialog.dart';
 
 class OrganizationEditProfile extends StatefulWidget {
   final String id;
@@ -173,9 +174,12 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                         );
 
                         if (success) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Profile updated successfully'),
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Success',
+                              message: 'Profile updated successfully',
+                              type: true,
                             ),
                           );
                           Navigator.pushReplacementNamed(
@@ -183,10 +187,12 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                             '/organization-home',
                           );
                         } else {
-                          // Show error message
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Failed to update profile'),
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Failed',
+                              message: 'Failed to update profile',
+                              type: false,
                             ),
                           );
                         }

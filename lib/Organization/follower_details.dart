@@ -5,16 +5,16 @@ import 'package:fypapp2/widget/empty_box.dart';
 import '../services/profile.dart';
 import '../widget/app_bar.dart';
 import '../widget/profile_head.dart';
-import 'edit_profile.dart';
 
-class ContributorProfilePage extends StatefulWidget {
-  const ContributorProfilePage({super.key});
+class FollowerDetailsPage extends StatefulWidget {
+  final cid;
+  const FollowerDetailsPage({super.key, required this.cid});
 
   @override
-  State<ContributorProfilePage> createState() => _ContributorProfilePageState();
+  State<FollowerDetailsPage> createState() => _FollowerDetailsPageState();
 }
 
-class _ContributorProfilePageState extends State<ContributorProfilePage> {
+class _FollowerDetailsPageState extends State<FollowerDetailsPage> {
   String username = '';
   String id = '';
   String country = '';
@@ -31,7 +31,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
 
   Future<void> loadContributorProfile() async {
     try {
-      final data = await getContributorProfile();
+      final data = await getContributorProfile(cid: widget.cid);
       setState(() {
         id = data['ID'].toString();
         username = data['Username'];
@@ -43,7 +43,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
       });
     } catch (e) {
       setState(() {
-        isLoading = true;
+        isLoading = false;
       });
       ScaffoldMessenger.of(
         context,
@@ -55,7 +55,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
   Widget build(BuildContext context) {
     final screenWidth = MediaQuery.of(context).size.width.floor();
     return Scaffold(
-      appBar: CustomAppBar(title: "Profile"),
+      appBar: CustomAppBar(title: "Follower Details"),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -91,26 +91,6 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
                           text: "Birthdate:",
                           extraText: birthDate,
                           spacing: 12,
-                        ),
-                        gaph24,
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ContributorEditProfile(
-                                    id: id,
-                                    username: username,
-                                    country: country,
-                                    profileImage: profileImage,
-                                    backgroundImage: backgroundImage,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text('Edit Profile'),
-                          ),
                         ),
                         gaph24,
                       ],

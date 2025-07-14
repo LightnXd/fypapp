@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:fypapp2/widget/app_bar.dart';
+import '../services/authentication.dart';
 import '../services/transaction.dart';
 import '../widget/date_picker.dart';
 import '../widget/empty_box.dart';
 import '../widget/question_box.dart';
+import '../widget/response_dialog.dart';
+import '../widget/side_bar.dart';
 
 class CreateProposalPage extends StatefulWidget {
   const CreateProposalPage({super.key});
@@ -13,11 +16,12 @@ class CreateProposalPage extends StatefulWidget {
 }
 
 class _CreateProposalPageState extends State<CreateProposalPage> {
+  final AuthenticationService _authService = AuthenticationService();
   final titleController = TextEditingController();
   final descriptionController = TextEditingController();
   final amountController = TextEditingController();
   final birthdateController = TextEditingController();
-
+  String? oid;
   bool isLoading = false;
 
   String? titleError;
@@ -54,13 +58,37 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
 
     if (isValid && amount != null) {
       setState(() => isLoading = true);
-      await createProposalRequest(
-        oid: 'some-user-id',
-        title: title,
-        description: description,
-        amount: amount,
-        endDate: parsedDate.toUtc().toString(),
-      );
+      try {
+        final getOID = await _authService.getCurrentUserID();
+        if (getOID == null) {
+          throw Exception('User ID (oid) is null');
+        }
+        setState(() => oid = getOID);
+        await createProposalRequest(
+          oid: getOID,
+          title: title,
+          description: description,
+          amount: amount,
+          endDate: parsedDate.toUtc().toString(),
+        );
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Success',
+            message: 'Proposal created successfully',
+            type: true,
+          ),
+        );
+      } catch (e) {
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Error',
+            message: 'Failed to create proposal: $e',
+            type: false,
+          ),
+        );
+      }
       setState(() => isLoading = false);
     }
   }
@@ -77,7 +105,9 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Create Proposal'),
+      appBar: CustomAppBar(title: 'Create Proposal', type: 1),
+      drawerEnableOpenDragGesture: false,
+      drawer: oid == null ? null : OrganizationSideBar(userId: oid!),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(

@@ -195,10 +195,8 @@ Future<void> changeFund({
   required double amount,
   required bool type, // true = add, false = use
 }) async {
-  final url = Uri.parse('https://your-server.com/change-fund');
-
   final response = await http.post(
-    url,
+    Uri.parse(createChangeFundUrl),
     headers: {'Content-Type': 'application/json'},
     body: jsonEncode({'oid': oid, 'amount': amount, 'type': type}),
   );
@@ -215,15 +213,10 @@ Future<void> changeFund({
 
 Future<String?> makeDonation(int amount, String currency, String secret) async {
   try {
-    final url = Uri.parse(makeDonationUrl);
     final response = await http.post(
       Uri.parse(makeDonationUrl),
       headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({
-        'amount': amount,
-        'currency': currency,
-        'secret': secret,
-      }),
+      body: jsonEncode({'amount': amount, 'currency': currency, 'oid': secret}),
     );
 
     if (response.statusCode == 200) {
@@ -236,5 +229,23 @@ Future<String?> makeDonation(int amount, String currency, String secret) async {
   } catch (e) {
     print("HTTP error: $e");
     return null;
+  }
+}
+
+Future<String> changeOrganizationKey({
+  required String oid,
+  required String publicKey,
+  required String secretKey,
+}) async {
+  final response = await http.post(
+    Uri.parse(changeKeyUrl),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'oid': oid, 'public': publicKey, 'secret': secretKey}),
+  );
+
+  if (response.statusCode == 200) {
+    return 'Success: ${jsonDecode(response.body)['message']}';
+  } else {
+    return ('Error:${response.statusCode} \n ${response.body}');
   }
 }

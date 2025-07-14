@@ -4,6 +4,7 @@ import '../services/profile.dart';
 import '../widget/empty_box.dart';
 import '../widget/profile_head.dart';
 import '../widget/question_box.dart';
+import '../widget/response_dialog.dart';
 
 class ContributorEditProfile extends StatefulWidget {
   final String id;
@@ -103,14 +104,22 @@ class _ContributorEditProfileState extends State<ContributorEditProfile> {
                     country: countryController.text,
                   );
                   if (success) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Profile updated successfully'),
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResponseDialog(
+                        title: 'Success',
+                        message: 'Profile updated successfully',
+                        type: true,
                       ),
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Failed to update profile')),
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResponseDialog(
+                        title: 'Failed',
+                        message: 'Failed to update profile',
+                        type: false,
+                      ),
                     );
                   }
                 }

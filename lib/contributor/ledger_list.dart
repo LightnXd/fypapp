@@ -14,7 +14,7 @@ import '../widget/side_bar.dart';
 class ContributorLedgerPage extends StatefulWidget {
   final String oid;
 
-  const ContributorLedgerPage({super.key, this.oid = 'Or0000001'});
+  const ContributorLedgerPage({super.key, required this.oid});
 
   @override
   State<ContributorLedgerPage> createState() => _ContributorLedgerPageState();
@@ -36,10 +36,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: "Home", type: 1),
-      bottomNavigationBar: ContributorNavBar(),
-      drawerEnableOpenDragGesture: false,
-      drawer: ContributorSideBar(userId: widget.oid),
+      appBar: CustomAppBar(title: "Ledger List"),
       body: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(

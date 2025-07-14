@@ -24,6 +24,7 @@ class _OpenPageState extends State<OpenPage> {
   }
 
   Future<void> _checkSession() async {
+    print("11111111111111");
     final authService = AuthenticationService();
     final session = authService.client.auth.currentSession;
 
@@ -66,13 +67,13 @@ class _OpenPageState extends State<OpenPage> {
 
       final userRole = await getUserRole(id);
       if (!mounted) return;
-
+      print("22222222222222 $userRole");
       switch (userRole) {
         case 'Contributor':
-          Navigator.pushReplacementNamed(context, '/contributor-home');
+          Navigator.pushReplacementNamed(context, '/contributor-main');
           break;
         case 'Organization':
-          Navigator.pushReplacementNamed(context, '/organization-home');
+          Navigator.pushReplacementNamed(context, '/organization-main');
           break;
         default:
           ScaffoldMessenger.of(

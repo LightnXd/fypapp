@@ -1,0 +1,52 @@
+import 'package:flutter/material.dart';
+import 'avatar_box.dart';
+import 'dynamic_image_view.dart';
+import 'empty_box.dart';
+
+class PostView extends StatelessWidget {
+  final String? profileImg;
+  final String title;
+  final String? desc;
+  final List<String?>? imageUrls;
+  final String? date;
+  final VoidCallback? onAvatarTap;
+
+  const PostView({
+    Key? key,
+    this.profileImg,
+    required this.title,
+    this.desc,
+    this.imageUrls,
+    this.date,
+    this.onAvatarTap,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        InkWell(
+          onTap: onAvatarTap,
+          child: AvatarBox(imageUrl: profileImg, orgName: title, desc: desc),
+        ),
+        gaph12,
+        if (imageUrls != null && imageUrls!.isNotEmpty) ...[
+          DynamicImageColumn(imageUrls: imageUrls!),
+          gaph8,
+        ],
+        if (date != null) ...[
+          Align(
+            alignment: Alignment.centerRight,
+            child: Text(
+              date!,
+              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            ),
+          ),
+        ],
+        gaph5,
+        Divider(),
+      ],
+    );
+  }
+}

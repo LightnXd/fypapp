@@ -7,6 +7,7 @@ import 'package:fypapp2/services/profile.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/otp_confirmation.dart';
 import 'package:fypapp2/widget/question_box.dart';
+import 'package:fypapp2/widget/response_dialog.dart';
 
 import 'Organization/register.dart';
 
@@ -138,9 +139,12 @@ class _LoginPageState extends State<LoginPage> {
                                   final id = await _authService
                                       .getCurrentUserID();
                                   if (id == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text('id(uid) not found'),
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => ResponseDialog(
+                                        title: 'Login Failed',
+                                        message: 'Failed to get session',
+                                        type: false,
                                       ),
                                     );
                                   }
@@ -159,8 +163,14 @@ class _LoginPageState extends State<LoginPage> {
                                     );
                                   }
                                   if (userRole == null) {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(content: Text('Role not found')),
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => ResponseDialog(
+                                        title: 'Login Failed',
+                                        message:
+                                        'Failed to get role',
+                                        type: false,
+                                      ),
                                     );
                                   }
                                 } else {

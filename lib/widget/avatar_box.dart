@@ -15,7 +15,7 @@ class AvatarBox extends StatelessWidget {
     this.imageUrl,
     required this.orgName,
     this.desc,
-    required this.limit,
+    this.limit,
     this.textSize = 12,
     this.fontColor = Colors.black,
   });
@@ -42,7 +42,7 @@ class AvatarBox extends StatelessWidget {
               Text(
                 orgName,
                 style: TextStyle(
-                  fontSize: textSize + 2,
+                  fontSize: textSize + 4,
                   fontWeight: FontWeight.bold,
                   color: fontColor,
                 ),

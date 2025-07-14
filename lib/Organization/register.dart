@@ -7,6 +7,7 @@ import '../../widget/question_box.dart';
 import '../../widget/empty_box.dart';
 import '../widget/app_bar.dart';
 import '../widget/dropdown_label.dart';
+import '../widget/response_dialog.dart';
 
 class OrganizationRegisterPage extends StatefulWidget {
   const OrganizationRegisterPage({super.key});
@@ -56,9 +57,11 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
         isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ResponseDialog(title: 'Error', message: 'Error: $e', type: false),
+      );
       setState(() => isLoading = false);
     }
   }
@@ -293,8 +296,13 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                     passwordController.text,
                   );
                   if (!passwordSet) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Failed to set password")),
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResponseDialog(
+                        title: 'Error',
+                        message: 'Failed to set password',
+                        type: false,
+                      ),
                     );
                     return;
                   }
@@ -314,15 +322,23 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                       '/organization-home',
                     );
                   } else {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Failed to create Organization'),
+                    showDialog(
+                      context: context,
+                      builder: (context) => ResponseDialog(
+                        title: 'Error',
+                        message: 'Failed to create Organization',
+                        type: false,
                       ),
                     );
                   }
                 } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(content: Text('Failed to restore session')),
+                  showDialog(
+                    context: context,
+                    builder: (context) => ResponseDialog(
+                      title: 'Error',
+                      message: 'Failed to restore session',
+                      type: false,
+                    ),
                   );
                 }
               } else {
@@ -334,14 +350,24 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
           },
         );
       } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('This email is already confirmed.')),
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Error',
+            message: 'This email is already confirmed',
+            type: false,
+          ),
         );
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Signup error: $e')));
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'Error',
+          message: 'Signup error: $e',
+          type: false,
+        ),
+      );
     }
   }
 }

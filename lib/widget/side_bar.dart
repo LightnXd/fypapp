@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:fypapp2/Organization/confirm_proposal.dart';
+import 'package:fypapp2/Organization/follower_list.dart';
 import 'package:fypapp2/Organization/proposal_list.dart';
+import 'package:fypapp2/contributor/followed_list.dart';
 import 'package:fypapp2/contributor/profile.dart';
 import 'package:fypapp2/contributor/proposal_list.dart';
 import 'package:fypapp2/contributor/verify_ledger.dart';
@@ -90,24 +92,11 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         imagePath: 'assets/images/follower.png',
                         text: "Following list",
                         spacing: 32,
-                        onTap: () {},
-                      ),
-                      horizontalIcon(
-                        imagePath: 'assets/images/top_up.png',
-                        text: "Top up wallet",
-                        spacing: 32,
-                        onTap: () {},
-                      ),
-                      horizontalIcon(
-                        imagePath: 'assets/images/ledger.png',
-                        text: "View Proposal",
-                        spacing: 32,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  const ContributorProposalListPage(),
+                              builder: (_) => const FollowedListPage(),
                             ),
                           );
                         },
@@ -225,7 +214,14 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                         imagePath: 'assets/images/follower.png',
                         text: "Follower list",
                         spacing: 32,
-                        onTap: () {},
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => FollowerListPage(),
+                            ),
+                          );
+                        },
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/use_fund.png',
@@ -242,24 +238,17 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/ledger.png',
-                        text: "View transaction list",
+                        imagePath: 'assets/images/test.png',
+                        text: "Verify Ledger",
                         spacing: 32,
                         onTap: () {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) =>
-                                  const OrganizationProposalListPage(),
+                              builder: (_) => VerifyLedgerPage(),
                             ),
                           );
                         },
-                      ),
-                      horizontalIcon(
-                        imagePath: 'assets/images/test.png',
-                        text: "Charity framework test",
-                        spacing: 32,
-                        onTap: () {},
                       ),
                       horizontalIcon(
                         imagePath: 'assets/images/log_out.png',
