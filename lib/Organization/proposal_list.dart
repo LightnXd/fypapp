@@ -28,6 +28,11 @@ class _OrganizationProposalListPageState
     loadProposals();
   }
 
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    loadProposals();
+  }
+
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
@@ -62,66 +67,69 @@ class _OrganizationProposalListPageState
     return Scaffold(
       appBar: CustomAppBar(title: 'Proposal List', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: oid == null ? null : OrganizationSideBar(userId: oid!),
+      drawer: OrganizationSideBar(userId: oid),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder<List<Map<String, dynamic>>>(
-              future: _proposals,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: _proposals,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No proposals found.'));
-                }
+                  if (snapshot.hasError ||
+                      !snapshot.hasData ||
+                      snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No proposals found.'));
+                  }
 
-                final proposals = snapshot.data!;
+                  final proposals = snapshot.data!;
 
-                return ListView(
-                  padding: const EdgeInsets.all(12),
-                  children: [
-                    gaph16,
-                    ...proposals.map((row) {
-                      final voteStats = row['VoteStats'];
-                      return ProposalInfo(
-                        orgImage: row['Image'],
-                        title: row['Title'] ?? 'No title',
-                        orgName: row['Username'] ?? 'Name not found',
-                        limit: '${row['Limit']} day',
-                        fundAmount: row['Amount']?.toString() ?? '0',
-                        countYes: voteStats?['YesVote'] ?? '0',
-                        countNo: voteStats?['NoVote'] ?? '0',
-                        notVoted: voteStats?['NotVoted'] ?? '0',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ConfirmProposalPage(
-                                oid: oid!,
-                                proposalid: row['ProposalID'] ?? '',
-                                name: row['Username'] ?? '',
-                                image: row['Image'] ?? '',
-                                title: row['Title'] ?? '',
-                                description: row['Desc'] ?? '',
-                                amount: row['Amount']?.toString() ?? '',
-                                creationDate: row['CreationDate'] ?? '',
-                                limit: '${row['Limit']} day',
-                                status: row['Status'] ?? '',
-                                yes: voteStats?['YesVote'] ?? '0',
-                                no: voteStats?['NoVote'] ?? '0',
-                                notVoted: voteStats?['NotVoted'] ?? '0',
+                  return ListView(
+                    padding: const EdgeInsets.all(12),
+                    children: [
+                      gaph16,
+                      ...proposals.map((row) {
+                        final voteStats = row['VoteStats'];
+                        return ProposalInfo(
+                          orgImage: row['Image'],
+                          title: row['Title'] ?? 'No title',
+                          orgName: row['Username'] ?? 'Name not found',
+                          limit: '${row['Limit']} day',
+                          fundAmount: row['Amount']?.toString() ?? '0',
+                          countYes: voteStats?['YesVote'] ?? '0',
+                          countNo: voteStats?['NoVote'] ?? '0',
+                          notVoted: voteStats?['NotVoted'] ?? '0',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ConfirmProposalPage(
+                                  oid: oid!,
+                                  proposalid: row['ProposalID'] ?? '',
+                                  name: row['Username'] ?? '',
+                                  image: row['Image'] ?? '',
+                                  title: row['Title'] ?? '',
+                                  description: row['Desc'] ?? '',
+                                  amount: row['Amount']?.toString() ?? '',
+                                  creationDate: row['CreationDate'] ?? '',
+                                  limit: '${row['Limit']} day',
+                                  status: row['Status'] ?? '',
+                                  yes: voteStats?['YesVote'] ?? '0',
+                                  no: voteStats?['NoVote'] ?? '0',
+                                  notVoted: voteStats?['NotVoted'] ?? '0',
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ],
-                );
-              },
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ],
+                  );
+                },
+              ),
             ),
     );
   }

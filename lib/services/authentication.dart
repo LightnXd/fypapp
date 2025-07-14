@@ -38,7 +38,6 @@ class AuthenticationService {
   }
 
   Future<bool> signUp(String email) async {
-    // Step 1: Check status
     final statusResponse = await http.post(
       Uri.parse(checkStatusUrl),
       headers: {'Content-Type': 'application/json'},
@@ -52,7 +51,6 @@ class AuthenticationService {
     final statusData = jsonDecode(statusResponse.body);
     final shouldSendOtp = statusData['status'] == true;
 
-    // Step 2: If true, send OTP
     if (shouldSendOtp) {
       return await sendOTP(email);
     }

@@ -15,13 +15,13 @@ import '../widget/response_dialog.dart';
 import 'organization_details.dart';
 
 class ContributorHomePage extends StatefulWidget {
-  const ContributorHomePage({super.key});
+  const ContributorHomePage({Key? key}) : super(key: key);
 
   @override
-  State<ContributorHomePage> createState() => _ContributorHomePageState();
+  ContributorHomePageState createState() => ContributorHomePageState();
 }
 
-class _ContributorHomePageState extends State<ContributorHomePage> {
+class ContributorHomePageState extends State<ContributorHomePage> {
   final AuthenticationService _authService = AuthenticationService();
   String cid = '';
   String status = '';
@@ -35,7 +35,11 @@ class _ContributorHomePageState extends State<ContributorHomePage> {
   void initState() {
     super.initState();
     loadUserData();
-    fetchPosts();
+  }
+
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await fetchPosts();
   }
 
   void loadUserData() async {
@@ -49,6 +53,7 @@ class _ContributorHomePageState extends State<ContributorHomePage> {
           status = userStatus!;
           isLoading = false;
         });
+        await fetchPosts();
       } catch (e) {
         setState(() {
           isLoading = true;
@@ -78,12 +83,24 @@ class _ContributorHomePageState extends State<ContributorHomePage> {
   }
 
   Future<void> fetchPosts() async {
-    final posts = await getAllFollowedPost(cid);
-    setState(() {
-      _originalList = posts;
-      _filteredList = posts;
-      _isPostLoading = false;
-    });
+    if (cid.isEmpty) return;
+    setState(() => _isPostLoading = true);
+
+    try {
+      final posts = await getAllFollowedPost(cid);
+      setState(() {
+        _originalList = posts;
+        _filteredList = posts;
+        _isPostLoading = false;
+      });
+    } catch (e) {
+      setState(() => _isPostLoading = false);
+      showDialog(
+        context: context,
+        builder: (_) =>
+            ResponseDialog(title: 'Error', message: e.toString(), type: false),
+      );
+    }
   }
 
   void _filterList(String query) {
@@ -112,76 +129,86 @@ class _ContributorHomePageState extends State<ContributorHomePage> {
           ? Center(child: CircularProgressIndicator())
           : status != 'Active'
           ? const Center(child: Text('Your account have been suspended'))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        showDialog(
-                          context: context,
-                          builder: (context) => ResponseDialog(
-                            title: 'Transaction Successful',
-                            message:
-                                'Transaction saved to the ledger with LedgerID:',
-                            type: false,
-                          ),
-                        );
-                      },
-                      child: const Text('Go to Profile'),
-                    ),
-                  ),
-                  gaph32,
-                  TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search posts...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Transaction Successful',
+                              message:
+                                  'Transaction saved to the ledger with LedgerID:',
+                              type: false,
+                            ),
+                          );
+                        },
+                        child: const Text('Go to Profile'),
                       ),
                     ),
-                    onChanged: _filterList,
-                  ),
-                  gaph32,
-                  _isPostLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _filteredList.isEmpty
-                      ? const Center(child: Text('No post found.'))
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _filteredList.length,
-                          itemBuilder: (context, index) {
-                            final post = _filteredList[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: PostView(
-                                profileImg: post['ProfileImage'],
-                                title: post['Tittle'] ?? 'No Title',
-                                desc: post['Description'] ?? 'No Description',
-                                onAvatarTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          OrganizationDetailsPage(
-                                            oid: post['OID'],
-                                          ),
-                                    ),
-                                  );
-                                },
-                                imageUrls: post['mediaUrls'],
-                                date: post['CreatedAt'] != null
-                                    ? formatDate(post['CreatedAt'])
-                                    : 'NA',
-                              ),
-                            );
-                          },
+                    gaph32,
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search posts...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                ],
+                      ),
+                      onChanged: _filterList,
+                    ),
+                    gaph32,
+                    _isPostLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : _filteredList.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'No post found, follow an organization to view their post',
+                            ),
+                          )
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _filteredList.length,
+                            itemBuilder: (context, index) {
+                              final post = _filteredList[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 20),
+                                child: PostView(
+                                  profileImg: post['ProfileImage'],
+                                  title: post['Tittle'] ?? 'No Title',
+                                  desc: post['Description'] ?? 'No Description',
+                                  onAvatarTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            OrganizationDetailsPage(
+                                              oid: post['OID'],
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  imageUrls: post['mediaUrls'],
+                                  date: post['CreatedAt'] != null
+                                      ? formatDate(post['CreatedAt'])
+                                      : 'NA',
+                                ),
+                              );
+                            },
+                          ),
+                  ],
+                ),
               ),
             ),
     );

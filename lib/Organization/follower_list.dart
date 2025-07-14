@@ -9,13 +9,13 @@ import '../widget/side_bar.dart';
 import 'follower_details.dart';
 
 class FollowerListPage extends StatefulWidget {
-  const FollowerListPage({super.key});
+  const FollowerListPage({Key? key}) : super(key: key);
 
   @override
-  State<FollowerListPage> createState() => _FollowerListPageState();
+  FollowerListPageState createState() => FollowerListPageState();
 }
 
-class _FollowerListPageState extends State<FollowerListPage> {
+class FollowerListPageState extends State<FollowerListPage> {
   final AuthenticationService _authService = AuthenticationService();
   final TextEditingController _searchController = TextEditingController();
   bool isLoading = true;
@@ -28,6 +28,11 @@ class _FollowerListPageState extends State<FollowerListPage> {
   void initState() {
     super.initState();
     getFollowerList();
+  }
+
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await getFollowerList();
   }
 
   Future<void> getFollowerList() async {
@@ -76,51 +81,57 @@ class _FollowerListPageState extends State<FollowerListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'View Follower'),
+      appBar: CustomAppBar(title: 'View Follower', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: oid!),
+      drawer: OrganizationSideBar(userId: oid),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : _originalList.isEmpty
           ? const Center(child: Text('No follower found.'))
-          : ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              children: [
-                gaph20,
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search follower...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: _filterList,
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
                 ),
-                gaph32,
-                ..._filteredList.map((user) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20, left: 20),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                FollowerDetailsPage(cid: user['ID']),
-                          ),
-                        );
-                      },
-                      child: AvatarBox(
-                        imageUrl: user['ProfileImage'],
-                        orgName: user['Username'],
-                        desc: user['ID'],
+                children: [
+                  gaph20,
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search follower...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                  );
-                }).toList(),
-              ],
+                    onChanged: _filterList,
+                  ),
+                  gaph32,
+                  ..._filteredList.map((user) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 20, left: 20),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  FollowerDetailsPage(cid: user['ID']),
+                            ),
+                          );
+                        },
+                        child: AvatarBox(
+                          imageUrl: user['ProfileImage'],
+                          orgName: user['Username'],
+                          desc: user['ID'],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
             ),
     );
   }

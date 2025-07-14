@@ -23,14 +23,26 @@ class ContributorLedgerPage extends StatefulWidget {
 class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   late Stream<List<Map<String, dynamic>>> _ledgerStream;
 
+  Stream<List<Map<String, dynamic>>> ledgerStream(String oid) async* {
+    while (true) {
+      try {
+        yield* Supabase.instance.client
+            .from('ledger')
+            .stream(primaryKey: ['LedgerID'])
+            .eq('OID', oid)
+            .order('TransactionNumber', ascending: false);
+        break;
+      } catch (e, st) {
+        debugPrint('Realtime stream error: $e\n$st');
+        await Future.delayed(const Duration(seconds: 5));
+      }
+    }
+  }
+
   @override
   void initState() {
     super.initState();
-    _ledgerStream = Supabase.instance.client
-        .from('ledger')
-        .stream(primaryKey: ['LedgerID'])
-        .eq('OID', widget.oid)
-        .order('TransactionNumber', ascending: false);
+    _ledgerStream = ledgerStream(widget.oid);
   }
 
   @override

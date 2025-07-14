@@ -8,7 +8,7 @@ Future<String> pickAndUploadLedgerFile() async {
   final result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['xlsx'],
-    withData: true, // <---- ADD THIS
+    withData: true,
   );
 
   if (result == null) return "File selection cancelled";
@@ -22,7 +22,7 @@ Future<String> pickAndUploadLedgerFile() async {
 
   request.files.add(
     http.MultipartFile.fromBytes(
-      'ledger_file', // <-- must match your backend field name
+      'ledger_file',
       fileBytes,
       filename: fileName,
       contentType: MediaType(
@@ -46,7 +46,6 @@ Future<String> pickAndUploadLedgerFile() async {
 }
 
 Future<List<Map<String, dynamic>>> getActiveProposal(String oid) async {
-  // Replace with your actual server URL
   final response = await http.get(
     Uri.parse('$getActiveProposalListUrl?oid=$oid'),
   );
@@ -193,7 +192,7 @@ Future<String?> getPublicKey(String oid) async {
 Future<void> changeFund({
   required String oid,
   required double amount,
-  required bool type, // true = add, false = use
+  required bool type,
 }) async {
   final response = await http.post(
     Uri.parse(createChangeFundUrl),

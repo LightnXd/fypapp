@@ -29,6 +29,11 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
     loadContributorProfile();
   }
 
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await loadContributorProfile();
+  }
+
   Future<void> loadContributorProfile() async {
     try {
       final data = await getContributorProfile();
@@ -58,65 +63,69 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
       appBar: CustomAppBar(title: "Profile"),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProfileHeader(
-                    profileUrl: profileImage,
-                    backgroundUrl: backgroundImage,
-                  ),
-
-                  SizedBox(height: screenWidth / 4.3),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        horizontalIcon(
-                          imagePath: 'assets/images/border_profile.png',
-                          text: username,
-                          spacing: 6,
-                        ),
-                        horizontalIcon(text: id, spacing: 12, textSize: 14),
-                        horizontalIcon(
-                          imagePath: 'assets/images/country.png',
-                          text: "Country:",
-                          extraText: country,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/birthdate.png',
-                          text: "Birthdate:",
-                          extraText: birthDate,
-                          spacing: 12,
-                        ),
-                        gaph24,
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => ContributorEditProfile(
-                                    id: id,
-                                    username: username,
-                                    country: country,
-                                    profileImage: profileImage,
-                                    backgroundImage: backgroundImage,
-                                  ),
-                                ),
-                              );
-                            },
-                            child: Text('Edit Profile'),
-                          ),
-                        ),
-                        gaph24,
-                      ],
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ProfileHeader(
+                      profileUrl: profileImage,
+                      backgroundUrl: backgroundImage,
                     ),
-                  ),
-                ],
+
+                    SizedBox(height: screenWidth / 4.3),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          horizontalIcon(
+                            imagePath: 'assets/images/border_profile.png',
+                            text: username,
+                            spacing: 6,
+                          ),
+                          horizontalIcon(text: id, spacing: 12, textSize: 14),
+                          horizontalIcon(
+                            imagePath: 'assets/images/country.png',
+                            text: "Country:",
+                            extraText: country,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/birthdate.png',
+                            text: "Birthdate:",
+                            extraText: birthDate,
+                            spacing: 12,
+                          ),
+                          gaph24,
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) =>
+                                        ContributorEditProfile(
+                                          id: id,
+                                          username: username,
+                                          country: country,
+                                          profileImage: profileImage,
+                                          backgroundImage: backgroundImage,
+                                        ),
+                                  ),
+                                );
+                              },
+                              child: Text('Edit Profile'),
+                            ),
+                          ),
+                          gaph24,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

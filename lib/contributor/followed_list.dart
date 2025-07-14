@@ -8,13 +8,13 @@ import '../widget/empty_box.dart';
 import '../widget/side_bar.dart';
 
 class FollowedListPage extends StatefulWidget {
-  const FollowedListPage({super.key});
+  const FollowedListPage({Key? key}) : super(key: key);
 
   @override
-  State<FollowedListPage> createState() => _FollowedListPageState();
+  FollowedListPageState createState() => FollowedListPageState();
 }
 
-class _FollowedListPageState extends State<FollowedListPage> {
+class FollowedListPageState extends State<FollowedListPage> {
   final AuthenticationService _authService = AuthenticationService();
   final TextEditingController _searchController = TextEditingController();
   String? cid;
@@ -27,6 +27,11 @@ class _FollowedListPageState extends State<FollowedListPage> {
   void initState() {
     super.initState();
     getFollowedList();
+  }
+
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await getFollowedList();
   }
 
   Future<void> getFollowedList() async {
@@ -82,44 +87,50 @@ class _FollowedListPageState extends State<FollowedListPage> {
           ? const Center(child: CircularProgressIndicator())
           : _originalList.isEmpty
           ? const Center(child: Text('No followed organizations found.'))
-          : ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              children: [
-                gaph20,
-                TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search organizations...',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  onChanged: _filterList,
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: ListView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
                 ),
-                gaph32,
-                ..._filteredList.map((user) {
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 20, left: 20),
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) =>
-                                OrganizationDetailsPage(oid: user['ID']),
-                          ),
-                        );
-                      },
-                      child: AvatarBox(
-                        imageUrl: user['ProfileImage'],
-                        orgName: user['Username'],
-                        desc: user['ID'],
+                children: [
+                  gaph20,
+                  TextField(
+                    controller: _searchController,
+                    decoration: InputDecoration(
+                      hintText: 'Search organizations...',
+                      prefixIcon: const Icon(Icons.search),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                  );
-                }).toList(),
-              ],
+                    onChanged: _filterList,
+                  ),
+                  gaph32,
+                  ..._filteredList.map((user) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 20, left: 20),
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  OrganizationDetailsPage(oid: user['ID']),
+                            ),
+                          );
+                        },
+                        child: AvatarBox(
+                          imageUrl: user['ProfileImage'],
+                          orgName: user['Username'],
+                          desc: user['ID'],
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ],
+              ),
             ),
     );
   }

@@ -184,7 +184,7 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                           );
                           Navigator.pushReplacementNamed(
                             context,
-                            '/organization-home',
+                            '/organization-main',
                           );
                         } else {
                           showDialog(

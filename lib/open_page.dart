@@ -24,7 +24,6 @@ class _OpenPageState extends State<OpenPage> {
   }
 
   Future<void> _checkSession() async {
-    print("11111111111111");
     final authService = AuthenticationService();
     final session = authService.client.auth.currentSession;
 
@@ -67,7 +66,6 @@ class _OpenPageState extends State<OpenPage> {
 
       final userRole = await getUserRole(id);
       if (!mounted) return;
-      print("22222222222222 $userRole");
       switch (userRole) {
         case 'Contributor':
           Navigator.pushReplacementNamed(context, '/contributor-main');
@@ -82,7 +80,6 @@ class _OpenPageState extends State<OpenPage> {
           Navigator.pushReplacementNamed(context, '/login');
       }
     } catch (e, stack) {
-      print(stack);
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error checking registration: $e')),

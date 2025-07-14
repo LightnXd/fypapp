@@ -135,7 +135,6 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                   children: [
                     gaph40,
                     Center(
-                      // Centers the CircleAvatar horizontally
                       child: CircleAvatar(
                         radius: 80,
                         backgroundImage:

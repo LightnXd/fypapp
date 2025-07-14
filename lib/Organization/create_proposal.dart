@@ -107,7 +107,7 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Create Proposal', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: oid == null ? null : OrganizationSideBar(userId: oid!),
+      drawer: OrganizationSideBar(userId: oid),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -135,8 +135,8 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
             DatePickerDropdown(
               hint: 'Select the proposal end date',
               controller: birthdateController,
-              firstDate: daysLater(30), // 1 month later
-              initialDate: daysLater(30), // 1 month later
+              firstDate: daysLater(30),
+              initialDate: daysLater(30),
               lastDate: DateTime(2200),
             ),
             gaph32,

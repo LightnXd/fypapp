@@ -18,13 +18,13 @@ import '../widget/navigation_bar.dart';
 import '../widget/response_dialog.dart';
 
 class OrganizationHomePage extends StatefulWidget {
-  const OrganizationHomePage({super.key});
+  OrganizationHomePage({Key? key}) : super(key: key);
 
   @override
-  State<OrganizationHomePage> createState() => _OrganizationHomePageState();
+  OrganizationHomePageState createState() => OrganizationHomePageState();
 }
 
-class _OrganizationHomePageState extends State<OrganizationHomePage> {
+class OrganizationHomePageState extends State<OrganizationHomePage> {
   final AuthenticationService _authService = AuthenticationService();
 
   String? status;
@@ -40,6 +40,11 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
     super.initState();
     fetchUserStatus();
     fetchPosts();
+  }
+
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await fetchPosts();
   }
 
   Future<void> fetchPosts() async {
@@ -88,6 +93,7 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
 
     if (mounted) {
       setState(() {
+        id = id;
         status = userStatus;
         isLoading = false;
       });
@@ -99,7 +105,7 @@ class _OrganizationHomePageState extends State<OrganizationHomePage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Home', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: id!),
+      drawer: OrganizationSideBar(userId: id),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : status != 'Active'

@@ -78,7 +78,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/border_profile.png',
                         text: "Profile",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -91,7 +91,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/follower.png',
                         text: "Following list",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -104,7 +104,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/verification.png',
                         text: "Verify ledger",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -117,7 +117,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/log_out.png',
                         text: "Log out",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.pushReplacementNamed(context, '/login');
                         },
@@ -200,7 +200,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/border_profile.png',
                         text: "Profile",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -211,22 +211,9 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/follower.png',
-                        text: "Follower list",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => FollowerListPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      horizontalIcon(
                         imagePath: 'assets/images/use_fund.png',
                         text: "Proposal list",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -240,7 +227,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/test.png',
                         text: "Verify Ledger",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -253,7 +240,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/log_out.png',
                         text: "Log out",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.pushReplacementNamed(context, '/login');
                         },

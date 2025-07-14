@@ -272,6 +272,9 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
     if (!validateInputs()) return;
 
     try {
+      setState(() {
+        isLoading = true;
+      });
       final shouldVerify = await _authService.signUp(emailController.text);
       if (shouldVerify) {
         await OtpDialog.show(
@@ -296,6 +299,9 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                     passwordController.text,
                   );
                   if (!passwordSet) {
+                    setState(() {
+                      isLoading = false;
+                    });
                     showDialog(
                       context: context,
                       builder: (context) => ResponseDialog(
@@ -317,11 +323,17 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                   );
 
                   if (creationSuccess) {
+                    setState(() {
+                      isLoading = false;
+                    });
                     Navigator.pushReplacementNamed(
                       context,
-                      '/organization-home',
+                      '/organization-main',
                     );
                   } else {
+                    setState(() {
+                      isLoading = false;
+                    });
                     showDialog(
                       context: context,
                       builder: (context) => ResponseDialog(
@@ -332,6 +344,9 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                     );
                   }
                 } else {
+                  setState(() {
+                    isLoading = false;
+                  });
                   showDialog(
                     context: context,
                     builder: (context) => ResponseDialog(
@@ -342,14 +357,23 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
                   );
                 }
               } else {
+                setState(() {
+                  isLoading = false;
+                });
                 onResult(data['error'] ?? 'Verification failed');
               }
             } catch (e) {
+              setState(() {
+                isLoading = false;
+              });
               onResult('An error occurred: $e');
             }
           },
         );
       } else {
+        setState(() {
+          isLoading = false;
+        });
         showDialog(
           context: context,
           builder: (context) => ResponseDialog(
@@ -360,6 +384,9 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
         );
       }
     } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
       showDialog(
         context: context,
         builder: (context) => ResponseDialog(

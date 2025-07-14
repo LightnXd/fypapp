@@ -4,6 +4,7 @@ import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
 import '../contributor/ledger_list.dart';
+import '../services/follow.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/horizontal_box.dart';
@@ -38,11 +39,25 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
   final secretController = TextEditingController();
   String? publicError;
   String? secretError;
+  int count = 0;
 
   @override
   void initState() {
     super.initState();
     loadOrganizationProfile();
+  }
+
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await loadOrganizationProfile();
+  }
+
+  Future<void> loadCount() async {
+    final result = await fetchCountByOID(id);
+    if (result == null) return;
+    setState(() {
+      count = result;
+    });
   }
 
   Future<void> loadOrganizationProfile() async {
@@ -71,9 +86,9 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
         } else {
           tid = [];
         }
-
         isLoading = false;
       });
+      loadCount();
     } catch (e) {
       setState(() => isLoading = false);
       showDialog(
@@ -113,106 +128,110 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Profile'),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // loading spinner
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ProfileHeader(
-                    profileUrl: profileImage,
-                    backgroundUrl: backgroundImage,
-                  ),
-
-                  SizedBox(height: screenWidth / 4.3),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) =>
-                                        ContributorLedgerPage(oid: id),
-                                  ),
-                                );
-                              },
-                              child: Text('View ledger'),
-                            ),
-                            ElevatedButton(
-                              onPressed: _showWalletConfigModal,
-                              child: Text('Wallet Details'),
-                            ),
-                          ],
-                        ),
-                        gaph16,
-                        //add is verified later
-                        horizontalIcon(
-                          imagePath: 'assets/images/border_profile.png',
-                          text: username,
-                          spacing: 6,
-                        ),
-                        horizontalIcon(text: id, textSize: 14, spacing: 12),
-                        CustomHorizontalBox(items: type, textSize: 13),
-                        gaph12,
-                        horizontalIcon(
-                          alignment: MainAxisAlignment.start,
-                          text: "Description:",
-                          extraText: description,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/calendar.png',
-                          text: "Joined on:",
-                          extraText: formatDate(creationDate),
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/country.png',
-                          text: "Country of origin:",
-                          extraText: country,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/address.png',
-                          text: "Address:",
-                          extraText: address,
-                          spacing: 12,
-                        ),
-                      ],
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ProfileHeader(
+                      profileUrl: profileImage,
+                      backgroundUrl: backgroundImage,
+                      follower: "$count",
                     ),
-                  ),
-                  gaph24,
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OrganizationEditProfile(
-                              id: id,
-                              username: username,
-                              country: country,
-                              profileImage: profileImage,
-                              backgroundImage: backgroundImage,
-                              address: address,
-                              description: description,
-                              tid: tid,
-                            ),
+
+                    SizedBox(height: screenWidth / 4.3),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) =>
+                                          ContributorLedgerPage(oid: id),
+                                    ),
+                                  );
+                                },
+                                child: Text('View ledger'),
+                              ),
+                              ElevatedButton(
+                                onPressed: _showWalletConfigModal,
+                                child: Text('Wallet Details'),
+                              ),
+                            ],
                           ),
-                        );
-                      },
-                      child: Text('Edit Profile'),
+                          gaph16,
+                          //add is verified later
+                          horizontalIcon(
+                            imagePath: 'assets/images/border_profile.png',
+                            text: username,
+                            spacing: 6,
+                          ),
+                          horizontalIcon(text: id, textSize: 14, spacing: 12),
+                          CustomHorizontalBox(items: type, textSize: 13),
+                          gaph12,
+                          horizontalIcon(
+                            alignment: MainAxisAlignment.start,
+                            text: "Description:",
+                            extraText: description,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/calendar.png',
+                            text: "Joined on:",
+                            extraText: formatDate(creationDate),
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/country.png',
+                            text: "Country of origin:",
+                            extraText: country,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/address.png',
+                            text: "Address:",
+                            extraText: address,
+                            spacing: 12,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                  gaph24,
-                ],
+                    gaph24,
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrganizationEditProfile(
+                                id: id,
+                                username: username,
+                                country: country,
+                                profileImage: profileImage,
+                                backgroundImage: backgroundImage,
+                                address: address,
+                                description: description,
+                                tid: tid,
+                              ),
+                            ),
+                          );
+                        },
+                        child: Text('Edit Profile'),
+                      ),
+                    ),
+                    gaph24,
+                  ],
+                ),
               ),
             ),
     );
