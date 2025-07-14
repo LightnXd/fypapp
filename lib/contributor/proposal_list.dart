@@ -4,6 +4,7 @@ import 'package:fypapp2/widget/proposal_information.dart';
 import '../services/authentication.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
+import '../widget/empty_box.dart';
 import '../widget/navigation_bar.dart';
 import '../widget/side_bar.dart';
 
@@ -30,8 +31,8 @@ class _ContributorProposalListPageState
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
-      cid = await authService.getCurrentUserID();
-      final proposals = await getActiveProposalsByFollower(cid!);
+      final getCID = await authService.getCurrentUserID();
+      final proposals = await getActiveProposalsByFollower(getCID!);
 
       // Fetch vote stats for each proposal
       final proposalsWithVotes = await Future.wait(
@@ -48,6 +49,7 @@ class _ContributorProposalListPageState
       setState(() {
         _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
+        cid = cid;
       });
     } catch (e) {
       setState(() => isLoading = false);
@@ -60,7 +62,9 @@ class _ContributorProposalListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Proposal List'),
+      appBar: CustomAppBar(title: 'Proposal List', type: 1),
+      drawerEnableOpenDragGesture: false,
+      drawer: ContributorSideBar(userId: cid),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : FutureBuilder<List<Map<String, dynamic>>>(
@@ -81,7 +85,7 @@ class _ContributorProposalListPageState
                 return ListView(
                   padding: const EdgeInsets.all(12),
                   children: [
-                    const SizedBox(height: 16),
+                    gaph16,
                     ...proposals.map((row) {
                       final voteStats = row['VoteStats'];
                       return ProposalInfo(

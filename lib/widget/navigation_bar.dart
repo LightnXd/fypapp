@@ -1,23 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:fypapp2/Organization/create_post.dart';
 import 'package:fypapp2/Organization/create_proposal.dart';
 import 'package:fypapp2/Organization/home.dart';
 import 'package:fypapp2/Organization/proposal_list.dart';
 import 'package:fypapp2/contributor/home.dart';
-import 'package:fypapp2/contributor/ledger.dart';
+import 'package:fypapp2/contributor/ledger_list.dart';
 
 import 'icon_box.dart';
 
-class ContributorNavBar extends StatefulWidget {
+class ContributorNavBar extends StatelessWidget {
+  final int selectedIndex;
+  final ValueChanged<int> onItemTapped;
   final double fontSize;
 
-  const ContributorNavBar({super.key, this.fontSize = 12});
-
-  @override
-  State<ContributorNavBar> createState() => _ContributorNavBarState();
-}
-
-class _ContributorNavBarState extends State<ContributorNavBar> {
-  int selectedIndex = 0;
+  const ContributorNavBar({
+    super.key,
+    required this.selectedIndex,
+    required this.onItemTapped,
+    this.fontSize = 12,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,50 +32,29 @@ class _ContributorNavBarState extends State<ContributorNavBar> {
             imagePath: 'assets/images/home.png',
             text: 'Home',
             textColor: selectedIndex == 0 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 0);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const ContributorHomePage()),
-              );
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(0),
           ),
           verticalIcon(
             imagePath: 'assets/images/search.png',
-            text: 'Search',
+            text: 'Followed Account',
             textColor: selectedIndex == 1 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 1);
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(1),
           ),
           verticalIcon(
             imagePath: 'assets/images/ledger.png',
-            text: 'view Ledger',
+            text: 'View Proposal',
             textColor: selectedIndex == 2 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 2);
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(2),
           ),
           verticalIcon(
             imagePath: 'assets/images/recommendation.png',
             text: 'Recommendation',
             textColor: selectedIndex == 3 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 3);
-            },
-          ),
-          verticalIcon(
-            imagePath: 'assets/images/wallet.png',
-            text: 'Wallet',
-            textColor: selectedIndex == 4 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 4);
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(3),
           ),
         ],
       ),
@@ -82,17 +62,17 @@ class _ContributorNavBarState extends State<ContributorNavBar> {
   }
 }
 
-class OrganizationNavBar extends StatefulWidget {
+class OrganizationNavBar extends StatelessWidget {
+  final int selectedIndex;
+  final Function(int) onItemTapped;
   final double fontSize;
 
-  const OrganizationNavBar({super.key, this.fontSize = 12});
-
-  @override
-  State<OrganizationNavBar> createState() => _OrganizationNavBarState();
-}
-
-class _OrganizationNavBarState extends State<OrganizationNavBar> {
-  int selectedIndex = 0;
+  const OrganizationNavBar({
+    super.key,
+    required this.selectedIndex,
+    required this.onItemTapped,
+    this.fontSize = 12,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -106,54 +86,29 @@ class _OrganizationNavBarState extends State<OrganizationNavBar> {
             imagePath: 'assets/images/home.png',
             text: 'Home',
             textColor: selectedIndex == 0 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 0);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const OrganizationHomePage()),
-              );
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(0),
           ),
           verticalIcon(
             imagePath: 'assets/images/search.png',
-            text: 'Search',
+            text: 'View Follower',
             textColor: selectedIndex == 1 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 1);
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(1),
           ),
           verticalIcon(
             imagePath: 'assets/images/post.png',
             text: 'Post',
             textColor: selectedIndex == 2 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 2);
-            },
-          ),
-          verticalIcon(
-            imagePath: 'assets/images/fund.png',
-            text: 'Fund',
-            textColor: selectedIndex == 3 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 3);
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(2),
           ),
           verticalIcon(
             imagePath: 'assets/images/ledger.png',
             text: 'Create Proposal',
             textColor: selectedIndex == 4 ? Colors.blue : Colors.grey,
-            textSize: widget.fontSize,
-            onTap: () {
-              setState(() => selectedIndex = 4);
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const CreateProposalPage()),
-              );
-            },
+            textSize: fontSize,
+            onTap: () => onItemTapped(4),
           ),
         ],
       ),

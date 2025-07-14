@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
+import '../widget/empty_box.dart';
 
 class VerifyLedgerPage extends StatefulWidget {
   const VerifyLedgerPage({super.key});
@@ -33,7 +34,7 @@ class _VerifyLedgerPageState extends State<VerifyLedgerPage> {
                 icon: const Icon(Icons.upload_file),
                 label: const Text("Upload Excel File"),
               ),
-              const SizedBox(height: 20),
+              gaph20,
               SelectableText(
                 statusMessage,
                 textAlign: TextAlign.center,

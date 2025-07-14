@@ -5,6 +5,7 @@ import '../services/follow.dart';
 import '../widget/app_bar.dart';
 import '../widget/avatar_box.dart';
 import '../widget/empty_box.dart';
+import '../widget/side_bar.dart';
 
 class FollowedListPage extends StatefulWidget {
   const FollowedListPage({super.key});
@@ -16,6 +17,7 @@ class FollowedListPage extends StatefulWidget {
 class _FollowedListPageState extends State<FollowedListPage> {
   final AuthenticationService _authService = AuthenticationService();
   final TextEditingController _searchController = TextEditingController();
+  String? cid;
   bool isLoading = true;
 
   List<Map<String, dynamic>> _originalList = [];
@@ -29,16 +31,17 @@ class _FollowedListPageState extends State<FollowedListPage> {
 
   Future<void> getFollowedList() async {
     try {
-      final cid = await _authService.getCurrentUserID();
-      if (cid == null) {
+      final getCID = await _authService.getCurrentUserID();
+      if (getCID == null) {
         throw Exception("User ID is null.");
       }
 
-      final data = await getFollowedUsers(cid);
+      final data = await getFollowedUsers(getCID);
 
       setState(() {
         _originalList = data;
         _filteredList = data;
+        cid = getCID;
         isLoading = false;
       });
     } catch (e) {
@@ -72,7 +75,9 @@ class _FollowedListPageState extends State<FollowedListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Followed Organizations'),
+      appBar: CustomAppBar(title: 'Followed Organizations', type: 1),
+      drawerEnableOpenDragGesture: false,
+      drawer: ContributorSideBar(userId: cid),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : _originalList.isEmpty

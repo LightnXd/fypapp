@@ -9,11 +9,16 @@ import '../services/follow.dart';
 import '../widget/app_bar.dart';
 import '../widget/horizontal_box.dart';
 import '../widget/profile_head.dart';
-import 'ledger.dart';
+import 'ledger_list.dart';
 
 class OrganizationDetailsPage extends StatefulWidget {
   final String oid;
-  const OrganizationDetailsPage({super.key, required this.oid});
+  final bool type;
+  const OrganizationDetailsPage({
+    super.key,
+    required this.oid,
+    this.type = true,
+  });
 
   @override
   State<OrganizationDetailsPage> createState() =>
@@ -119,42 +124,49 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: ElevatedButton(
-                            onPressed: () async {
-                              if (cid == null) return;
+                        if (widget.type)
+                          Align(
+                            alignment: Alignment.centerRight,
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (cid == null) return;
 
-                              bool success = isFollowed
-                                  ? await unfollowOrganization(widget.oid, cid!)
-                                  : await followOrganization(widget.oid, cid!);
+                                bool success = isFollowed
+                                    ? await unfollowOrganization(
+                                        widget.oid,
+                                        cid!,
+                                      )
+                                    : await followOrganization(
+                                        widget.oid,
+                                        cid!,
+                                      );
 
-                              if (success) {
-                                loadCount();
-                                setState(() {
-                                  isFollowed = !isFollowed;
-                                });
+                                if (success) {
+                                  loadCount();
+                                  setState(() {
+                                    isFollowed = !isFollowed;
+                                  });
 
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                      isFollowed
-                                          ? 'Followed successfully'
-                                          : 'Unfollowed successfully',
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    SnackBar(
+                                      content: Text(
+                                        isFollowed
+                                            ? 'Followed successfully'
+                                            : 'Unfollowed successfully',
+                                      ),
                                     ),
-                                  ),
-                                );
-                              } else {
-                                ScaffoldMessenger.of(context).showSnackBar(
-                                  const SnackBar(
-                                    content: Text('Something went wrong.'),
-                                  ),
-                                );
-                              }
-                            },
-                            child: Text(isFollowed ? 'Unfollow' : 'Follow'),
+                                  );
+                                } else {
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Something went wrong.'),
+                                    ),
+                                  );
+                                }
+                              },
+                              child: Text(isFollowed ? 'Unfollow' : 'Follow'),
+                            ),
                           ),
-                        ),
                         horizontalIcon(
                           imagePath: 'assets/images/border_profile.png',
                           text: username,
@@ -202,19 +214,20 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                           ),
                         ),
                         gaph24,
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => MakeDonationPage(oid: id),
-                                ),
-                              );
-                            },
-                            child: Text('Make Donation'),
+                        if (widget.type)
+                          Center(
+                            child: ElevatedButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => MakeDonationPage(oid: id),
+                                  ),
+                                );
+                              },
+                              child: Text('Make Donation'),
+                            ),
                           ),
-                        ),
                       ],
                     ),
                   ),
@@ -225,5 +238,3 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
     );
   }
 }
-
-// isVerified, following

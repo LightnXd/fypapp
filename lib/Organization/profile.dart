@@ -3,12 +3,13 @@ import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
-import '../contributor/ledger.dart';
+import '../contributor/ledger_list.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/horizontal_box.dart';
 import '../widget/profile_head.dart';
 import '../widget/question_box.dart';
+import '../widget/response_dialog.dart';
 import 'edit_profile.dart';
 
 class OrganizationProfilePage extends StatefulWidget {
@@ -37,7 +38,6 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
   final secretController = TextEditingController();
   String? publicError;
   String? secretError;
-  bool showSecret = false;
 
   @override
   void initState() {
@@ -76,9 +76,11 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
       });
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ResponseDialog(title: 'Error', message: 'Error: $e', type: false),
+      );
     }
   }
 
@@ -250,10 +252,6 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                   label: 'Secret key:',
                   hint: 'Enter your Stripe secret key',
                   controller: secretController,
-                  hidden: true,
-                  showPassword: showSecret,
-                  onTogglePassword: () =>
-                      setState(() => showSecret = !showSecret),
                   errorText: secretError,
                 ),
                 gaph32,
@@ -262,6 +260,8 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                   children: [
                     ElevatedButton.icon(
                       onPressed: () {
+                        publicController.clear();
+                        secretController.clear();
                         Navigator.pop(context);
                       },
                       icon: const Icon(Icons.close),
@@ -303,13 +303,22 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
         publicKey: public.trim(),
         secretKey: secret.trim(),
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      publicController.clear();
+      secretController.clear();
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ResponseDialog(title: 'Success', message: message, type: true),
+      );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Unexpected error: $e')));
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'Error',
+          message: 'Unexpected error: $e',
+          type: false,
+        ),
+      );
     }
   }
 }

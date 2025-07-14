@@ -5,6 +5,7 @@ import '../services/follow.dart';
 import '../widget/app_bar.dart';
 import '../widget/avatar_box.dart';
 import '../widget/empty_box.dart';
+import '../widget/side_bar.dart';
 import 'follower_details.dart';
 
 class FollowerListPage extends StatefulWidget {
@@ -18,6 +19,7 @@ class _FollowerListPageState extends State<FollowerListPage> {
   final AuthenticationService _authService = AuthenticationService();
   final TextEditingController _searchController = TextEditingController();
   bool isLoading = true;
+  String? oid;
 
   List<Map<String, dynamic>> _originalList = [];
   List<Map<String, dynamic>> _filteredList = [];
@@ -30,16 +32,17 @@ class _FollowerListPageState extends State<FollowerListPage> {
 
   Future<void> getFollowerList() async {
     try {
-      final oid = await _authService.getCurrentUserID();
-      if (oid == null) {
+      final getOID = await _authService.getCurrentUserID();
+      if (getOID == null) {
         throw Exception("User ID is null.");
       }
 
-      final data = await getFollowerUsers(oid);
+      final data = await getFollowerUsers(getOID);
 
       setState(() {
         _originalList = data;
         _filteredList = data;
+        oid = getOID;
         isLoading = false;
       });
     } catch (e) {
@@ -74,6 +77,8 @@ class _FollowerListPageState extends State<FollowerListPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'View Follower'),
+      drawerEnableOpenDragGesture: false,
+      drawer: OrganizationSideBar(userId: oid!),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : _originalList.isEmpty

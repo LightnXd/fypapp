@@ -102,26 +102,6 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/top_up.png',
-                        text: "Top up wallet",
-                        spacing: 32,
-                        onTap: () {},
-                      ),
-                      horizontalIcon(
-                        imagePath: 'assets/images/ledger.png',
-                        text: "View Proposal",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const ContributorProposalListPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      horizontalIcon(
                         imagePath: 'assets/images/verification.png',
                         text: "Verify ledger",
                         spacing: 32,
@@ -258,22 +238,8 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/ledger.png',
-                        text: "View transaction list",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) =>
-                                  const OrganizationProposalListPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      horizontalIcon(
                         imagePath: 'assets/images/test.png',
-                        text: "Charity framework test",
+                        text: "Verify Ledger",
                         spacing: 32,
                         onTap: () {
                           Navigator.push(

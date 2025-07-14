@@ -1,4 +1,4 @@
-const baseurl = 'http://10.0.2.2:8000';
+const baseurl = 'https://fyp-backend-xw29.onrender.com';
 const auth = '$baseurl/auth';
 const ledger = '$baseurl/ledger';
 const profile = '$baseurl/profile';
@@ -41,4 +41,6 @@ const followUrl = '$follow/follow';
 const unfollowUrl = '$follow/unfollow';
 const getFollowCountUrl = '$follow/follower-count';
 const getAllPostUrl = '$posting/get-all-post';
+const getAllFollowedPostUrl = '$posting/get-all-followed-post';
 const createPostUrl = '$posting/create-post';
+const mediaLinkUrl = '$posting/media-link';

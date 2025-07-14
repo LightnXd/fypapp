@@ -5,7 +5,6 @@ import 'package:fypapp2/widget/empty_box.dart';
 import '../services/profile.dart';
 import '../widget/app_bar.dart';
 import '../widget/profile_head.dart';
-import 'edit_profile.dart';
 
 class FollowerDetailsPage extends StatefulWidget {
   final cid;

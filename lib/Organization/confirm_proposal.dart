@@ -100,7 +100,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
   Future<void> _cancelTransaction(BuildContext context) async {
     setState(() => _isSending = true);
     try {
-      await changeStatus(context, "Cancelled"); // ✅ await it
+      await changeStatus(context, "Cancelled");
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -212,7 +212,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                               )
                             : const Text('Create Transaction'),
                       ),
-                    if (widget.status == 'Waiting') const SizedBox(height: 20),
+                    if (widget.status == 'Waiting') gaph20,
                     ElevatedButton(
                       onPressed: _isSending
                           ? null

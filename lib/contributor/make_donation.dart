@@ -9,6 +9,7 @@ import 'dart:convert';
 
 import '../services/authentication.dart';
 import '../services/transaction.dart';
+import '../widget/response_dialog.dart';
 
 class MakeDonationPage extends StatefulWidget {
   final String oid;
@@ -38,9 +39,13 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
     try {
       if (publishableKey == null || publishableKey.isEmpty) {
         isRegistered = false;
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("The organization have not enable donation!"),
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Wallet not Found',
+            message:
+                'The organization have not set up their wallet information yet',
+            type: false,
           ),
         );
         return;
@@ -50,9 +55,12 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
       await Stripe.instance.applySettings();
     } catch (e) {
       isRegistered = false;
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Organization donation information is invalid"),
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'Invalid Wallet',
+          message: "Organization wallet information is invalid",
+          type: false,
         ),
       );
     }
@@ -64,18 +72,27 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
     try {
       final cid = await _authService.getCurrentUserID();
       if (cid == null) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Unable to find user ID')));
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Transaction Failed',
+            message: ' Unable to get your information',
+            type: false,
+          ),
+        );
         return;
       }
 
       int donate = (amount * 100).toInt();
-      print(donate);
       final clientSecret = await makeDonation(donate, "myr", widget.oid);
       if (clientSecret == null) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text("Failed to get client secret")),
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Transaction Failed',
+            message: "Failed to get client secret",
+            type: false,
+          ),
         );
         return;
       }
@@ -101,36 +118,48 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
         final data = jsonDecode(response.body);
 
         if (response.statusCode == 200 && data['success'] == true) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                'Transaction successful. LedgerID: ${data['LedgerID']}',
-                style: TextStyle(color: Colors.red),
-              ),
+          showDialog(
+            context: context,
+            builder: (context) => ResponseDialog(
+              title: 'Transaction Successful',
+              message:
+                  'Transaction saved to the ledger with LedgerID: ${data['LedgerID']}',
+              type: true,
             ),
           );
         } else {
           throw Exception(data['error'] ?? 'Transaction failed');
         }
-
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text("Payment successful!")));
       } catch (e) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error: $e')));
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Payment Failed',
+            message: "Error: $e",
+            type: false,
+          ),
+        );
       }
     } on StripeException catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text("Payment cancelled: ${e.error.localizedMessage}"),
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'Payment Cancelled',
+          message:
+              e.error.localizedMessage ??
+              "Unable to get the reason of this exception",
+          type: false,
         ),
       );
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text("Error: $e")));
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'An unexpected error occur',
+          message: "Error: $e",
+          type: false,
+        ),
+      );
     } finally {
       setState(() => isLoading = false);
     }
@@ -185,11 +214,12 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
                   onPressed: amount >= 5.00
                       ? _startPayment
                       : () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text(
-                                "The minimum donation amount is 5 Ringgit",
-                              ),
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Invalid Amount',
+                              message: 'The minimum donation amount is RM 5',
+                              type: false,
                             ),
                           );
                         },

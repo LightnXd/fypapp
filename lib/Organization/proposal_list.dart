@@ -4,6 +4,7 @@ import 'package:fypapp2/widget/proposal_information.dart';
 import '../services/authentication.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
+import '../widget/empty_box.dart';
 import '../widget/navigation_bar.dart';
 import '../widget/side_bar.dart';
 
@@ -60,7 +61,6 @@ class _OrganizationProposalListPageState
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: 'Proposal List', type: 1),
-      bottomNavigationBar: OrganizationNavBar(),
       drawerEnableOpenDragGesture: false,
       drawer: oid == null ? null : OrganizationSideBar(userId: oid!),
       body: isLoading
@@ -83,7 +83,7 @@ class _OrganizationProposalListPageState
                 return ListView(
                   padding: const EdgeInsets.all(12),
                   children: [
-                    const SizedBox(height: 16),
+                    gaph16,
                     ...proposals.map((row) {
                       final voteStats = row['VoteStats'];
                       return ProposalInfo(

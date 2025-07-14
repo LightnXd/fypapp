@@ -43,7 +43,7 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
       });
     } catch (e) {
       setState(() {
-        isLoading = false;
+        isLoading = true;
       });
       ScaffoldMessenger.of(
         context,
