@@ -89,19 +89,6 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/follower.png',
-                        text: "Following list",
-                        spacing: 40,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const FollowedListPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      horizontalIcon(
                         imagePath: 'assets/images/verification.png',
                         text: "Verify ledger",
                         spacing: 40,

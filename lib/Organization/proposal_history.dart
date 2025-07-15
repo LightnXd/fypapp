@@ -1,23 +1,22 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/contributor/proposal_details.dart';
+import 'package:fypapp2/Organization/confirm_proposal.dart';
 import 'package:fypapp2/widget/proposal_information.dart';
 import '../services/authentication.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
-import '../widget/side_bar.dart';
 
-class ContributorProposalListPage extends StatefulWidget {
-  const ContributorProposalListPage({Key? key}) : super(key: key);
+class OrganizationProposalHistoryListPage extends StatefulWidget {
+  const OrganizationProposalHistoryListPage({super.key});
 
   @override
-  ContributorProposalListPageState createState() =>
-      ContributorProposalListPageState();
+  State<OrganizationProposalHistoryListPage> createState() =>
+      _OrganizationProposalHistoryListPageState();
 }
 
-class ContributorProposalListPageState
-    extends State<ContributorProposalListPage> {
-  String? cid;
+class _OrganizationProposalHistoryListPageState
+    extends State<OrganizationProposalHistoryListPage> {
+  String? oid;
   late Future<List<Map<String, dynamic>>> _proposals;
   bool isLoading = true;
 
@@ -35,11 +34,11 @@ class ContributorProposalListPageState
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
-      final getCID = await authService.getCurrentUserID();
-      final proposals = await getActiveProposalsByFollower(getCID!);
+      oid = await authService.getCurrentUserID();
+      final rawProposals = await getHistoryProposal(oid!);
 
       final proposalsWithVotes = await Future.wait(
-        proposals.map((proposal) async {
+        rawProposals.map((proposal) async {
           try {
             final voteStats = await getVoteStat(proposal['ProposalID']);
             return {...proposal, 'VoteStats': voteStats};
@@ -52,7 +51,6 @@ class ContributorProposalListPageState
       setState(() {
         _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
-        cid = cid;
       });
     } catch (e) {
       setState(() => isLoading = false);
@@ -65,9 +63,7 @@ class ContributorProposalListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Proposal List', type: 1),
-      drawerEnableOpenDragGesture: false,
-      drawer: ContributorSideBar(userId: cid),
+      appBar: CustomAppBar(title: 'Proposal History'),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -106,9 +102,9 @@ class ContributorProposalListPageState
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (_) => ProposalDetailsPage(
+                                builder: (_) => ConfirmProposalPage(
+                                  oid: oid!,
                                   proposalid: row['ProposalID'] ?? '',
-                                  oid: row['OID'] ?? '',
                                   name: row['Username'] ?? '',
                                   image: row['Image'] ?? '',
                                   title: row['Title'] ?? '',
@@ -117,11 +113,9 @@ class ContributorProposalListPageState
                                   creationDate: row['CreationDate'] ?? '',
                                   limit: '${row['Limit']} day',
                                   status: row['Status'] ?? '',
-                                  cid: cid!,
                                   yes: voteStats?['YesVote'] ?? '0',
                                   no: voteStats?['NoVote'] ?? '0',
                                   notVoted: voteStats?['NotVoted'] ?? '0',
-                                  isHistory: false,
                                 ),
                               ),
                             );

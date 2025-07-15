@@ -81,7 +81,7 @@ class FollowerListPageState extends State<FollowerListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'View Follower', type: 1),
+      appBar: CustomAppBar(title: 'View Followers', type: 1),
       drawerEnableOpenDragGesture: false,
       drawer: OrganizationSideBar(userId: oid),
       body: isLoading
@@ -111,7 +111,7 @@ class FollowerListPageState extends State<FollowerListPage> {
                   gaph32,
                   ..._filteredList.map((user) {
                     return Padding(
-                      padding: const EdgeInsets.only(bottom: 20, left: 20),
+                      padding: const EdgeInsets.only(bottom: 30, left: 20),
                       child: InkWell(
                         onTap: () {
                           Navigator.push(

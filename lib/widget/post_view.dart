@@ -28,14 +28,22 @@ class PostView extends StatelessWidget {
       children: [
         InkWell(
           onTap: onAvatarTap,
-          child: AvatarBox(imageUrl: profileImg, orgName: title, desc: desc),
+          child: AvatarBox(imageUrl: profileImg, imgSize: 20, orgName: title),
         ),
         gaph12,
         if (imageUrls != null && imageUrls!.isNotEmpty) ...[
           DynamicImageColumn(imageUrls: imageUrls!),
           gaph8,
         ],
-        if (date != null) ...[
+        if (desc != null)
+          Padding(
+            padding: const EdgeInsets.symmetric(
+              vertical: 8.0,
+              horizontal: 20.0,
+            ), // You can customize the padding
+            child: SelectableText(desc!),
+          ),
+        if (date != null)
           Align(
             alignment: Alignment.centerRight,
             child: Text(
@@ -43,7 +51,6 @@ class PostView extends StatelessWidget {
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ),
-        ],
         gaph5,
         Divider(),
       ],

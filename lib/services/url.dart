@@ -26,9 +26,12 @@ const getStatusUrl = '$profile/get-status';
 const getActiveProposalListUrl = '$proposal/list-active-proposal';
 const getActiveProposalListbyFollowerUrl =
     '$proposal/list-active-proposal-by-follower';
+const getHistoryProposalListUrl = '$proposal/list-history-proposal';
+const getHistoryProposalListbyFollowerUrl =
+    '$proposal/list-history-proposal-by-follower';
 const createProposalUrl = '$proposal/create-proposal';
 const getVoteUrl = '$proposal/get-vote';
-const changeProposalStatusUrl = '$proposal/confirm-proposal-status';
+const changeProposalStatusUrl = '$proposal/change-proposal-status';
 const castVoteUrl = '$proposal/vote';
 const getVoteStatUrl = '$proposal/get-vote-count';
 const getPublicUrl = '$proposal/get-public';

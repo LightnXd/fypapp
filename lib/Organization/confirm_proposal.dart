@@ -7,6 +7,7 @@ import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
 import '../widget/icon_box.dart';
+import '../widget/response_dialog.dart';
 
 class ConfirmProposalPage extends StatefulWidget {
   final String proposalid;
@@ -54,44 +55,49 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
         proposalid: widget.proposalid,
         status: change,
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Proposal successfully $change')));
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Unable to change status: $e')));
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'Failed',
+          message: 'Unable to change status: $e',
+          type: false,
+        ),
+      );
     }
   }
 
   Future<void> _sendTransaction(BuildContext context) async {
     setState(() => _isSending = true);
     try {
-      await changeStatus(context, "Confirmed");
-
       final response = await http.post(
         Uri.parse(addBlockUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'OID': widget.oid, 'Amount': widget.amount}),
+        body: jsonEncode({
+          'OID': widget.oid,
+          'Amount': double.parse(widget.amount.trim()),
+        }),
       );
-
       final data = jsonDecode(response.body);
-
       if (response.statusCode == 200 && data['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Transaction successful. LedgerID: ${data['LedgerID']}',
-            ),
+        await changeStatus(context, "Confirmed");
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Success',
+            message: 'Transaction successful. LedgerID: ${data['LedgerID']}',
+            type: true,
           ),
         );
       } else {
         throw Exception(data['error'] ?? 'Transaction failed');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ResponseDialog(title: 'Failed', message: 'Error: $e', type: false),
+      );
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -222,7 +228,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                               height: 20,
                               child: CircularProgressIndicator(strokeWidth: 2),
                             )
-                          : Text('Cancel Transaction ${widget.oid}'),
+                          : Text('Cancel Transaction'),
                     ),
                     gaph40,
                   ],

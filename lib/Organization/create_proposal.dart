@@ -84,7 +84,7 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
           context: context,
           builder: (context) => ResponseDialog(
             title: 'Error',
-            message: 'Failed to create proposal: $e',
+            message: e.toString(),
             type: false,
           ),
         );
@@ -118,6 +118,7 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
               hint: 'Enter the title',
               errorText: titleError,
             ),
+            gaph10,
             QuestionBox(
               keyboardType: TextInputType.number,
               label: 'Amount',
@@ -125,6 +126,7 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
               controller: amountController,
               errorText: amountError,
             ),
+            gaph10,
             QuestionBox(
               label: 'Description:',
               hint: 'Description',
@@ -132,6 +134,7 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
               controller: descriptionController,
               errorText: descriptionError,
             ),
+            gaph20,
             DatePickerDropdown(
               hint: 'Select the proposal end date',
               controller: birthdateController,
@@ -139,7 +142,7 @@ class _CreateProposalPageState extends State<CreateProposalPage> {
               initialDate: daysLater(30),
               lastDate: DateTime(2200),
             ),
-            gaph32,
+            gaph40,
             isLoading
                 ? const CircularProgressIndicator()
                 : ElevatedButton(

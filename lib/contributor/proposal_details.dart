@@ -24,6 +24,7 @@ class ProposalDetailsPage extends StatefulWidget {
   final String yes;
   final String no;
   final String notVoted;
+  final bool isHistory;
 
   const ProposalDetailsPage({
     super.key,
@@ -41,6 +42,7 @@ class ProposalDetailsPage extends StatefulWidget {
     required this.yes,
     required this.no,
     required this.notVoted,
+    required this.isHistory,
   });
 
   @override
@@ -204,7 +206,7 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
                           ],
                         ),
                       ),
-                      if (vote == null && isSuccess) ...[
+                      if (vote == null && isSuccess && widget.isHistory) ...[
                         ElevatedButton(
                           onPressed: _isSending
                               ? null

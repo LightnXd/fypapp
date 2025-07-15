@@ -5,8 +5,6 @@ import '../services/authentication.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
-import '../widget/navigation_bar.dart';
-import '../widget/side_bar.dart';
 
 class OrganizationProposalListPage extends StatefulWidget {
   const OrganizationProposalListPage({super.key});
@@ -65,9 +63,7 @@ class _OrganizationProposalListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Proposal List', type: 1),
-      drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: oid),
+      appBar: CustomAppBar(title: 'Proposal List'),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(

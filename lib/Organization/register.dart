@@ -144,9 +144,7 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
               child: Column(
                 children: [
                   QuestionBox(
-                    image: const AssetImage(
-                      'assets/images/rounded_profile.png',
-                    ),
+                    image: const AssetImage('assets/images/profile.png'),
                     label: 'Name:',
                     hint: 'Enter your name',
                     controller: nameController,

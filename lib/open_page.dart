@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
@@ -15,12 +16,28 @@ class OpenPage extends StatefulWidget {
 }
 
 class _OpenPageState extends State<OpenPage> {
+  Timer? _timer;
+
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       _checkSession();
     });
+
+    _timer = Timer.periodic(const Duration(seconds: 10), (timer) {
+      refresh();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  Future<void> refresh() async {
+    await _checkSession();
   }
 
   Future<void> _checkSession() async {
@@ -89,6 +106,11 @@ class _OpenPageState extends State<OpenPage> {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    return Scaffold(
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+    );
   }
 }

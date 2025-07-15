@@ -4,6 +4,7 @@ import 'package:fypapp2/services/url.dart';
 import 'package:fypapp2/widget/app_bar.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/horizontal_box.dart';
+import 'package:fypapp2/widget/question_box.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -26,6 +27,8 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
   double amount = 0.00;
   final AuthenticationService _authService = AuthenticationService();
   String? cid;
+  final customAmountController = TextEditingController();
+  String? customAmountError;
 
   @override
   void initState() {
@@ -208,8 +211,43 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
                   onMidTap: () => setState(() => amount = 100.00),
                   onRightTap: () => setState(() => amount = 200.00),
                 ),
+                gaph20,
+                QuestionBox(
+                  label: "Custom Donation",
+                  hint: "Enter the amount eg(20.50)",
+                  controller: customAmountController,
+                  keyboardType: TextInputType.number,
+                  errorText: customAmountError,
+                ),
                 gaph60,
                 gaph20,
+                ElevatedButton(
+                  onPressed: () {
+                    final textValue = customAmountController.text;
+                    final parsed = double.tryParse(textValue) ?? 0.0;
+
+                    if (parsed >= 5.00) {
+                      setState(() {
+                        amount = parsed;
+                      });
+                      _startPayment();
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder: (context) => ResponseDialog(
+                          title: 'Invalid Amount',
+                          message: 'The inputted amount is invalid or under RM 5.00',
+                          type: false,
+                        ),
+                      );
+                    }
+                  },
+                  child: const Text(
+                    "Make a Custom Donation",
+                    style: TextStyle(fontSize: 18),
+                  ),
+                ),
+                gaph32,
                 ElevatedButton(
                   onPressed: amount >= 5.00
                       ? _startPayment

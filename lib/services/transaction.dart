@@ -59,10 +59,40 @@ Future<List<Map<String, dynamic>>> getActiveProposal(String oid) async {
   }
 }
 
+Future<List<Map<String, dynamic>>> getHistoryProposal(String oid) async {
+  final response = await http.get(
+    Uri.parse('$getHistoryProposalListUrl?oid=$oid'),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load proposals: ${error['error']}');
+  }
+}
+
 Future<List<Map<String, dynamic>>> getActiveProposalsByFollower(
   String cid,
 ) async {
   final url = Uri.parse('$getActiveProposalListbyFollowerUrl?cid=$cid');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load proposals: ${error['error']}');
+  }
+}
+
+Future<List<Map<String, dynamic>>> getHistoryProposalsByFollower(
+  String cid,
+) async {
+  final url = Uri.parse('$getHistoryProposalListbyFollowerUrl?cid=$cid');
 
   final response = await http.get(url);
 

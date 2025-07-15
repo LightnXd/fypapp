@@ -110,74 +110,83 @@ class OrganizationHomePageState extends State<OrganizationHomePage> {
           ? Center(child: CircularProgressIndicator())
           : status != 'Active'
           ? const Center(child: Text('Your account have been suspended'))
-          : SingleChildScrollView(
-              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Center(
-                    child: ElevatedButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => OrganizationMainPage(),
-                          ),
-                        );
-                      },
-                      child: const Text('Go to Profile'),
-                    ),
-                  ),
-                  gaph32,
-                  TextField(
-                    controller: _searchController,
-                    decoration: InputDecoration(
-                      hintText: 'Search posts...',
-                      prefixIcon: const Icon(Icons.search),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 20,
+                  vertical: 10,
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Center(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => OrganizationMainPage(),
+                            ),
+                          );
+                        },
+                        child: const Text('Go to Profile'),
                       ),
                     ),
-                    onChanged: _filterList,
-                  ),
-                  gaph32,
-                  _isPostLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _filteredList.isEmpty
-                      ? const Center(child: Text('No post found.'))
-                      : ListView.builder(
-                          shrinkWrap: true,
-                          physics: const NeverScrollableScrollPhysics(),
-                          itemCount: _filteredList.length,
-                          itemBuilder: (context, index) {
-                            final post = _filteredList[index];
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 20),
-                              child: PostView(
-                                profileImg: post['ProfileImage'],
-                                title: post['Tittle'] ?? 'No Title',
-                                desc: post['Description'] ?? 'No Description',
-                                onAvatarTap: () {
-                                  Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                      builder: (context) =>
-                                          OrganizationDetailsPage(
-                                            oid: post['OID'],
-                                            type: false,
-                                          ),
-                                    ),
-                                  );
-                                },
-                                imageUrls: post['mediaUrls'],
-                                date: post['CreatedAt'] != null
-                                    ? formatDate(post['CreatedAt'])
-                                    : 'NA',
-                              ),
-                            );
-                          },
+                    gaph32,
+                    TextField(
+                      controller: _searchController,
+                      decoration: InputDecoration(
+                        hintText: 'Search posts...',
+                        prefixIcon: const Icon(Icons.search),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
                         ),
-                ],
+                      ),
+                      onChanged: _filterList,
+                    ),
+                    gaph32,
+                    _isPostLoading
+                        ? const Center(child: CircularProgressIndicator())
+                        : _filteredList.isEmpty
+                        ? const Center(child: Text('No post found.'))
+                        : ListView.builder(
+                            shrinkWrap: true,
+                            physics: const NeverScrollableScrollPhysics(),
+                            itemCount: _filteredList.length,
+                            itemBuilder: (context, index) {
+                              final post = _filteredList[index];
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 10,
+                                  horizontal: 10,
+                                ),
+                                child: PostView(
+                                  profileImg: post['ProfileImage'],
+                                  title: post['Tittle'] ?? 'No Title',
+                                  desc: post['Description'] ?? 'No Description',
+                                  onAvatarTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            OrganizationDetailsPage(
+                                              oid: post['OID'],
+                                              type: false,
+                                            ),
+                                      ),
+                                    );
+                                  },
+                                  imageUrls: post['mediaUrls'],
+                                  date: post['CreatedAt'] != null
+                                      ? formatDate(post['CreatedAt'])
+                                      : 'NA',
+                                ),
+                              );
+                            },
+                          ),
+                  ],
+                ),
               ),
             ),
     );

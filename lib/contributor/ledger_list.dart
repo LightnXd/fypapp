@@ -8,8 +8,6 @@ import '../Organization/proposal_list.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
 import '../widget/ledger_list.dart';
-import '../widget/navigation_bar.dart';
-import '../widget/side_bar.dart';
 
 class ContributorLedgerPage extends StatefulWidget {
   final String oid;
@@ -42,7 +40,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   @override
   void initState() {
     super.initState();
-    _ledgerStream = ledgerStream(widget.oid);
+    _ledgerStream = ledgerStream(widget.oid).asBroadcastStream();
   }
 
   @override
@@ -113,7 +111,16 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   }
 
   Future<void> _downloadAsExcel(BuildContext context) async {
-    final snapshot = await _ledgerStream.first;
+    final rawData = await Supabase.instance.client
+        .from('ledger')
+        .select()
+        .eq('OID', widget.oid)
+        .order('TransactionNumber', ascending: false);
+
+    // rawData will be List<dynamic>, so cast it to List<Map<String,dynamic>>
+    final List<Map<String, dynamic>> snapshot = List<Map<String, dynamic>>.from(
+      rawData,
+    );
 
     if (snapshot.isEmpty) {
       ScaffoldMessenger.of(
@@ -121,10 +128,13 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
       ).showSnackBar(const SnackBar(content: Text('No data to export.')));
       return;
     }
-    final excel = Excel.createExcel();
-    final String sheetName = excel.getDefaultSheet()!;
-    final Sheet sheet = excel.sheets[sheetName]!;
 
+    // 2) build your Excel exactly as before using `snapshot`
+    final excel = Excel.createExcel();
+    final sheetName = excel.getDefaultSheet()!;
+    final sheet = excel.sheets[sheetName]!;
+
+    // header row
     sheet.appendRow([
       TextCellValue('LedgerID'),
       TextCellValue('TransactionNumber'),
@@ -136,6 +146,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
       TextCellValue('CreationDate'),
     ]);
 
+    // data rows
     for (final entry in snapshot) {
       sheet.appendRow([
         TextCellValue(entry['LedgerID']?.toString() ?? ''),
@@ -149,15 +160,12 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
       ]);
     }
 
+    // 3) rest of your save/export logic…
     final bytes = excel.encode()!;
     final tempDir = await getTemporaryDirectory();
     final tempPath = '${tempDir.path}/ledger.xlsx';
     final tempFile = File(tempPath);
     await tempFile.writeAsBytes(bytes);
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('File saved to: $tempPath')));
-
     final savedPath = await FlutterFileDialog.saveFile(
       params: SaveFileDialogParams(sourceFilePath: tempPath),
     );

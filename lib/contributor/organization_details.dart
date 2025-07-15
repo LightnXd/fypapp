@@ -40,20 +40,21 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
   List<String> tid = [];
   List<String> type = [];
   bool isLoading = true;
+  bool isPressed = false;
   bool isFollowed = false;
   String? cid;
   int count = 0;
   @override
   void initState() {
     super.initState();
-    loadCount();
     loadOrganizationProfile();
+    loadCount();
   }
 
   Future<void> refresh() async {
     setState(() => isLoading = true);
-    await loadCount();
     await loadOrganizationProfile();
+    await loadCount();
   }
 
   Future<void> loadCount() async {
@@ -123,7 +124,7 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                     ProfileHeader(
                       profileUrl: profileImage,
                       backgroundUrl: backgroundImage,
-                      follower: "$count following",
+                      follower: "$count",
                     ),
 
                     SizedBox(height: screenWidth / 5.3),
@@ -137,43 +138,73 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                             Align(
                               alignment: Alignment.centerRight,
                               child: ElevatedButton(
-                                onPressed: () async {
-                                  if (cid == null) return;
+                                onPressed: isPressed
+                                    ? null
+                                    : () async {
+                                        if (cid == null) return;
 
-                                  bool success = isFollowed
-                                      ? await unfollowOrganization(
-                                          widget.oid,
-                                          cid!,
-                                        )
-                                      : await followOrganization(
-                                          widget.oid,
-                                          cid!,
-                                        );
+                                        setState(() {
+                                          isPressed = true;
+                                        });
 
-                                  if (success) {
-                                    loadCount();
-                                    setState(() {
-                                      isFollowed = !isFollowed;
-                                    });
+                                        bool success = isFollowed
+                                            ? await unfollowOrganization(
+                                                widget.oid,
+                                                cid!,
+                                              )
+                                            : await followOrganization(
+                                                widget.oid,
+                                                cid!,
+                                              );
 
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      SnackBar(
-                                        content: Text(
-                                          isFollowed
-                                              ? 'Followed successfully'
-                                              : 'Unfollowed successfully',
+                                        if (!mounted) return;
+
+                                        if (success) {
+                                          loadCount();
+                                          setState(() {
+                                            isFollowed = !isFollowed;
+                                          });
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                isFollowed
+                                                    ? 'Followed successfully'
+                                                    : 'Unfollowed successfully',
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Something went wrong.',
+                                              ),
+                                            ),
+                                          );
+                                        }
+
+                                        setState(() {
+                                          isPressed = false;
+                                        });
+                                      },
+                                child: isLoading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.0,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
                                         ),
-                                      ),
-                                    );
-                                  } else {
-                                    ScaffoldMessenger.of(context).showSnackBar(
-                                      const SnackBar(
-                                        content: Text('Something went wrong.'),
-                                      ),
-                                    );
-                                  }
-                                },
-                                child: Text(isFollowed ? 'Unfollow' : 'Follow'),
+                                      )
+                                    : Text(isFollowed ? 'Unfollow' : 'Follow'),
                               ),
                             ),
                           horizontalIcon(

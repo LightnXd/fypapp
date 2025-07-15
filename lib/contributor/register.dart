@@ -95,9 +95,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
               child: Column(
                 children: [
                   QuestionBox(
-                    image: const AssetImage(
-                      'assets/images/rounded_profile.png',
-                    ),
+                    image: const AssetImage('assets/images/profile.png'),
                     label: 'Name:',
                     hint: 'Enter your name',
                     controller: nameController,
@@ -190,7 +188,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
                       if (validateInputs()) {
                         try {
                           setState(() {
-                            isLoading = false;
+                            isLoading = true;
                           });
                           final shouldVerify = await _authService.signUp(
                             emailController.text,
