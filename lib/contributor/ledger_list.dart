@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_file_dialog/flutter_file_dialog.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import '../Organization/proposal_list.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
 import '../widget/ledger_list.dart';
@@ -24,15 +23,18 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
   Stream<List<Map<String, dynamic>>> ledgerStream(String oid) async* {
     while (true) {
       try {
-        yield* Supabase.instance.client
+        final stream = Supabase.instance.client
             .from('ledger')
             .stream(primaryKey: ['LedgerID'])
             .eq('OID', oid)
             .order('TransactionNumber', ascending: false);
+
+        await stream.first;
+        yield* stream;
         break;
       } catch (e, st) {
         debugPrint('Realtime stream error: $e\n$st');
-        await Future.delayed(const Duration(seconds: 5));
+        await Future.delayed(const Duration(seconds: 3));
       }
     }
   }
@@ -52,31 +54,20 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'OID: ${widget.oid}',
-              style: const TextStyle(fontWeight: FontWeight.bold),
-            ),
             gaph8,
-            const Text('Related ledger entries:'),
-            gaph8,
-            ElevatedButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const OrganizationProposalListPage(),
-                  ),
-                );
-              },
-              child: const Text('switch page'),
+            Center(
+              child: ElevatedButton.icon(
+                icon: const Icon(Icons.download),
+                label: const Text('Export as Excel'),
+                onPressed: () => _downloadAsExcel(context),
+              ),
             ),
-            gaph8,
-            ElevatedButton.icon(
-              icon: const Icon(Icons.download),
-              label: const Text('Export as Excel'),
-              onPressed: () => _downloadAsExcel(context),
+            gaph20,
+            const Text(
+              'Related ledger entries:',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
             ),
-            gaph16,
+            gaph12,
             Expanded(
               child: StreamBuilder<List<Map<String, dynamic>>>(
                 stream: _ledgerStream,
@@ -144,6 +135,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
       TextCellValue('OID'),
       TextCellValue('Amount'),
       TextCellValue('CreationDate'),
+      TextCellValue('Description'),
     ]);
 
     // data rows
@@ -157,6 +149,7 @@ class _ContributorLedgerPageState extends State<ContributorLedgerPage> {
         TextCellValue(entry['OID']?.toString() ?? ''),
         TextCellValue(entry['Amount']?.toString() ?? ''),
         TextCellValue(entry['CreationDate']?.toString() ?? ''),
+        TextCellValue(entry['Description']?.toString() ?? ''),
       ]);
     }
 

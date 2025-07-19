@@ -116,6 +116,7 @@ class _OrganizationProposalHistoryListPageState
                                   yes: voteStats?['YesVote'] ?? '0',
                                   no: voteStats?['NoVote'] ?? '0',
                                   notVoted: voteStats?['NotVoted'] ?? '0',
+                                  isHistory: true,
                                 ),
                               ),
                             );

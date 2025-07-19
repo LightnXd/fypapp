@@ -120,19 +120,6 @@ class OrganizationHomePageState extends State<OrganizationHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => OrganizationMainPage(),
-                            ),
-                          );
-                        },
-                        child: const Text('Go to Profile'),
-                      ),
-                    ),
                     gaph32,
                     TextField(
                       controller: _searchController,

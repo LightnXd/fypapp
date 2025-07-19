@@ -52,7 +52,7 @@ class ContributorProposalListPageState
       setState(() {
         _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
-        cid = cid;
+        cid = getCID;
       });
     } catch (e) {
       setState(() => isLoading = false);
@@ -117,7 +117,7 @@ class ContributorProposalListPageState
                                   creationDate: row['CreationDate'] ?? '',
                                   limit: '${row['Limit']} day',
                                   status: row['Status'] ?? '',
-                                  cid: cid!,
+                                  cid: cid ?? '',
                                   yes: voteStats?['YesVote'] ?? '0',
                                   no: voteStats?['NoVote'] ?? '0',
                                   notVoted: voteStats?['NotVoted'] ?? '0',

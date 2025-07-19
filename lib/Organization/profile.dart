@@ -5,6 +5,7 @@ import 'package:fypapp2/widget/empty_box.dart';
 import '../../services/profile.dart';
 import '../contributor/ledger_list.dart';
 import '../services/follow.dart';
+import '../services/image_upload.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/horizontal_box.dart';
@@ -22,6 +23,7 @@ class OrganizationProfilePage extends StatefulWidget {
 }
 
 class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
+  final ImageUploadService _changeImg = ImageUploadService();
   String username = '';
   String id = '';
   String country = '';
@@ -139,6 +141,40 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                       profileUrl: profileImage,
                       backgroundUrl: backgroundImage,
                       follower: "$count",
+                      onTapProfile: () async {
+                        try {
+                          setState(() => isLoading = true);
+                          await _changeImg.ProfileImg(id, true);
+                          loadOrganizationProfile();
+                        } catch (e) {
+                          setState(() => isLoading = false);
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Failed',
+                              message: "Failed to change profile image",
+                              type: false,
+                            ),
+                          );
+                        }
+                      },
+                      onTapBackground: () async {
+                        try {
+                          setState(() => isLoading = true);
+                          await _changeImg.ProfileImg(id, false);
+                          loadOrganizationProfile();
+                        } catch (e) {
+                          setState(() => isLoading = false);
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Failed',
+                              message: "Failed to change background image",
+                              type: false,
+                            ),
+                          );
+                        }
+                      },
                     ),
 
                     SizedBox(height: screenWidth / 4.3),
@@ -183,6 +219,12 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                             alignment: MainAxisAlignment.start,
                             text: "Description:",
                             extraText: description,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/fund.png',
+                            text: "Available fund:",
+                            extraText: fund,
                             spacing: 12,
                           ),
                           horizontalIcon(
@@ -305,6 +347,11 @@ class _OrganizationProfilePageState extends State<OrganizationProfilePage> {
                       ),
                     ),
                   ],
+                ),
+                const Text(
+                  '\nPlease register a Stripe account and get the public and secret key\n\n*/ Don\'t share your secret key with anyone else',
+                  textAlign: TextAlign.start,
+                  style: TextStyle(fontSize: 12),
                 ),
               ],
             ),

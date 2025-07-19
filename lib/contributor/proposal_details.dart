@@ -67,6 +67,7 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
   }
 
   Future<void> _fetchVote() async {
+    print(widget.cid);
     setState(() {
       isLoading = true;
     });
@@ -82,9 +83,6 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
         isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load Vote status')),
-      );
       setState(() {
         vote = null;
         isSuccess = false;
@@ -113,22 +111,10 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.status == 'Confirmed' || widget.status == 'Cancelled') {
-      return Scaffold(
-        appBar: CustomAppBar(title: 'Transaction ${widget.status}'),
-        body: Center(
-          child: Text(
-            'Transaction ${widget.status}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
-      body: _isSending
+      body: _isSending || isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
               onRefresh: refresh,
@@ -206,7 +192,7 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
                           ],
                         ),
                       ),
-                      if (vote == null && isSuccess && widget.isHistory) ...[
+                      if (vote == null && isSuccess && !widget.isHistory) ...[
                         ElevatedButton(
                           onPressed: _isSending
                               ? null
@@ -250,7 +236,7 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
                           color: Color(0xFFFF8A8A),
                           width: 150,
                         ),
-                      if (!isSuccess)
+                      if (!isSuccess && !widget.isHistory)
                         BuildingBox(
                           text: "Not eligible to vote",
                           textSize: 16,

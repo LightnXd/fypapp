@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:fypapp2/services/date_converter.dart';
 import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/empty_box.dart';
+import '../services/image_upload.dart';
 import '../services/profile.dart';
 import '../widget/app_bar.dart';
 import '../widget/profile_head.dart';
+import '../widget/response_dialog.dart';
 import 'edit_profile.dart';
 
 class ContributorProfilePage extends StatefulWidget {
@@ -15,6 +17,7 @@ class ContributorProfilePage extends StatefulWidget {
 }
 
 class _ContributorProfilePageState extends State<ContributorProfilePage> {
+  final ImageUploadService _changeImg = ImageUploadService();
   String username = '';
   String id = '';
   String country = '';
@@ -72,6 +75,40 @@ class _ContributorProfilePageState extends State<ContributorProfilePage> {
                     ProfileHeader(
                       profileUrl: profileImage,
                       backgroundUrl: backgroundImage,
+                      onTapProfile: () async {
+                        try {
+                          setState(() => isLoading = true);
+                          await _changeImg.ProfileImg(id, true);
+                          loadContributorProfile();
+                        } catch (e) {
+                          setState(() => isLoading = false);
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Failed',
+                              message: "Failed to change Profile image",
+                              type: false,
+                            ),
+                          );
+                        }
+                      },
+                      onTapBackground: () async {
+                        try {
+                          setState(() => isLoading = true);
+                          await _changeImg.ProfileImg(id, false);
+                          loadContributorProfile();
+                        } catch (e) {
+                          setState(() => isLoading = false);
+                          showDialog(
+                            context: context,
+                            builder: (context) => ResponseDialog(
+                              title: 'Failed',
+                              message: "Failed to change background image",
+                              type: false,
+                            ),
+                          );
+                        }
+                      },
                     ),
 
                     SizedBox(height: screenWidth / 4.3),

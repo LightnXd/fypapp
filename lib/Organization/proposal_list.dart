@@ -34,8 +34,8 @@ class _OrganizationProposalListPageState
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
-      oid = await authService.getCurrentUserID();
-      final rawProposals = await getActiveProposal(oid!);
+      final getoid = await authService.getCurrentUserID();
+      final rawProposals = await getActiveProposal(getoid!);
 
       final proposalsWithVotes = await Future.wait(
         rawProposals.map((proposal) async {
@@ -49,6 +49,7 @@ class _OrganizationProposalListPageState
       );
 
       setState(() {
+        oid = getoid;
         _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
       });

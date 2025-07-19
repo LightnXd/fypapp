@@ -6,7 +6,6 @@ import 'package:fypapp2/services/authentication.dart';
 import 'package:fypapp2/services/profile.dart';
 import 'package:fypapp2/services/url.dart';
 import 'package:http/http.dart' as http;
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 class OpenPage extends StatefulWidget {
   const OpenPage({super.key});

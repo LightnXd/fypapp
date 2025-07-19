@@ -174,99 +174,106 @@ class _MakeDonationPageState extends State<MakeDonationPage> {
       appBar: CustomAppBar(title: "Make Donation"),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                gaph60,
-                Text(
-                  'RM ${amount.toStringAsFixed(2)}',
-                  style: const TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                gaph60,
-                HorizontalBox3(
-                  leftText: '5',
-                  midText: '10',
-                  rightText: '20',
-                  textSize: 20,
-                  width: 90,
-                  color3: Color(0xFFBAFFC9),
-                  color2: Color(0xFFBAFFC9),
-                  onLeftTap: () => setState(() => amount = 5.00),
-                  onMidTap: () => setState(() => amount = 10.00),
-                  onRightTap: () => setState(() => amount = 20.00),
-                ),
-                gaph40,
-                HorizontalBox3(
-                  leftText: '50',
-                  midText: '100',
-                  rightText: '200',
-                  textSize: 20,
-                  width: 90,
-                  color3: Color(0xFFBAFFC9),
-                  color2: Color(0xFFBAFFC9),
-                  onLeftTap: () => setState(() => amount = 50.00),
-                  onMidTap: () => setState(() => amount = 100.00),
-                  onRightTap: () => setState(() => amount = 200.00),
-                ),
-                gaph20,
-                QuestionBox(
-                  label: "Custom Donation",
-                  hint: "Enter the amount eg(20.50)",
-                  controller: customAmountController,
-                  keyboardType: TextInputType.number,
-                  errorText: customAmountError,
-                ),
-                gaph60,
-                gaph20,
-                ElevatedButton(
-                  onPressed: () {
-                    final textValue = customAmountController.text;
-                    final parsed = double.tryParse(textValue) ?? 0.0;
+          : SingleChildScrollView(
+              child: Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    gaph60,
+                    Text(
+                      'RM ${amount.toStringAsFixed(2)}',
+                      style: const TextStyle(
+                        fontSize: 60,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    gaph60,
+                    HorizontalBox3(
+                      leftText: '5',
+                      midText: '10',
+                      rightText: '20',
+                      textSize: 20,
+                      width: 90,
+                      color3: Color(0xFFBAFFC9),
+                      color2: Color(0xFFBAFFC9),
+                      onLeftTap: () => setState(() => amount = 5.00),
+                      onMidTap: () => setState(() => amount = 10.00),
+                      onRightTap: () => setState(() => amount = 20.00),
+                    ),
+                    gaph40,
+                    HorizontalBox3(
+                      leftText: '50',
+                      midText: '100',
+                      rightText: '200',
+                      textSize: 20,
+                      width: 90,
+                      color3: Color(0xFFBAFFC9),
+                      color2: Color(0xFFBAFFC9),
+                      onLeftTap: () => setState(() => amount = 50.00),
+                      onMidTap: () => setState(() => amount = 100.00),
+                      onRightTap: () => setState(() => amount = 200.00),
+                    ),
+                    gaph20,
+                    QuestionBox(
+                      label: "Custom Donation",
+                      hint: "Enter the amount eg(20.50)",
+                      controller: customAmountController,
+                      keyboardType: TextInputType.number,
+                      errorText: customAmountError,
+                    ),
+                    gaph60,
+                    gaph20,
+                    ElevatedButton(
+                      onPressed: () {
+                        final textValue = customAmountController.text;
+                        final parsed = double.tryParse(textValue) ?? 0.0;
 
-                    if (parsed >= 5.00) {
-                      setState(() {
-                        amount = parsed;
-                      });
-                      _startPayment();
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ResponseDialog(
-                          title: 'Invalid Amount',
-                          message: 'The inputted amount is invalid or under RM 5.00',
-                          type: false,
-                        ),
-                      );
-                    }
-                  },
-                  child: const Text(
-                    "Make a Custom Donation",
-                    style: TextStyle(fontSize: 18),
-                  ),
-                ),
-                gaph32,
-                ElevatedButton(
-                  onPressed: amount >= 5.00
-                      ? _startPayment
-                      : () {
+                        if (parsed >= 5.00) {
+                          setState(() {
+                            amount = parsed;
+                          });
+                          _startPayment();
+                        } else {
                           showDialog(
                             context: context,
                             builder: (context) => ResponseDialog(
                               title: 'Invalid Amount',
-                              message: 'The minimum donation amount is RM 5',
+                              message:
+                                  'The inputted amount is invalid or under RM 5.00',
                               type: false,
                             ),
                           );
-                        },
-                  child: const Text(
-                    "Make Donation",
-                    style: TextStyle(fontSize: 18),
-                  ),
+                        }
+                      },
+                      child: const Text(
+                        "Make a Custom Donation",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                    gaph32,
+                    ElevatedButton(
+                      onPressed: amount >= 5.00
+                          ? _startPayment
+                          : () {
+                              showDialog(
+                                context: context,
+                                builder: (context) => ResponseDialog(
+                                  title: 'Invalid Amount',
+                                  message:
+                                      'The minimum donation amount is RM 5',
+                                  type: false,
+                                ),
+                              );
+                            },
+                      child: const Text(
+                        "Make Donation",
+                        style: TextStyle(fontSize: 18),
+                      ),
+                    ),
+                  ],
                 ),
-              ],
+              ),
             ),
     );
   }

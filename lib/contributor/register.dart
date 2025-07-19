@@ -185,134 +185,111 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
                   gaph28,
                   ElevatedButton(
                     onPressed: () async {
-                      if (validateInputs()) {
-                        try {
-                          setState(() {
-                            isLoading = true;
-                          });
-                          final shouldVerify = await _authService.signUp(
-                            emailController.text,
-                          );
-                          if (shouldVerify) {
-                            await OtpDialog.show(
-                              context: context,
-                              onSubmitted: (otp, onResult) async {
-                                try {
-                                  final response = await _authService.verifyOTP(
-                                    email: emailController.text,
-                                    otp: otp,
-                                  );
-                                  final data = jsonDecode(response.body);
+                      if (!validateInputs()) return;
 
-                                  if (response.statusCode == 200) {
-                                    onResult(null);
-
-                                    final success = await _authService
-                                        .getSession(data['session_string']);
-
-                                    if (success) {
-                                      final passwordSet = await _authService
-                                          .setPassword(passwordController.text);
-                                      if (!passwordSet) {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => ResponseDialog(
-                                            title: 'Error',
-                                            message: 'Failed to set password',
-                                            type: false,
-                                          ),
-                                        );
-                                        return;
-                                      }
-
-                                      final creationSuccess = await _authService
-                                          .createContributor(
-                                            email: emailController.text,
-                                            name: nameController.text,
-                                            country: countryController.text,
-                                            birthdate: birthdateController.text,
-                                          );
-
-                                      if (creationSuccess) {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                        Navigator.pushReplacementNamed(
-                                          context,
-                                          '/contributor-main',
-                                        );
-                                      } else {
-                                        setState(() {
-                                          isLoading = false;
-                                        });
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) => ResponseDialog(
-                                            title: 'Error',
-                                            message:
-                                                'Failed to create contributor',
-                                            type: false,
-                                          ),
-                                        );
-                                      }
-                                    } else {
-                                      setState(() {
-                                        isLoading = false;
-                                      });
-                                      showDialog(
-                                        context: context,
-                                        builder: (context) => ResponseDialog(
-                                          title: 'Error',
-                                          message: 'Failed to restore session',
-                                          type: false,
-                                        ),
-                                      );
-                                    }
-                                  } else {
-                                    setState(() {
-                                      isLoading = false;
-                                    });
-                                    onResult(
-                                      data['error'] ?? 'Verification failed',
-                                    );
-                                  }
-                                } catch (e) {
-                                  setState(() {
-                                    isLoading = false;
-                                  });
-                                  onResult('An error occurred: $e');
-                                }
-                              },
-                            );
-                          } else {
-                            setState(() {
-                              isLoading = false;
-                            });
-                            showDialog(
-                              context: context,
-                              builder: (context) => ResponseDialog(
-                                title: 'Error',
-                                message: 'This email is already confirmed',
-                                type: false,
-                              ),
-                            );
-                          }
-                        } catch (e) {
-                          setState(() {
-                            isLoading = false;
-                          });
-                          showDialog(
+                      setState(() => isLoading = true);
+                      try {
+                        final shouldVerify = await _authService.signUp(
+                          emailController.text,
+                        );
+                        if (!shouldVerify) {
+                          setState(() => isLoading = false);
+                          return showDialog(
                             context: context,
-                            builder: (context) => ResponseDialog(
+                            builder: (_) => const ResponseDialog(
                               title: 'Error',
-                              message: 'Signup error: $e',
+                              message: 'This email is already confirmed',
                               type: false,
                             ),
                           );
                         }
+
+                        await OtpDialog.show(
+                          context: context,
+                          onSubmitted: (otp, onResult) async {
+                            try {
+                              final response = await _authService.verifyOTP(
+                                email: emailController.text,
+                                otp: otp,
+                              );
+                              final data = jsonDecode(response.body);
+
+                              if (response.statusCode != 200) {
+                                setState(() => isLoading = false);
+                                return onResult(
+                                  data['error'] ?? 'Verification failed',
+                                );
+                              }
+
+                              onResult(null);
+                              final sessionOk = await _authService.getSession(
+                                data['session_string'],
+                              );
+                              if (!sessionOk) {
+                                setState(() => isLoading = false);
+                                return showDialog(
+                                  context: context,
+                                  builder: (_) => const ResponseDialog(
+                                    title: 'Error',
+                                    message: 'Failed to restore session',
+                                    type: false,
+                                  ),
+                                );
+                              }
+                              final creationSuccess = await _authService
+                                  .createContributor(
+                                    email: emailController.text,
+                                    name: nameController.text,
+                                    country: countryController.text,
+                                    birthdate: birthdateController.text,
+                                  );
+                              if (!creationSuccess) {
+                                setState(() => isLoading = false);
+                                return showDialog(
+                                  context: context,
+                                  builder: (_) => const ResponseDialog(
+                                    title: 'Error',
+                                    message: 'Failed to create contributor',
+                                    type: false,
+                                  ),
+                                );
+                              }
+                              final passwordSet = await _authService
+                                  .setPassword(passwordController.text);
+                              if (!passwordSet) {
+                                setState(() => isLoading = false);
+                                return showDialog(
+                                  context: context,
+                                  builder: (_) => const ResponseDialog(
+                                    title: 'Error',
+                                    message: 'Failed to set password',
+                                    type: false,
+                                  ),
+                                );
+                              }
+                              setState(() => isLoading = false);
+                              Navigator.pushReplacementNamed(
+                                context,
+                                '/contributor-main',
+                              );
+                            } catch (e) {
+                              setState(() => isLoading = false);
+                              onResult('An error occurred: $e');
+                            }
+                          },
+                        ).then((_) {
+                          if (mounted) setState(() => isLoading = false);
+                        });
+                      } catch (e) {
+                        setState(() => isLoading = false);
+                        showDialog(
+                          context: context,
+                          builder: (_) => ResponseDialog(
+                            title: 'Error',
+                            message: 'Signup error: $e',
+                            type: false,
+                          ),
+                        );
                       }
                     },
                     child: const Text("Register"),

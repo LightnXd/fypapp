@@ -23,6 +23,7 @@ class ConfirmProposalPage extends StatefulWidget {
   final String yes;
   final String no;
   final String notVoted;
+  final bool isHistory;
 
   const ConfirmProposalPage({
     super.key,
@@ -39,6 +40,7 @@ class ConfirmProposalPage extends StatefulWidget {
     required this.yes,
     required this.no,
     required this.notVoted,
+    this.isHistory = false,
   });
 
   @override
@@ -76,6 +78,8 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
         body: jsonEncode({
           'OID': widget.oid,
           'Amount': double.parse(widget.amount.trim()),
+          'description':
+              'Transaction of: ${widget.proposalid} that aim to :${widget.description}',
         }),
       );
       final data = jsonDecode(response.body);
@@ -114,18 +118,6 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.status == 'Confirmed' || widget.status == 'Cancelled') {
-      return Scaffold(
-        appBar: CustomAppBar(title: 'Transaction ${widget.status}'),
-        body: Center(
-          child: Text(
-            'Transaction ${widget.status}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       key: _scaffoldKey,
       appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
@@ -202,7 +194,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                         ],
                       ),
                     ),
-                    if (widget.status == 'Waiting')
+                    if (widget.status == 'Waiting' && !widget.isHistory) ...[
                       ElevatedButton(
                         onPressed: _isSending
                             ? null
@@ -217,19 +209,33 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                               )
                             : const Text('Create Transaction'),
                       ),
-                    if (widget.status == 'Waiting') gaph20,
-                    ElevatedButton(
-                      onPressed: _isSending
-                          ? null
-                          : () => _cancelTransaction(context),
-                      child: _isSending
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text('Cancel Transaction'),
-                    ),
+                      gaph20,
+                      ElevatedButton(
+                        onPressed: _isSending
+                            ? null
+                            : () => _cancelTransaction(context),
+                        child: _isSending
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text('Cancel Transaction'),
+                      ),
+                    ],
+
+                    if (widget.isHistory)
+                      Center(
+                        child: Text(
+                          'The Proposal is ${widget.status}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
                     gaph40,
                   ],
                 ),

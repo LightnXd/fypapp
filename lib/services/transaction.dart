@@ -136,9 +136,9 @@ Future<Map<String, dynamic>> getVote({
   required String proposalId,
   required String cid,
 }) async {
-  final url = Uri.parse('$getVoteUrl?proposalid=$proposalId&cid=$cid');
-
-  final response = await http.get(url);
+  final response = await http.get(
+    Uri.parse('$getVoteUrl?proposalid=$proposalId&cid=$cid'),
+  );
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);

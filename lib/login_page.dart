@@ -2,12 +2,15 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:fypapp2/contributor/register.dart';
+import 'package:fypapp2/reset_password.dart';
 import 'package:fypapp2/services/authentication.dart';
 import 'package:fypapp2/services/profile.dart';
 import 'package:fypapp2/widget/empty_box.dart';
+import 'package:fypapp2/widget/icon_box.dart';
 import 'package:fypapp2/widget/otp_confirmation.dart';
 import 'package:fypapp2/widget/question_box.dart';
 import 'package:fypapp2/widget/response_dialog.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'Organization/register.dart';
 
@@ -41,13 +44,23 @@ class _LoginPageState extends State<LoginPage> {
     final passwordValid = RegExp(
       r'^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[\W_]).{8,24}$',
     );
+
+    final emailIsValid = email.contains('@');
+    final passwordIsValid = passwordValid.hasMatch(password);
+
     setState(() {
-      emailError = email.contains('@') ? null : 'Invalid email address';
-      passwordError = passwordValid.hasMatch(password)
+      emailError = emailIsValid ? null : 'Invalid email address';
+      passwordError = passwordIsValid
           ? null
-          : 'Need to be within 8–24 characters\nAt least 1 uppercase\nAt least 1 lowercase\nAt least 1 number\nAt least 1 symbol';
+          : 'Need to be within 8–24 characters\n'
+                'At least 1 uppercase\n'
+                'At least 1 lowercase\n'
+                'At least 1 number\n'
+                'At least 1 symbol';
     });
-    return email.contains('@');
+
+    // 3) return true only if both are valid
+    return emailIsValid && passwordIsValid;
   }
 
   @override
@@ -96,6 +109,22 @@ class _LoginPageState extends State<LoginPage> {
                         errordata!,
                         style: const TextStyle(color: Colors.red, fontSize: 14),
                       ),
+                    gaph10,
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ResetPasswordPage(),
+                          ),
+                        );
+                      },
+                      child: const Text(
+                        'Forget password? Reset password here!',
+                        style: TextStyle(color: Colors.blue),
+                      ),
+                    ),
+
                     gaph28,
                     ElevatedButton(
                       onPressed: () async {
@@ -114,13 +143,18 @@ class _LoginPageState extends State<LoginPage> {
                               password,
                             );
                             final verified = result['status'];
-
+                            final msg = result['message'].toString().trim();
                             if (!verified) {
                               setState(() {
-                                errordata = result['message'];
-                                setState(() {
-                                  isLoading = false;
-                                });
+                                errordata = msg;
+                                isLoading = false;
+                              });
+                              return;
+                            }
+                            if (!verified) {
+                              setState(() {
+                                errordata = msg;
+                                isLoading = false;
                               });
                               return;
                             }
@@ -223,7 +257,9 @@ class _LoginPageState extends State<LoginPage> {
                                     onResult('An error occurred: $e');
                                   }
                                 },
-                              );
+                              ).then((_) {
+                                if (mounted) setState(() => isLoading = false);
+                              });
                             } catch (e) {
                               setState(() {
                                 isLoading = false;

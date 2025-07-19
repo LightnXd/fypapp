@@ -6,6 +6,7 @@ import 'package:fypapp2/widget/side_bar.dart';
 
 import '../services/authentication.dart';
 import '../services/date_converter.dart';
+import '../services/image_upload.dart';
 import '../services/posting.dart';
 import '../services/profile.dart';
 import '../widget/avatar_box.dart';
@@ -62,7 +63,7 @@ class ContributorHomePageState extends State<ContributorHomePage> {
           context: context,
           builder: (context) => ResponseDialog(
             title: 'Unexpected Error',
-            message: 'Failed to fetch user data: $e',
+            message: 'Failed to fetch user data',
             type: false,
           ),
         );
@@ -97,9 +98,15 @@ class ContributorHomePageState extends State<ContributorHomePage> {
       setState(() => _isPostLoading = false);
       showDialog(
         context: context,
-        builder: (_) =>
-            ResponseDialog(title: 'Error', message: e.toString(), type: false),
+        builder: (_) => ResponseDialog(
+          title: 'Error',
+          message: "Failed to fetch post",
+          type: false,
+        ),
       );
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 
@@ -125,13 +132,13 @@ class ContributorHomePageState extends State<ContributorHomePage> {
       appBar: CustomAppBar(title: "Home", type: 1),
       drawerEnableOpenDragGesture: false,
       drawer: ContributorSideBar(userId: cid),
-      body: isLoading
-          ? Center(child: CircularProgressIndicator())
-          : status != 'Active'
-          ? const Center(child: Text('Your account have been suspended'))
-          : RefreshIndicator(
-              onRefresh: refresh,
-              child: SingleChildScrollView(
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: isLoading
+            ? Center(child: CircularProgressIndicator())
+            : status != 'Active'
+            ? const Center(child: Text('Your account have been suspended'))
+            : SingleChildScrollView(
                 padding: const EdgeInsets.symmetric(
                   horizontal: 20,
                   vertical: 10,
@@ -139,22 +146,6 @@ class ContributorHomePageState extends State<ContributorHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Center(
-                      child: ElevatedButton(
-                        onPressed: () {
-                          showDialog(
-                            context: context,
-                            builder: (context) => ResponseDialog(
-                              title: 'Transaction Successful',
-                              message:
-                                  'Transaction saved to the ledger with LedgerID:',
-                              type: false,
-                            ),
-                          );
-                        },
-                        child: const Text('Go to Profile'),
-                      ),
-                    ),
                     gaph32,
                     TextField(
                       controller: _searchController,
@@ -210,7 +201,7 @@ class ContributorHomePageState extends State<ContributorHomePage> {
                   ],
                 ),
               ),
-            ),
+      ),
     );
   }
 }

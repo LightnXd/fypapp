@@ -4,12 +4,16 @@ class ProfileHeader extends StatelessWidget {
   final String? profileUrl;
   final String? backgroundUrl;
   final String follower;
+  final VoidCallback? onTapProfile;
+  final VoidCallback? onTapBackground;
 
   const ProfileHeader({
     super.key,
     this.profileUrl,
     this.backgroundUrl,
     this.follower = "0",
+    this.onTapProfile,
+    this.onTapBackground,
   });
 
   @override
@@ -21,19 +25,22 @@ class ProfileHeader extends StatelessWidget {
     return Stack(
       clipBehavior: Clip.none,
       children: [
-        (backgroundUrl != null && backgroundUrl!.isNotEmpty)
-            ? Image.network(
-                backgroundUrl!,
-                height: screenHeight / 3.1,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              )
-            : Image.asset(
-                'assets/images/profile_background.jpg',
-                height: screenHeight / 3.1,
-                width: double.infinity,
-                fit: BoxFit.cover,
-              ),
+        GestureDetector(
+          onTap: onTapBackground,
+          child: (backgroundUrl != null && backgroundUrl!.isNotEmpty)
+              ? Image.network(
+                  backgroundUrl!,
+                  height: screenHeight / 3.1,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                )
+              : Image.asset(
+                  'assets/images/profile_background.jpg',
+                  height: screenHeight / 3.1,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                ),
+        ),
 
         Positioned(
           bottom: -profileRadius,
@@ -44,12 +51,16 @@ class ProfileHeader extends StatelessWidget {
             children: [
               Padding(
                 padding: EdgeInsets.only(left: screenWidth / 13.6),
-                child: CircleAvatar(
-                  radius: profileRadius,
-                  backgroundImage:
-                      (profileUrl != null && profileUrl!.isNotEmpty)
-                      ? NetworkImage(profileUrl!)
-                      : const AssetImage('assets/images/profile.png'),
+                child: GestureDetector(
+                  onTap: onTapProfile,
+                  child: CircleAvatar(
+                    radius: profileRadius,
+                    backgroundImage:
+                        (profileUrl != null && profileUrl!.isNotEmpty)
+                        ? NetworkImage(profileUrl!)
+                        : const AssetImage('assets/images/profile.png')
+                              as ImageProvider,
+                  ),
                 ),
               ),
               const Spacer(),

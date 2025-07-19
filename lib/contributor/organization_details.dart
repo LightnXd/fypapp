@@ -48,17 +48,15 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
   void initState() {
     super.initState();
     loadOrganizationProfile();
-    loadCount();
   }
 
   Future<void> refresh() async {
     setState(() => isLoading = true);
     await loadOrganizationProfile();
-    await loadCount();
   }
 
-  Future<void> loadCount() async {
-    final result = await fetchCountByOID(id);
+  Future<void> loadCount(String identifier) async {
+    final result = await fetchCountByOID(identifier);
     if (result == null) return;
     setState(() {
       count = result;
@@ -92,6 +90,7 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
           tid = [];
         }
       });
+      loadCount(data['ID'].toString());
       final getcid = await _authService.getCurrentUserID();
       final followed = await isFollowing(widget.oid, getcid!);
       setState(() {
@@ -160,7 +159,7 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                                         if (!mounted) return;
 
                                         if (success) {
-                                          loadCount();
+                                          loadCount(id);
                                           setState(() {
                                             isFollowed = !isFollowed;
                                           });
@@ -219,6 +218,12 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                             alignment: MainAxisAlignment.start,
                             text: "Description:",
                             extraText: description,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/fund.png',
+                            text: "Available fund:",
+                            extraText: fund,
                             spacing: 12,
                           ),
                           horizontalIcon(

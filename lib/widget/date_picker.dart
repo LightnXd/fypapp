@@ -16,11 +16,24 @@ class DatePickerDropdown extends StatelessWidget {
     DateTime? initialDate,
     DateTime? lastDate,
   }) : firstDate = firstDate ?? DateTime(1900),
-       initialDate = initialDate ?? DateTime.now(),
-       lastDate = lastDate ?? DateTime.now();
+       initialDate =
+           initialDate ??
+           DateTime(
+             DateTime.now().year - 12,
+             DateTime.now().month,
+             DateTime.now().day,
+           ),
+       lastDate =
+           lastDate ??
+           DateTime(
+             DateTime.now().year - 12,
+             DateTime.now().month,
+             DateTime.now().day,
+           );
 
   @override
   Widget build(BuildContext context) {
+    print(lastDate);
     return GestureDetector(
       onTap: () async {
         final pickedDate = await showDatePicker(
