@@ -100,9 +100,6 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
       });
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -216,7 +213,7 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
                           gaph12,
                           horizontalIcon(
                             alignment: MainAxisAlignment.start,
-                            text: "Description:",
+                            text: "Description: \n",
                             extraText: description,
                             spacing: 12,
                           ),

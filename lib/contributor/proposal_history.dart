@@ -17,7 +17,7 @@ class ContributorProposalHistoryListPage extends StatefulWidget {
 
 class ContributorProposalHistoryListPageState
     extends State<ContributorProposalHistoryListPage> {
-  String? cid;
+  String cid = '';
   late Future<List<Map<String, dynamic>>> _proposals;
   bool isLoading = true;
 
@@ -52,7 +52,7 @@ class ContributorProposalHistoryListPageState
       setState(() {
         _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
-        cid = cid;
+        cid = getCID;
       });
     } catch (e) {
       setState(() => isLoading = false);
@@ -65,7 +65,7 @@ class ContributorProposalHistoryListPageState
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: CustomAppBar(title: 'Proposal List', type: 1),
+      appBar: CustomAppBar(title: 'Proposal List',),
       drawerEnableOpenDragGesture: false,
       drawer: ContributorSideBar(userId: cid),
       body: isLoading
@@ -117,7 +117,7 @@ class ContributorProposalHistoryListPageState
                             creationDate: row['CreationDate'] ?? '',
                             limit: '${row['Limit']} day',
                             status: row['Status'] ?? '',
-                            cid: cid!,
+                            cid: cid,
                             yes: voteStats?['YesVote'] ?? '0',
                             no: voteStats?['NoVote'] ?? '0',
                             notVoted: voteStats?['NotVoted'] ?? '0',

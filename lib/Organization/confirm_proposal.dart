@@ -120,7 +120,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
+      appBar: CustomAppBar(title: 'Confirm Proposal', type: 2),
       body: _isSending
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -168,17 +168,17 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                           ),
                           horizontalIcon(
                             text: 'Yes vote:',
-                            extraText: widget.description,
+                            extraText: widget.yes,
                             spacing: 16,
                           ),
                           horizontalIcon(
                             text: 'No vote:',
-                            extraText: widget.description,
+                            extraText: widget.no,
                             spacing: 16,
                           ),
                           horizontalIcon(
                             text: 'Have not vote:',
-                            extraText: widget.description,
+                            extraText: widget.notVoted,
                             spacing: 16,
                           ),
                           horizontalIcon(

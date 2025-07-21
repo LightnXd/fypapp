@@ -48,38 +48,30 @@ class _OpenPageState extends State<OpenPage> {
       Navigator.pushReplacementNamed(context, '/login');
       return;
     }
-
     try {
       final email = session.user?.email;
-
       if (email == null) {
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/login');
         return;
       }
-
       final response = await http.post(
         Uri.parse(checkUserCreatedUrl),
         headers: {'Content-Type': 'application/json'},
         body: jsonEncode({'email': email}),
       );
-
       if (response.statusCode != 200) {
         throw Exception('Failed to check user registration');
       }
-
       final data = jsonDecode(response.body);
       final isRegistered = data['created'] == true;
-
       if (!isRegistered) {
         if (!mounted) return;
         Navigator.pushReplacementNamed(context, '/login');
         return;
       }
-
       final id = await authService.getCurrentUserID();
       if (id == null || !mounted) return;
-
       final userRole = await getUserRole(id);
       if (!mounted) return;
       switch (userRole) {

@@ -113,7 +113,7 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
+      appBar: CustomAppBar(title: 'Proposal Details', type: 2),
       body: _isSending || isLoading
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
@@ -166,17 +166,17 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
                             ),
                             horizontalIcon(
                               text: 'Yes vote:',
-                              extraText: widget.description,
+                              extraText: widget.yes,
                               spacing: 16,
                             ),
                             horizontalIcon(
                               text: 'No vote:',
-                              extraText: widget.description,
+                              extraText: widget.no,
                               spacing: 16,
                             ),
                             horizontalIcon(
                               text: 'Have not vote:',
-                              extraText: widget.description,
+                              extraText: widget.notVoted,
                               spacing: 16,
                             ),
                             horizontalIcon(

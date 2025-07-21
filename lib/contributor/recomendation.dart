@@ -111,7 +111,7 @@ class ContributorRecommendationPageState
     return Scaffold(
       appBar: CustomAppBar(title: 'Recommendation', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: id),
+      drawer: ContributorSideBar(userId: id),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(

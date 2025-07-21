@@ -203,7 +203,6 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
                             ),
                           );
                         }
-
                         await OtpDialog.show(
                           context: context,
                           onSubmitted: (otp, onResult) async {
@@ -220,7 +219,6 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
                                   data['error'] ?? 'Verification failed',
                                 );
                               }
-
                               onResult(null);
                               final sessionOk = await _authService.getSession(
                                 data['session_string'],

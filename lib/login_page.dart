@@ -151,13 +151,6 @@ class _LoginPageState extends State<LoginPage> {
                               });
                               return;
                             }
-                            if (!verified) {
-                              setState(() {
-                                errordata = msg;
-                                isLoading = false;
-                              });
-                              return;
-                            }
                             try {
                               await _authService.sendOTP(email);
                               await OtpDialog.show(
@@ -176,11 +169,6 @@ class _LoginPageState extends State<LoginPage> {
                                       final success = await _authService
                                           .getSession(data['session_string']);
                                       if (success) {
-                                        final session = _authService
-                                            .client
-                                            .auth
-                                            .currentSession;
-                                        final uid = session?.user.id;
                                         final id = await _authService
                                             .getCurrentUserID();
                                         if (id == null) {
