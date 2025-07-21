@@ -25,7 +25,7 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
   final confirmPasswordController = TextEditingController();
   final countryController = TextEditingController();
   final birthdateController = TextEditingController();
-
+  bool isLoading = false;
   bool showPassword = false;
   bool showConfirmPassword = false;
   String? nameError;
@@ -88,203 +88,213 @@ class _ContributorRegisterPageState extends State<ContributorRegisterPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: CustomAppBar(title: "Register"),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(24.0),
-        child: Column(
-          children: [
-            QuestionBox(
-              image: const AssetImage('assets/images/rounded_profile.png'),
-              label: 'Name:',
-              hint: 'Enter your name',
-              controller: nameController,
-              errorText: nameError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/email.png'),
-              label: 'Email:',
-              hint: 'Enter your email',
-              controller: emailController,
-              keyboardType: TextInputType.emailAddress,
-              errorText: emailError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/email.png'),
-              label: 'Confirm Email:',
-              hint: 'Re-enter your email',
-              controller: confirmEmailController,
-              keyboardType: TextInputType.emailAddress,
-              errorText: confirmEmailError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/password.png'),
-              label: 'Password:',
-              hint: 'Enter your password',
-              controller: passwordController,
-              hidden: true,
-              showPassword: showPassword,
-              onTogglePassword: () =>
-                  setState(() => showPassword = !showPassword),
-              errorText: passwordError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/password.png'),
-              label: 'Confirm Password:',
-              hint: 'Re-enter your password',
-              controller: confirmPasswordController,
-              hidden: true,
-              showPassword: showConfirmPassword,
-              onTogglePassword: () =>
-                  setState(() => showConfirmPassword = !showConfirmPassword),
-              errorText: confirmPasswordError,
-            ),
-            QuestionBox(
-              image: const AssetImage('assets/images/country.png'),
-              label: 'Country:',
-              hint: 'Enter your country',
-              controller: countryController,
-              errorText: countryError,
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 10.0),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.start,
+      body: isLoading
+          ? Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(24.0),
+              child: Column(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.only(right: 8.0, top: 7),
-                    child: Image(
-                      image: AssetImage('assets/images/birthdate.png'),
-                      width: 40,
-                      height: 40,
+                  QuestionBox(
+                    image: const AssetImage('assets/images/profile.png'),
+                    label: 'Name:',
+                    hint: 'Enter your name',
+                    controller: nameController,
+                    errorText: nameError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/email.png'),
+                    label: 'Email:',
+                    hint: 'Enter your email',
+                    controller: emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    errorText: emailError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/email.png'),
+                    label: 'Confirm Email:',
+                    hint: 'Re-enter your email',
+                    controller: confirmEmailController,
+                    keyboardType: TextInputType.emailAddress,
+                    errorText: confirmEmailError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/password.png'),
+                    label: 'Password:',
+                    hint: 'Enter your password',
+                    controller: passwordController,
+                    hidden: true,
+                    showPassword: showPassword,
+                    onTogglePassword: () =>
+                        setState(() => showPassword = !showPassword),
+                    errorText: passwordError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/password.png'),
+                    label: 'Confirm Password:',
+                    hint: 'Re-enter your password',
+                    controller: confirmPasswordController,
+                    hidden: true,
+                    showPassword: showConfirmPassword,
+                    onTogglePassword: () => setState(
+                      () => showConfirmPassword = !showConfirmPassword,
+                    ),
+                    errorText: confirmPasswordError,
+                  ),
+                  QuestionBox(
+                    image: const AssetImage('assets/images/country.png'),
+                    label: 'Country:',
+                    hint: 'Enter your country',
+                    controller: countryController,
+                    errorText: countryError,
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(right: 8.0, top: 7),
+                          child: Image(
+                            image: AssetImage('assets/images/birthdate.png'),
+                            width: 40,
+                            height: 40,
+                          ),
+                        ),
+                        const SizedBox(
+                          width: 100,
+                          child: Padding(
+                            padding: EdgeInsets.only(top: 15.0),
+                            child: Text(
+                              'Birthdate:',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.black,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Expanded(
+                          child: DatePickerDropdown(
+                            hint: "Select your birthdate",
+                            controller: birthdateController,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(
-                    width: 100,
-                    child: Padding(
-                      padding: EdgeInsets.only(top: 15.0),
-                      child: Text(
-                        'Birthdate:',
-                        style: TextStyle(fontSize: 14, color: Colors.black),
-                      ),
-                    ),
-                  ),
-                  Expanded(
-                    child: DatePickerDropdown(
-                      hint: "Select your birthdate",
-                      controller: birthdateController,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            gaph28,
-            ElevatedButton(
-              onPressed: () async {
-                if (validateInputs()) {
-                  try {
-                    final shouldVerify = await _authService.signUp(
-                      emailController.text,
-                    );
-                    if (shouldVerify) {
-                      await OtpDialog.show(
-                        context: context,
-                        onSubmitted: (otp, onResult) async {
-                          try {
-                            final response = await _authService.verifyOTP(
-                              email: emailController.text,
-                              otp: otp,
-                            );
-                            final data = jsonDecode(response.body);
+                  gaph28,
+                  ElevatedButton(
+                    onPressed: () async {
+                      if (!validateInputs()) return;
 
-                            if (response.statusCode == 200) {
+                      setState(() => isLoading = true);
+                      try {
+                        final shouldVerify = await _authService.signUp(
+                          emailController.text,
+                        );
+                        if (!shouldVerify) {
+                          setState(() => isLoading = false);
+                          return showDialog(
+                            context: context,
+                            builder: (_) => const ResponseDialog(
+                              title: 'Error',
+                              message: 'This email is already confirmed',
+                              type: false,
+                            ),
+                          );
+                        }
+                        await OtpDialog.show(
+                          context: context,
+                          onSubmitted: (otp, onResult) async {
+                            try {
+                              final response = await _authService.verifyOTP(
+                                email: emailController.text,
+                                otp: otp,
+                              );
+                              final data = jsonDecode(response.body);
+
+                              if (response.statusCode != 200) {
+                                setState(() => isLoading = false);
+                                return onResult(
+                                  data['error'] ?? 'Verification failed',
+                                );
+                              }
                               onResult(null);
-
-                              final success = await _authService.getSession(
+                              final sessionOk = await _authService.getSession(
                                 data['session_string'],
                               );
-
-                              if (success) {
-                                final passwordSet = await _authService
-                                    .setPassword(passwordController.text);
-                                if (!passwordSet) {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => ResponseDialog(
-                                      title: 'Error',
-                                      message: 'Failed to set password',
-                                      type: false,
-                                    ),
-                                  );
-                                  return;
-                                }
-
-                                final creationSuccess = await _authService
-                                    .createContributor(
-                                      email: emailController.text,
-                                      name: nameController.text,
-                                      country: countryController.text,
-                                      birthdate: birthdateController.text,
-                                    );
-
-                                if (creationSuccess) {
-                                  Navigator.pushReplacementNamed(
-                                    context,
-                                    '/home',
-                                  );
-                                } else {
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => ResponseDialog(
-                                      title: 'Error',
-                                      message: 'Failed to create contributor',
-                                      type: false,
-                                    ),
-                                  );
-                                }
-                              } else {
-                                showDialog(
+                              if (!sessionOk) {
+                                setState(() => isLoading = false);
+                                return showDialog(
                                   context: context,
-                                  builder: (context) => ResponseDialog(
+                                  builder: (_) => const ResponseDialog(
                                     title: 'Error',
                                     message: 'Failed to restore session',
                                     type: false,
                                   ),
                                 );
                               }
-                            } else {
-                              onResult(data['error'] ?? 'Verification failed');
+                              final creationSuccess = await _authService
+                                  .createContributor(
+                                    email: emailController.text,
+                                    name: nameController.text,
+                                    country: countryController.text,
+                                    birthdate: birthdateController.text,
+                                  );
+                              if (!creationSuccess) {
+                                setState(() => isLoading = false);
+                                return showDialog(
+                                  context: context,
+                                  builder: (_) => const ResponseDialog(
+                                    title: 'Error',
+                                    message: 'Failed to create contributor',
+                                    type: false,
+                                  ),
+                                );
+                              }
+                              final passwordSet = await _authService
+                                  .setPassword(passwordController.text);
+                              if (!passwordSet) {
+                                setState(() => isLoading = false);
+                                return showDialog(
+                                  context: context,
+                                  builder: (_) => const ResponseDialog(
+                                    title: 'Error',
+                                    message: 'Failed to set password',
+                                    type: false,
+                                  ),
+                                );
+                              }
+                              setState(() => isLoading = false);
+                              Navigator.pushReplacementNamed(
+                                context,
+                                '/contributor-main',
+                              );
+                            } catch (e) {
+                              setState(() => isLoading = false);
+                              onResult('An error occurred: $e');
                             }
-                          } catch (e) {
-                            onResult('An error occurred: $e');
-                          }
-                        },
-                      );
-                    } else {
-                      showDialog(
-                        context: context,
-                        builder: (context) => ResponseDialog(
-                          title: 'Error',
-                          message: 'This email is already confirmed',
-                          type: false,
-                        ),
-                      );
-                    }
-                  } catch (e) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ResponseDialog(
-                        title: 'Error',
-                        message: 'Signup error: $e',
-                        type: false,
-                      ),
-                    );
-                  }
-                }
-              },
-              child: const Text("Register"),
+                          },
+                        ).then((_) {
+                          if (mounted) setState(() => isLoading = false);
+                        });
+                      } catch (e) {
+                        setState(() => isLoading = false);
+                        showDialog(
+                          context: context,
+                          builder: (_) => ResponseDialog(
+                            title: 'Error',
+                            message: 'Signup error: $e',
+                            type: false,
+                          ),
+                        );
+                      }
+                    },
+                    child: const Text("Register"),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-      ),
     );
   }
 }

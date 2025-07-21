@@ -2,14 +2,20 @@ import 'package:flutter/material.dart';
 
 class CustomCheckbox extends StatefulWidget {
   final List<Map<String, String>> types;
-  final void Function(List<String> selectedTIDs)? onSelectionChanged;
-  final List<String>? initialSelectedTIDs;
+  final void Function(List<String> selectedIds)? onSelectionChanged;
+  final List<String>? initialSelectedIds;
+  final int? maxSelection;
+  final String idKey;
+  final String labelKey;
 
   const CustomCheckbox({
     super.key,
     required this.types,
     this.onSelectionChanged,
-    this.initialSelectedTIDs,
+    this.initialSelectedIds,
+    this.maxSelection,
+    this.idKey = 'TID',
+    this.labelKey = 'TypeName',
   });
 
   @override
@@ -17,44 +23,44 @@ class CustomCheckbox extends StatefulWidget {
 }
 
 class _CustomCheckboxState extends State<CustomCheckbox> {
-  final Set<String> selectedTIDs = {};
+  final Set<String> _selectedIds = {};
 
   @override
   void initState() {
     super.initState();
-    if (widget.initialSelectedTIDs != null) {
-      selectedTIDs.addAll(
-        widget.initialSelectedTIDs!.where(
-          (tid) => widget.types.any((type) => type['TID'] == tid),
+    if (widget.initialSelectedIds != null) {
+      _selectedIds.addAll(
+        widget.initialSelectedIds!.where(
+          (id) => widget.types.any((m) => m[widget.idKey] == id),
         ),
       );
     }
   }
 
-  void _toggleSelection(String tid) {
+  void _toggleSelection(String id) {
     setState(() {
-      if (selectedTIDs.contains(tid)) {
-        selectedTIDs.remove(tid);
-      } else if (selectedTIDs.length < 5) {
-        selectedTIDs.add(tid);
+      if (_selectedIds.contains(id)) {
+        _selectedIds.remove(id);
+      } else {
+        if (widget.maxSelection == null ||
+            _selectedIds.length < widget.maxSelection!) {
+          _selectedIds.add(id);
+        }
       }
     });
-
-    widget.onSelectionChanged?.call(selectedTIDs.toList());
+    widget.onSelectionChanged?.call(_selectedIds.toList());
   }
-
-  List<String> get selected => selectedTIDs.toList();
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      children: widget.types.map((type) {
-        final tid = type['TID']!;
-        final typeName = type['TypeName']!;
+      children: widget.types.map((item) {
+        final id = item[widget.idKey]!;
+        final label = item[widget.labelKey]!;
         return CheckboxListTile(
-          title: Text(typeName),
-          value: selectedTIDs.contains(tid),
-          onChanged: (_) => _toggleSelection(tid),
+          title: Text(label),
+          value: _selectedIds.contains(id),
+          onChanged: (_) => _toggleSelection(id),
         );
       }).toList(),
     );

@@ -37,8 +37,6 @@ Future<List<Map<String, dynamic>>> getAllPost() async {
 
     if (response.statusCode == 200) {
       final List<dynamic> data = jsonDecode(response.body);
-
-      // For each Map in the list, cast mediaUrls into `List<String>?`
       return data.map((raw) {
         final Map<String, dynamic> post = Map<String, dynamic>.from(raw);
         final rawUrls = post['mediaUrls'];
@@ -57,9 +55,10 @@ Future<List<Map<String, dynamic>>> getAllPost() async {
 }
 
 Future<List<Map<String, dynamic>>> getAllFollowedPost(String cid) async {
-  final uri = Uri.parse('$getAllFollowedPostUrl?cid=$cid');
   try {
-    final response = await http.get(uri);
+    final response = await http.get(
+      Uri.parse('$getAllFollowedPostUrl?cid=$cid'),
+    );
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -99,6 +98,6 @@ Future<void> addMediaLinks({
     }
   } catch (e) {
     print('Exception while uploading media links: $e');
-    rethrow; // optionally rethrow to let the caller handle it too
+    rethrow;
   }
 }

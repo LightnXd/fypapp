@@ -154,3 +154,26 @@ Future<String?> getUserStatus(String id) async {
 
   return null;
 }
+
+Future<Map<String, dynamic>> changeProfileImage({
+  required bool type,
+  required String id,
+  required String url,
+}) async {
+  final response = await http.post(
+    Uri.parse('$changeProfileUrl/change-profile'),
+    headers: {'Content-Type': 'application/json'},
+    body: jsonEncode({'type': type, 'id': id, 'url': url}),
+  );
+
+  if (response.statusCode == 200) {
+    final decoded = jsonDecode(response.body) as Map<String, dynamic>;
+    return decoded['user'] as Map<String, dynamic>;
+  } else {
+    final error = jsonDecode(response.body);
+    throw Exception(
+      'Failed to change profile image: '
+      '${response.statusCode} ${error['error'] ?? response.body}',
+    );
+  }
+}

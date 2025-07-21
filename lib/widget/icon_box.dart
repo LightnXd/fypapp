@@ -48,26 +48,31 @@ Widget horizontalIcon({
     children: [
       GestureDetector(
         onTap: onTap,
-        child: Row(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: alignment,
-          crossAxisAlignment: CrossAxisAlignment.center,
+        child: Wrap(
+          alignment: WrapAlignment.center,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: imagePath != null && imagePath.isNotEmpty ? 8.0 : 0,
           children: [
             if (imagePath != null && imagePath.isNotEmpty)
               Image.asset(imagePath, width: 45, height: 45),
-            if (imagePath != null && imagePath.isNotEmpty) gapw20,
-            Text(
-              text,
-              style: TextStyle(color: textColor, fontSize: textSize),
+
+            // Constrain width so text can wrap
+            ConstrainedBox(
+              constraints: BoxConstraints(maxWidth: 200),
+              child: Text(
+                text,
+                style: TextStyle(color: textColor, fontSize: textSize),
+                softWrap: true,
+              ),
             ),
+
             if (extraText != null) ...[
-              gapw10,
-              Flexible(
+              ConstrainedBox(
+                constraints: BoxConstraints(maxWidth: 200),
                 child: Text(
                   extraText,
                   style: TextStyle(color: textColor, fontSize: textSize),
                   softWrap: true,
-                  overflow: TextOverflow.visible,
                 ),
               ),
             ],

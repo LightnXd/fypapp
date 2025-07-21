@@ -9,8 +9,6 @@ Future<List<Map<String, dynamic>>> getFollowedUsers(String cid) async {
 
   if (response.statusCode == 200) {
     final List<dynamic> data = jsonDecode(response.body);
-
-    // Convert each dynamic item to Map<String, dynamic>
     return data
         .map<Map<String, dynamic>>(
           (item) => {
@@ -32,8 +30,6 @@ Future<List<Map<String, dynamic>>> getFollowerUsers(String oid) async {
 
   if (response.statusCode == 200) {
     final List<dynamic> data = jsonDecode(response.body);
-
-    // Convert each dynamic item to Map<String, dynamic>
     return data
         .map<Map<String, dynamic>>(
           (item) => {
@@ -101,23 +97,15 @@ Future<bool> unfollowOrganization(String oid, String cid) async {
   }
 }
 
-Future<int?> fetchCountByOID(String oid) async {
-  final url = Uri.parse(
-    '$getFollowCountUrl?oid=$oid',
-  ); // Update with your server IP if needed
+Future<int> fetchCountByOID(String oid) async {
+  final response = await http.get(
+    Uri.parse(getFollowCountUrl).replace(queryParameters: {'oid': oid}),
+  );
 
-  try {
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      return data['count'] as int;
-    } else {
-      print('Failed to fetch count. Status: ${response.statusCode}');
-    }
-  } catch (e) {
-    print('Error fetching count: $e');
+  if (response.statusCode == 200) {
+    final data = jsonDecode(response.body) as Map<String, dynamic>;
+    return (data['count'] as int?) ?? 0;
+  } else {
+    throw Exception('Failed to fetch count. Status: ${response.statusCode}');
   }
-
-  return null;
 }

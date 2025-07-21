@@ -29,6 +29,11 @@ class _FollowerDetailsPageState extends State<FollowerDetailsPage> {
     loadContributorProfile();
   }
 
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await loadContributorProfile();
+  }
+
   Future<void> loadContributorProfile() async {
     try {
       final data = await getContributorProfile(cid: widget.cid);
@@ -58,45 +63,48 @@ class _FollowerDetailsPageState extends State<FollowerDetailsPage> {
       appBar: CustomAppBar(title: "Follower Details"),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  ProfileHeader(
-                    profileUrl: profileImage,
-                    backgroundUrl: backgroundImage,
-                  ),
-
-                  SizedBox(height: screenWidth / 4.3),
-
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        horizontalIcon(
-                          imagePath: 'assets/images/border_profile.png',
-                          text: username,
-                          spacing: 6,
-                        ),
-                        horizontalIcon(text: id, spacing: 12, textSize: 14),
-                        horizontalIcon(
-                          imagePath: 'assets/images/country.png',
-                          text: "Country:",
-                          extraText: country,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/birthdate.png',
-                          text: "Birthdate:",
-                          extraText: birthDate,
-                          spacing: 12,
-                        ),
-                        gaph24,
-                      ],
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ProfileHeader(
+                      profileUrl: profileImage,
+                      backgroundUrl: backgroundImage,
                     ),
-                  ),
-                ],
+
+                    SizedBox(height: screenWidth / 4.3),
+
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          horizontalIcon(
+                            imagePath: 'assets/images/border_profile.png',
+                            text: username,
+                            spacing: 6,
+                          ),
+                          horizontalIcon(text: id, spacing: 12, textSize: 14),
+                          horizontalIcon(
+                            imagePath: 'assets/images/country.png',
+                            text: "Country:",
+                            extraText: country,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/birthdate.png',
+                            text: "Birthdate:",
+                            extraText: birthDate,
+                            spacing: 12,
+                          ),
+                          gaph24,
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
     );

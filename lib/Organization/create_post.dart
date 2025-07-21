@@ -5,7 +5,6 @@ import '../services/image_upload.dart';
 import '../services/posting.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
-import '../widget/navigation_bar.dart';
 import '../widget/question_box.dart';
 import '../widget/response_dialog.dart';
 import '../widget/side_bar.dart';
@@ -51,7 +50,7 @@ class _CreatePostPageState extends State<CreatePostPage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Create Post', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: id!),
+      drawer: OrganizationSideBar(userId: id),
       body: isLoading
           ? Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -154,7 +153,6 @@ class _CreatePostPageState extends State<CreatePostPage> {
           setState(() {
             _uploadedUrls = urls;
           });
-          print('Uploaded URLs: $_uploadedUrls');
           try {
             await addMediaLinks(postId: postId, links: _uploadedUrls);
             titleController.clear();
@@ -212,7 +210,17 @@ class _CreatePostPageState extends State<CreatePostPage> {
           ? null
           : 'Description must not be empty';
     });
+    if (titleError != null || descError != null) {
+      Future.delayed(Duration(seconds: 1), () {
+        if (mounted) {
+          setState(() {
+            titleError = null;
+            descError = null;
+          });
+        }
+      });
+    }
 
-    return confirmTitle.length >= 5 && confirmDescription.isNotEmpty;
+    return titleError == null && descError == null;
   }
 }

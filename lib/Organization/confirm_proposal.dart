@@ -7,6 +7,7 @@ import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
 import '../widget/icon_box.dart';
+import '../widget/response_dialog.dart';
 
 class ConfirmProposalPage extends StatefulWidget {
   final String proposalid;
@@ -22,6 +23,7 @@ class ConfirmProposalPage extends StatefulWidget {
   final String yes;
   final String no;
   final String notVoted;
+  final bool isHistory;
 
   const ConfirmProposalPage({
     super.key,
@@ -38,6 +40,7 @@ class ConfirmProposalPage extends StatefulWidget {
     required this.yes,
     required this.no,
     required this.notVoted,
+    this.isHistory = false,
   });
 
   @override
@@ -54,44 +57,51 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
         proposalid: widget.proposalid,
         status: change,
       );
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Proposal successfully $change')));
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Unable to change status: $e')));
+      showDialog(
+        context: context,
+        builder: (context) => ResponseDialog(
+          title: 'Failed',
+          message: 'Unable to change status: $e',
+          type: false,
+        ),
+      );
     }
   }
 
   Future<void> _sendTransaction(BuildContext context) async {
     setState(() => _isSending = true);
     try {
-      await changeStatus(context, "Confirmed");
-
       final response = await http.post(
         Uri.parse(addBlockUrl),
         headers: {'Content-Type': 'application/json'},
-        body: jsonEncode({'OID': widget.oid, 'Amount': widget.amount}),
+        body: jsonEncode({
+          'OID': widget.oid,
+          'Amount': double.parse(widget.amount.trim()),
+          'description':
+              'Transaction of: ${widget.proposalid} that aim to :${widget.description}',
+        }),
       );
-
       final data = jsonDecode(response.body);
-
       if (response.statusCode == 200 && data['success'] == true) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(
-              'Transaction successful. LedgerID: ${data['LedgerID']}',
-            ),
+        await changeStatus(context, "Confirmed");
+        showDialog(
+          context: context,
+          builder: (context) => ResponseDialog(
+            title: 'Success',
+            message: 'Transaction successful. LedgerID: ${data['LedgerID']}',
+            type: true,
           ),
         );
       } else {
         throw Exception(data['error'] ?? 'Transaction failed');
       }
     } catch (e) {
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
+      showDialog(
+        context: context,
+        builder: (context) =>
+            ResponseDialog(title: 'Failed', message: 'Error: $e', type: false),
+      );
     } finally {
       if (mounted) setState(() => _isSending = false);
     }
@@ -108,21 +118,9 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.status == 'Confirmed' || widget.status == 'Cancelled') {
-      return Scaffold(
-        appBar: CustomAppBar(title: 'Transaction ${widget.status}'),
-        body: Center(
-          child: Text(
-            'Transaction ${widget.status}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
+      appBar: CustomAppBar(title: 'Confirm Proposal', type: 2),
       body: _isSending
           ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
@@ -135,7 +133,6 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                   children: [
                     gaph40,
                     Center(
-                      // Centers the CircleAvatar horizontally
                       child: CircleAvatar(
                         radius: 80,
                         backgroundImage:
@@ -171,17 +168,17 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                           ),
                           horizontalIcon(
                             text: 'Yes vote:',
-                            extraText: widget.description,
+                            extraText: widget.yes,
                             spacing: 16,
                           ),
                           horizontalIcon(
                             text: 'No vote:',
-                            extraText: widget.description,
+                            extraText: widget.no,
                             spacing: 16,
                           ),
                           horizontalIcon(
                             text: 'Have not vote:',
-                            extraText: widget.description,
+                            extraText: widget.notVoted,
                             spacing: 16,
                           ),
                           horizontalIcon(
@@ -197,7 +194,7 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                         ],
                       ),
                     ),
-                    if (widget.status == 'Waiting')
+                    if (widget.status == 'Waiting' && !widget.isHistory) ...[
                       ElevatedButton(
                         onPressed: _isSending
                             ? null
@@ -212,19 +209,33 @@ class _ConfirmProposalPageState extends State<ConfirmProposalPage> {
                               )
                             : const Text('Create Transaction'),
                       ),
-                    if (widget.status == 'Waiting') gaph20,
-                    ElevatedButton(
-                      onPressed: _isSending
-                          ? null
-                          : () => _cancelTransaction(context),
-                      child: _isSending
-                          ? const SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            )
-                          : Text('Cancel Transaction ${widget.oid}'),
-                    ),
+                      gaph20,
+                      ElevatedButton(
+                        onPressed: _isSending
+                            ? null
+                            : () => _cancelTransaction(context),
+                        child: _isSending
+                            ? const SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : Text('Cancel Transaction'),
+                      ),
+                    ],
+
+                    if (widget.isHistory)
+                      Center(
+                        child: Text(
+                          'The Proposal is ${widget.status}',
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
+                        ),
+                      ),
                     gaph40,
                   ],
                 ),

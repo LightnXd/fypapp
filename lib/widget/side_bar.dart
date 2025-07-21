@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:fypapp2/Organization/confirm_proposal.dart';
-import 'package:fypapp2/Organization/follower_list.dart';
 import 'package:fypapp2/Organization/proposal_list.dart';
-import 'package:fypapp2/contributor/followed_list.dart';
+import 'package:fypapp2/Organization/transparency_test.dart';
 import 'package:fypapp2/contributor/profile.dart';
-import 'package:fypapp2/contributor/proposal_list.dart';
+import 'package:fypapp2/contributor/proposal_history.dart';
 import 'package:fypapp2/contributor/verify_ledger.dart';
 import 'package:fypapp2/widget/empty_box.dart';
 import 'package:fypapp2/widget/icon_box.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../Organization/profile.dart';
+import '../Organization/proposal_history.dart';
 import '../services/profile.dart';
 
 class ContributorSideBar extends StatefulWidget {
@@ -78,7 +78,7 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/border_profile.png',
                         text: "Profile",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -89,22 +89,9 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/follower.png',
-                        text: "Following list",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => const FollowedListPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      horizontalIcon(
                         imagePath: 'assets/images/verification.png',
                         text: "Verify ledger",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -115,11 +102,33 @@ class _ContributorSideBarState extends State<ContributorSideBar> {
                         },
                       ),
                       horizontalIcon(
+                        imagePath: 'assets/images/history.png',
+                        text: "View proposal history",
+                        spacing: 40,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const ContributorProposalHistoryListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
                         imagePath: 'assets/images/log_out.png',
                         text: "Log out",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.pushReplacementNamed(context, '/login');
+                        spacing: 40,
+                        onTap: () async {
+                          try {
+                            await Supabase.instance.client.auth.signOut();
+                            Navigator.pushReplacementNamed(context, '/login');
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error signing out: $e')),
+                            );
+                            return;
+                          }
                         },
                       ),
                     ],
@@ -200,7 +209,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/border_profile.png',
                         text: "Profile",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -211,22 +220,9 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                         },
                       ),
                       horizontalIcon(
-                        imagePath: 'assets/images/follower.png',
-                        text: "Follower list",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => FollowerListPage(),
-                            ),
-                          );
-                        },
-                      ),
-                      horizontalIcon(
                         imagePath: 'assets/images/use_fund.png',
                         text: "Proposal list",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -240,7 +236,7 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                       horizontalIcon(
                         imagePath: 'assets/images/test.png',
                         text: "Verify Ledger",
-                        spacing: 32,
+                        spacing: 40,
                         onTap: () {
                           Navigator.push(
                             context,
@@ -251,11 +247,46 @@ class _OrganizationSideBarState extends State<OrganizationSideBar> {
                         },
                       ),
                       horizontalIcon(
+                        imagePath: 'assets/images/history.png',
+                        text: "View proposal history",
+                        spacing: 40,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) =>
+                                  const OrganizationProposalHistoryListPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
+                        imagePath: 'assets/images/test.png',
+                        text: "Charity Transparency Framework Test",
+                        spacing: 40,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => const TransparentTestPage(),
+                            ),
+                          );
+                        },
+                      ),
+                      horizontalIcon(
                         imagePath: 'assets/images/log_out.png',
                         text: "Log out",
-                        spacing: 32,
-                        onTap: () {
-                          Navigator.pushReplacementNamed(context, '/login');
+                        spacing: 40,
+                        onTap: () async {
+                          try {
+                            await Supabase.instance.client.auth.signOut();
+                            Navigator.pushReplacementNamed(context, '/login');
+                          } catch (e) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(content: Text('Error signing out: $e')),
+                            );
+                            return;
+                          }
                         },
                       ),
                     ],

@@ -12,14 +12,14 @@ import '../widget/post_view.dart';
 import '../widget/response_dialog.dart';
 
 class ContributorRecommendationPage extends StatefulWidget {
-  const ContributorRecommendationPage({super.key});
+  const ContributorRecommendationPage({Key? key}) : super(key: key);
 
   @override
-  State<ContributorRecommendationPage> createState() =>
-      _ContributorRecommendationPageState();
+  ContributorRecommendationPageState createState() =>
+      ContributorRecommendationPageState();
 }
 
-class _ContributorRecommendationPageState
+class ContributorRecommendationPageState
     extends State<ContributorRecommendationPage> {
   final AuthenticationService _authService = AuthenticationService();
 
@@ -35,6 +35,11 @@ class _ContributorRecommendationPageState
     super.initState();
     fetchUserStatus();
     fetchPosts();
+  }
+
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await fetchPosts();
   }
 
   Future<void> fetchPosts() async {
@@ -106,7 +111,7 @@ class _ContributorRecommendationPageState
     return Scaffold(
       appBar: CustomAppBar(title: 'Recommendation', type: 1),
       drawerEnableOpenDragGesture: false,
-      drawer: OrganizationSideBar(userId: id!),
+      drawer: ContributorSideBar(userId: id),
       body: SingleChildScrollView(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         child: Column(

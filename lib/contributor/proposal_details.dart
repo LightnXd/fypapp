@@ -24,6 +24,7 @@ class ProposalDetailsPage extends StatefulWidget {
   final String yes;
   final String no;
   final String notVoted;
+  final bool isHistory;
 
   const ProposalDetailsPage({
     super.key,
@@ -41,6 +42,7 @@ class ProposalDetailsPage extends StatefulWidget {
     required this.yes,
     required this.no,
     required this.notVoted,
+    required this.isHistory,
   });
 
   @override
@@ -60,7 +62,12 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
     _fetchVote();
   }
 
+  Future<void> refresh() async {
+    _fetchVote();
+  }
+
   Future<void> _fetchVote() async {
+    print(widget.cid);
     setState(() {
       isLoading = true;
     });
@@ -76,9 +83,6 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
         isLoading = false;
       });
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Failed to load Vote status')),
-      );
       setState(() {
         vote = null;
         isSuccess = false;
@@ -107,143 +111,141 @@ class _ProposalDetailsPageState extends State<ProposalDetailsPage> {
 
   @override
   Widget build(BuildContext context) {
-    if (widget.status == 'Confirmed' || widget.status == 'Cancelled') {
-      return Scaffold(
-        appBar: CustomAppBar(title: 'Transaction ${widget.status}'),
-        body: Center(
-          child: Text(
-            'Transaction ${widget.status}',
-            style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-          ),
-        ),
-      );
-    }
-
     return Scaffold(
       key: _scaffoldKey,
-      appBar: CustomAppBar(title: 'Confirm Transaction', type: 2),
-      body: _isSending
+      appBar: CustomAppBar(title: 'Proposal Details', type: 2),
+      body: _isSending || isLoading
           ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: ConstrainedBox(
-                constraints: BoxConstraints(
-                  minHeight: MediaQuery.of(context).size.height,
-                ),
-                child: Column(
-                  children: [
-                    gaph40,
-                    Center(
-                      // Centers the CircleAvatar horizontally
-                      child: CircleAvatar(
-                        radius: 80,
-                        backgroundImage:
-                            (widget.image.isNotEmpty &&
-                                widget.image.startsWith('http'))
-                            ? NetworkImage(widget.image)
-                            : const AssetImage('assets/images/profile.png')
-                                  as ImageProvider,
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: MediaQuery.of(context).size.height,
+                  ),
+                  child: Column(
+                    children: [
+                      gaph40,
+                      Center(
+                        child: CircleAvatar(
+                          radius: 80,
+                          backgroundImage:
+                              (widget.image.isNotEmpty &&
+                                  widget.image.startsWith('http'))
+                              ? NetworkImage(widget.image)
+                              : const AssetImage('assets/images/profile.png')
+                                    as ImageProvider,
+                        ),
                       ),
-                    ),
-                    gaph10,
-                    horizontalIcon(text: widget.name, spacing: 4, textSize: 20),
-                    horizontalIcon(text: widget.oid, spacing: 40),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          horizontalIcon(
-                            text: 'Title:',
-                            extraText: widget.title,
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'Fund used:',
-                            extraText: widget.amount,
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'Creation date:',
-                            extraText: formatDate(widget.creationDate),
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'Yes vote:',
-                            extraText: widget.description,
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'No vote:',
-                            extraText: widget.description,
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'Have not vote:',
-                            extraText: widget.description,
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'Remaining time to vote:',
-                            extraText: widget.limit,
-                            spacing: 16,
-                          ),
-                          horizontalIcon(
-                            text: 'Description:',
-                            extraText: widget.description,
-                            spacing: 150,
-                          ),
-                        ],
+                      gaph10,
+                      horizontalIcon(
+                        text: widget.name,
+                        spacing: 4,
+                        textSize: 20,
                       ),
-                    ),
-                    if (vote == null && isSuccess) ...[
-                      ElevatedButton(
-                        onPressed: _isSending
-                            ? null
-                            : () => _castVote(context, true),
-                        child: _isSending
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text('Vote Yes'),
+                      horizontalIcon(text: widget.oid, spacing: 40),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            horizontalIcon(
+                              text: 'Title:',
+                              extraText: widget.title,
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'Fund used:',
+                              extraText: widget.amount,
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'Creation date:',
+                              extraText: formatDate(widget.creationDate),
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'Yes vote:',
+                              extraText: widget.yes,
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'No vote:',
+                              extraText: widget.no,
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'Have not vote:',
+                              extraText: widget.notVoted,
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'Remaining time to vote:',
+                              extraText: widget.limit,
+                              spacing: 16,
+                            ),
+                            horizontalIcon(
+                              text: 'Description:',
+                              extraText: widget.description,
+                              spacing: 150,
+                            ),
+                          ],
+                        ),
                       ),
-                      gaph20,
-                      ElevatedButton(
-                        onPressed: _isSending
-                            ? null
-                            : () => _castVote(context, false),
-                        child: _isSending
-                            ? const SizedBox(
-                                width: 20,
-                                height: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                ),
-                              )
-                            : const Text('Vote No'),
-                      ),
+                      if (vote == null && isSuccess && !widget.isHistory) ...[
+                        ElevatedButton(
+                          onPressed: _isSending
+                              ? null
+                              : () => _castVote(context, true),
+                          child: _isSending
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Vote Yes'),
+                        ),
+                        gaph20,
+                        ElevatedButton(
+                          onPressed: _isSending
+                              ? null
+                              : () => _castVote(context, false),
+                          child: _isSending
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Text('Vote No'),
+                        ),
+                      ],
+                      if (vote == true)
+                        BuildingBox(
+                          text: "Voted Yes",
+                          textSize: 16,
+                          width: 150,
+                        ),
+                      if (vote == false)
+                        BuildingBox(
+                          text: "Voted No",
+                          textSize: 16,
+                          color: Color(0xFFFF8A8A),
+                          width: 150,
+                        ),
+                      if (!isSuccess && !widget.isHistory)
+                        BuildingBox(
+                          text: "Not eligible to vote",
+                          textSize: 16,
+                          color: Color(0xFFE9E9E9),
+                          width: 250,
+                        ),
+                      gaph40,
                     ],
-                    if (vote == true)
-                      BuildingBox(text: "Voted Yes", textSize: 16, width: 150),
-                    if (vote == false)
-                      BuildingBox(
-                        text: "Voted No",
-                        textSize: 16,
-                        color: Color(0xFFFF8A8A),
-                        width: 150,
-                      ),
-                    if (!isSuccess)
-                      BuildingBox(
-                        text: "Not eligible to vote",
-                        textSize: 16,
-                        color: Color(0xFFE9E9E9),
-                        width: 250,
-                      ),
-                    gaph40,
-                  ],
+                  ),
                 ),
               ),
             ),

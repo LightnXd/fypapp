@@ -106,9 +106,9 @@ class OrganizationNavBar extends StatelessWidget {
           verticalIcon(
             imagePath: 'assets/images/ledger.png',
             text: 'Create Proposal',
-            textColor: selectedIndex == 4 ? Colors.blue : Colors.grey,
+            textColor: selectedIndex == 3 ? Colors.blue : Colors.grey,
             textSize: fontSize,
-            onTap: () => onItemTapped(4),
+            onTap: () => onItemTapped(3),
           ),
         ],
       ),

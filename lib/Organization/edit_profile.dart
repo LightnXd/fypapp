@@ -120,7 +120,7 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Edit Profile'),
       body: isLoading
-          ? const CircularProgressIndicator()
+          ? Center(child: const CircularProgressIndicator())
           : SingleChildScrollView(
               child: Column(
                 children: [
@@ -184,7 +184,7 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                           );
                           Navigator.pushReplacementNamed(
                             context,
-                            '/organization-home',
+                            '/organization-main',
                           );
                         } else {
                           showDialog(
@@ -200,6 +200,7 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
                     },
                     child: const Text('Save'),
                   ),
+                  gaph32,
                 ],
               ),
             ),
@@ -215,10 +216,11 @@ class _OrganizationEditProfileState extends State<OrganizationEditProfile> {
         content: SingleChildScrollView(
           child: CustomCheckbox(
             types: organizationTypes,
-            initialSelectedTIDs: tempSelected,
+            initialSelectedIds: tempSelected,
             onSelectionChanged: (selected) {
               tempSelected = selected;
             },
+            maxSelection: 5,
           ),
         ),
         actions: [

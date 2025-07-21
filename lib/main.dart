@@ -27,6 +27,8 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      theme: ThemeData(scaffoldBackgroundColor: Color(0xFFF6FFFF)),
+
       initialRoute: '/',
       routes: {
         '/': (context) => const OpenPage(),

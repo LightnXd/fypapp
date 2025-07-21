@@ -5,18 +5,17 @@ import '../services/authentication.dart';
 import '../services/transaction.dart';
 import '../widget/app_bar.dart';
 import '../widget/empty_box.dart';
-import '../widget/navigation_bar.dart';
 import '../widget/side_bar.dart';
 
 class ContributorProposalListPage extends StatefulWidget {
-  const ContributorProposalListPage({super.key});
+  const ContributorProposalListPage({Key? key}) : super(key: key);
 
   @override
-  State<ContributorProposalListPage> createState() =>
-      _ContributorProposalListPageState();
+  ContributorProposalListPageState createState() =>
+      ContributorProposalListPageState();
 }
 
-class _ContributorProposalListPageState
+class ContributorProposalListPageState
     extends State<ContributorProposalListPage> {
   String? cid;
   late Future<List<Map<String, dynamic>>> _proposals;
@@ -28,13 +27,17 @@ class _ContributorProposalListPageState
     loadProposals();
   }
 
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    loadProposals();
+  }
+
   void loadProposals() async {
     try {
       final AuthenticationService authService = AuthenticationService();
       final getCID = await authService.getCurrentUserID();
       final proposals = await getActiveProposalsByFollower(getCID!);
 
-      // Fetch vote stats for each proposal
       final proposalsWithVotes = await Future.wait(
         proposals.map((proposal) async {
           try {
@@ -49,7 +52,7 @@ class _ContributorProposalListPageState
       setState(() {
         _proposals = Future.value(proposalsWithVotes);
         isLoading = false;
-        cid = cid;
+        cid = getCID;
       });
     } catch (e) {
       setState(() => isLoading = false);
@@ -67,64 +70,68 @@ class _ContributorProposalListPageState
       drawer: ContributorSideBar(userId: cid),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
-          : FutureBuilder<List<Map<String, dynamic>>>(
-              future: _proposals,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: FutureBuilder<List<Map<String, dynamic>>>(
+                future: _proposals,
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  }
 
-                if (snapshot.hasError ||
-                    !snapshot.hasData ||
-                    snapshot.data!.isEmpty) {
-                  return const Center(child: Text('No proposals found.'));
-                }
+                  if (snapshot.hasError ||
+                      !snapshot.hasData ||
+                      snapshot.data!.isEmpty) {
+                    return const Center(child: Text('No proposals found.'));
+                  }
 
-                final proposals = snapshot.data!;
+                  final proposals = snapshot.data!;
 
-                return ListView(
-                  padding: const EdgeInsets.all(12),
-                  children: [
-                    gaph16,
-                    ...proposals.map((row) {
-                      final voteStats = row['VoteStats'];
-                      return ProposalInfo(
-                        orgImage: row['Image'],
-                        title: row['Title'] ?? 'No title',
-                        orgName: row['Username'] ?? 'Name not found',
-                        limit: '${row['Limit']} day',
-                        fundAmount: row['Amount']?.toString() ?? '0',
-                        countYes: voteStats?['YesVote'] ?? '0',
-                        countNo: voteStats?['NoVote'] ?? '0',
-                        notVoted: voteStats?['NotVoted'] ?? '0',
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => ProposalDetailsPage(
-                                proposalid: row['ProposalID'] ?? '',
-                                oid: row['OID'] ?? '',
-                                name: row['Username'] ?? '',
-                                image: row['Image'] ?? '',
-                                title: row['Title'] ?? '',
-                                description: row['Desc'] ?? '',
-                                amount: row['Amount']?.toString() ?? '',
-                                creationDate: row['CreationDate'] ?? '',
-                                limit: '${row['Limit']} day',
-                                status: row['Status'] ?? '',
-                                cid: cid!,
-                                yes: voteStats?['YesVote'] ?? '0',
-                                no: voteStats?['NoVote'] ?? '0',
-                                notVoted: voteStats?['NotVoted'] ?? '0',
+                  return ListView(
+                    padding: const EdgeInsets.all(12),
+                    children: [
+                      gaph16,
+                      ...proposals.map((row) {
+                        final voteStats = row['VoteStats'];
+                        return ProposalInfo(
+                          orgImage: row['Image'],
+                          title: row['Title'] ?? 'No title',
+                          orgName: row['Username'] ?? 'Name not found',
+                          limit: '${row['Limit']} day',
+                          fundAmount: row['Amount']?.toString() ?? '0',
+                          countYes: voteStats?['YesVote'] ?? '0',
+                          countNo: voteStats?['NoVote'] ?? '0',
+                          notVoted: voteStats?['NotVoted'] ?? '0',
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => ProposalDetailsPage(
+                                  proposalid: row['ProposalID'] ?? '',
+                                  oid: row['OID'] ?? '',
+                                  name: row['Username'] ?? '',
+                                  image: row['Image'] ?? '',
+                                  title: row['Title'] ?? '',
+                                  description: row['Desc'] ?? '',
+                                  amount: row['Amount']?.toString() ?? '',
+                                  creationDate: row['CreationDate'] ?? '',
+                                  limit: '${row['Limit']} day',
+                                  status: row['Status'] ?? '',
+                                  cid: cid ?? '',
+                                  yes: voteStats?['YesVote'] ?? '0',
+                                  no: voteStats?['NoVote'] ?? '0',
+                                  notVoted: voteStats?['NotVoted'] ?? '0',
+                                  isHistory: false,
+                                ),
                               ),
-                            ),
-                          );
-                        },
-                      );
-                    }).toList(),
-                  ],
-                );
-              },
+                            );
+                          },
+                        );
+                      }).toList(),
+                    ],
+                  );
+                },
+              ),
             ),
     );
   }

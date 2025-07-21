@@ -138,15 +138,13 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Organization Registration'),
       body: isLoading
-          ? const CircularProgressIndicator()
+          ? const Center(child: CircularProgressIndicator())
           : SingleChildScrollView(
               padding: const EdgeInsets.all(24.0),
               child: Column(
                 children: [
                   QuestionBox(
-                    image: const AssetImage(
-                      'assets/images/rounded_profile.png',
-                    ),
+                    image: const AssetImage('assets/images/profile.png'),
                     label: 'Name:',
                     hint: 'Enter your name',
                     controller: nameController,
@@ -245,10 +243,11 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
         content: SingleChildScrollView(
           child: CustomCheckbox(
             types: organizationTypes,
-            initialSelectedTIDs: tempSelected,
+            initialSelectedIds: tempSelected,
             onSelectionChanged: (selected) {
               tempSelected = selected;
             },
+            maxSelection: 5,
           ),
         ),
         actions: [
@@ -271,98 +270,99 @@ class _OrganizationRegisterPageState extends State<OrganizationRegisterPage> {
   Future<void> handleRegisterPressed() async {
     if (!validateInputs()) return;
 
+    setState(() => isLoading = true);
+
     try {
       final shouldVerify = await _authService.signUp(emailController.text);
-      if (shouldVerify) {
-        await OtpDialog.show(
+      if (!shouldVerify) {
+        setState(() => isLoading = false);
+        return showDialog(
           context: context,
-          onSubmitted: (otp, onResult) async {
-            try {
-              final response = await _authService.verifyOTP(
-                email: emailController.text,
-                otp: otp,
-              );
-              final data = jsonDecode(response.body);
-
-              if (response.statusCode == 200) {
-                onResult(null);
-
-                final success = await _authService.getSession(
-                  data['session_string'],
-                );
-
-                if (success) {
-                  final passwordSet = await _authService.setPassword(
-                    passwordController.text,
-                  );
-                  if (!passwordSet) {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ResponseDialog(
-                        title: 'Error',
-                        message: 'Failed to set password',
-                        type: false,
-                      ),
-                    );
-                    return;
-                  }
-
-                  final creationSuccess = await _authService.createOrganization(
-                    email: emailController.text,
-                    name: nameController.text,
-                    country: countryController.text,
-                    description: descriptionController.text,
-                    address: addressController.text,
-                    type: selectedTIDs,
-                  );
-
-                  if (creationSuccess) {
-                    Navigator.pushReplacementNamed(
-                      context,
-                      '/organization-home',
-                    );
-                  } else {
-                    showDialog(
-                      context: context,
-                      builder: (context) => ResponseDialog(
-                        title: 'Error',
-                        message: 'Failed to create Organization',
-                        type: false,
-                      ),
-                    );
-                  }
-                } else {
-                  showDialog(
-                    context: context,
-                    builder: (context) => ResponseDialog(
-                      title: 'Error',
-                      message: 'Failed to restore session',
-                      type: false,
-                    ),
-                  );
-                }
-              } else {
-                onResult(data['error'] ?? 'Verification failed');
-              }
-            } catch (e) {
-              onResult('An error occurred: $e');
-            }
-          },
-        );
-      } else {
-        showDialog(
-          context: context,
-          builder: (context) => ResponseDialog(
+          builder: (_) => const ResponseDialog(
             title: 'Error',
             message: 'This email is already confirmed',
             type: false,
           ),
         );
       }
+      await OtpDialog.show(
+        context: context,
+        onSubmitted: (otp, onResult) async {
+          try {
+            final response = await _authService.verifyOTP(
+              email: emailController.text,
+              otp: otp,
+            );
+            final data = jsonDecode(response.body);
+
+            if (response.statusCode != 200) {
+              setState(() => isLoading = false);
+              return onResult(data['error'] ?? 'Verification failed');
+            }
+            onResult(null);
+            final sessionOk = await _authService.getSession(
+              data['session_string'],
+            );
+            if (!sessionOk) {
+              setState(() => isLoading = false);
+              return showDialog(
+                context: context,
+                builder: (_) => const ResponseDialog(
+                  title: 'Error',
+                  message: 'Failed to restore session',
+                  type: false,
+                ),
+              );
+            }
+            final creationSuccess = await _authService.createOrganization(
+              email: emailController.text,
+              name: nameController.text,
+              country: countryController.text,
+              description: descriptionController.text,
+              address: addressController.text,
+              type: selectedTIDs,
+            );
+            if (!creationSuccess) {
+              setState(() => isLoading = false);
+              return showDialog(
+                context: context,
+                builder: (_) => const ResponseDialog(
+                  title: 'Error',
+                  message: 'Failed to create Organization',
+                  type: false,
+                ),
+              );
+            }
+
+            final passwordSet = await _authService.setPassword(
+              passwordController.text,
+            );
+            if (!passwordSet) {
+              setState(() => isLoading = false);
+              return showDialog(
+                context: context,
+                builder: (_) => const ResponseDialog(
+                  title: 'Error',
+                  message: 'Failed to set password',
+                  type: false,
+                ),
+              );
+            }
+            setState(() => isLoading = false);
+            Navigator.pushReplacementNamed(context, '/organization-main');
+          } catch (e) {
+            setState(() => isLoading = false);
+            onResult('An error occurred: $e');
+          }
+        },
+      ).then((_) {
+        if (mounted) setState(() => isLoading = false);
+      });
     } catch (e) {
+      setState(() => isLoading = false);
       showDialog(
         context: context,
-        builder: (context) => ResponseDialog(
+        builder: (_) => ResponseDialog(
           title: 'Error',
           message: 'Signup error: $e',
           type: false,

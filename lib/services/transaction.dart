@@ -8,7 +8,7 @@ Future<String> pickAndUploadLedgerFile() async {
   final result = await FilePicker.platform.pickFiles(
     type: FileType.custom,
     allowedExtensions: ['xlsx'],
-    withData: true, // <---- ADD THIS
+    withData: true,
   );
 
   if (result == null) return "File selection cancelled";
@@ -22,7 +22,7 @@ Future<String> pickAndUploadLedgerFile() async {
 
   request.files.add(
     http.MultipartFile.fromBytes(
-      'ledger_file', // <-- must match your backend field name
+      'ledger_file',
       fileBytes,
       filename: fileName,
       contentType: MediaType(
@@ -46,9 +46,22 @@ Future<String> pickAndUploadLedgerFile() async {
 }
 
 Future<List<Map<String, dynamic>>> getActiveProposal(String oid) async {
-  // Replace with your actual server URL
   final response = await http.get(
     Uri.parse('$getActiveProposalListUrl?oid=$oid'),
+  );
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load proposals: ${error['error']}');
+  }
+}
+
+Future<List<Map<String, dynamic>>> getHistoryProposal(String oid) async {
+  final response = await http.get(
+    Uri.parse('$getHistoryProposalListUrl?oid=$oid'),
   );
 
   if (response.statusCode == 200) {
@@ -64,6 +77,22 @@ Future<List<Map<String, dynamic>>> getActiveProposalsByFollower(
   String cid,
 ) async {
   final url = Uri.parse('$getActiveProposalListbyFollowerUrl?cid=$cid');
+
+  final response = await http.get(url);
+
+  if (response.statusCode == 200) {
+    final List<dynamic> jsonData = json.decode(response.body);
+    return jsonData.cast<Map<String, dynamic>>();
+  } else {
+    final error = json.decode(response.body);
+    throw Exception('Failed to load proposals: ${error['error']}');
+  }
+}
+
+Future<List<Map<String, dynamic>>> getHistoryProposalsByFollower(
+  String cid,
+) async {
+  final url = Uri.parse('$getHistoryProposalListbyFollowerUrl?cid=$cid');
 
   final response = await http.get(url);
 
@@ -107,9 +136,9 @@ Future<Map<String, dynamic>> getVote({
   required String proposalId,
   required String cid,
 }) async {
-  final url = Uri.parse('$getVoteUrl?proposalid=$proposalId&cid=$cid');
-
-  final response = await http.get(url);
+  final response = await http.get(
+    Uri.parse('$getVoteUrl?proposalid=$proposalId&cid=$cid'),
+  );
 
   if (response.statusCode == 200) {
     final data = json.decode(response.body);
@@ -193,7 +222,7 @@ Future<String?> getPublicKey(String oid) async {
 Future<void> changeFund({
   required String oid,
   required double amount,
-  required bool type, // true = add, false = use
+  required bool type,
 }) async {
   final response = await http.post(
     Uri.parse(createChangeFundUrl),

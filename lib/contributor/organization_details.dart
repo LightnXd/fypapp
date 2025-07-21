@@ -40,20 +40,26 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
   List<String> tid = [];
   List<String> type = [];
   bool isLoading = true;
+  bool isPressed = false;
   bool isFollowed = false;
   String? cid;
   int count = 0;
   @override
   void initState() {
     super.initState();
-    loadCount();
     loadOrganizationProfile();
   }
 
-  Future<void> loadCount() async {
-    final result = await fetchCountByOID(widget.oid);
+  Future<void> refresh() async {
+    setState(() => isLoading = true);
+    await loadOrganizationProfile();
+  }
+
+  Future<void> loadCount(String identifier) async {
+    final result = await fetchCountByOID(identifier);
+    if (result == null) return;
     setState(() {
-      count = result!;
+      count = result;
     });
   }
 
@@ -84,6 +90,7 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
           tid = [];
         }
       });
+      loadCount(data['ID'].toString());
       final getcid = await _authService.getCurrentUserID();
       final followed = await isFollowing(widget.oid, getcid!);
       setState(() {
@@ -93,9 +100,6 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
       });
     } catch (e) {
       setState(() => isLoading = false);
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Error: $e')));
     }
   }
 
@@ -106,133 +110,172 @@ class _OrganizationDetailsPageState extends State<OrganizationDetailsPage> {
     return Scaffold(
       appBar: CustomAppBar(title: 'Organization Details'),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator()) // loading spinner
-          : SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  ProfileHeader(
-                    profileUrl: profileImage,
-                    backgroundUrl: backgroundImage,
-                    follower: "",
-                  ),
+          ? const Center(child: CircularProgressIndicator())
+          : RefreshIndicator(
+              onRefresh: refresh,
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: <Widget>[
+                    ProfileHeader(
+                      profileUrl: profileImage,
+                      backgroundUrl: backgroundImage,
+                      follower: "$count",
+                    ),
 
-                  SizedBox(height: screenWidth / 5.3),
+                    SizedBox(height: screenWidth / 5.3),
 
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        if (widget.type)
-                          Align(
-                            alignment: Alignment.centerRight,
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                if (cid == null) return;
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          if (widget.type)
+                            Align(
+                              alignment: Alignment.centerRight,
+                              child: ElevatedButton(
+                                onPressed: isPressed
+                                    ? null
+                                    : () async {
+                                        if (cid == null) return;
 
-                                bool success = isFollowed
-                                    ? await unfollowOrganization(
-                                        widget.oid,
-                                        cid!,
+                                        setState(() {
+                                          isPressed = true;
+                                        });
+
+                                        bool success = isFollowed
+                                            ? await unfollowOrganization(
+                                                widget.oid,
+                                                cid!,
+                                              )
+                                            : await followOrganization(
+                                                widget.oid,
+                                                cid!,
+                                              );
+
+                                        if (!mounted) return;
+
+                                        if (success) {
+                                          loadCount(id);
+                                          setState(() {
+                                            isFollowed = !isFollowed;
+                                          });
+
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            SnackBar(
+                                              content: Text(
+                                                isFollowed
+                                                    ? 'Followed successfully'
+                                                    : 'Unfollowed successfully',
+                                              ),
+                                            ),
+                                          );
+                                        } else {
+                                          ScaffoldMessenger.of(
+                                            context,
+                                          ).showSnackBar(
+                                            const SnackBar(
+                                              content: Text(
+                                                'Something went wrong.',
+                                              ),
+                                            ),
+                                          );
+                                        }
+
+                                        setState(() {
+                                          isPressed = false;
+                                        });
+                                      },
+                                child: isLoading
+                                    ? const SizedBox(
+                                        width: 20,
+                                        height: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2.0,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
                                       )
-                                    : await followOrganization(
-                                        widget.oid,
-                                        cid!,
-                                      );
-
-                                if (success) {
-                                  loadCount();
-                                  setState(() {
-                                    isFollowed = !isFollowed;
-                                  });
-
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    SnackBar(
-                                      content: Text(
-                                        isFollowed
-                                            ? 'Followed successfully'
-                                            : 'Unfollowed successfully',
-                                      ),
-                                    ),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context).showSnackBar(
-                                    const SnackBar(
-                                      content: Text('Something went wrong.'),
-                                    ),
-                                  );
-                                }
-                              },
-                              child: Text(isFollowed ? 'Unfollow' : 'Follow'),
+                                    : Text(isFollowed ? 'Unfollow' : 'Follow'),
+                              ),
                             ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/border_profile.png',
+                            text: username,
+                            spacing: 6,
                           ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/border_profile.png',
-                          text: username,
-                          spacing: 6,
-                        ),
-                        horizontalIcon(text: id, textSize: 14, spacing: 12),
-                        CustomHorizontalBox(items: type, textSize: 13),
-                        gaph12,
-                        horizontalIcon(
-                          alignment: MainAxisAlignment.start,
-                          text: "Description:",
-                          extraText: description,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/calendar.png',
-                          text: "Joined on:",
-                          extraText: formatDate(creationDate),
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/country.png',
-                          text: "Country of origin:",
-                          extraText: country,
-                          spacing: 12,
-                        ),
-                        horizontalIcon(
-                          imagePath: 'assets/images/address.png',
-                          text: "Address:",
-                          extraText: address,
-                          spacing: 24,
-                        ),
-                        Center(
-                          child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) =>
-                                      ContributorLedgerPage(oid: id),
-                                ),
-                              );
-                            },
-                            child: Text('View ledger'),
+                          horizontalIcon(text: id, textSize: 14, spacing: 12),
+                          CustomHorizontalBox(items: type, textSize: 13),
+                          gaph12,
+                          horizontalIcon(
+                            alignment: MainAxisAlignment.start,
+                            text: "Description: \n",
+                            extraText: description,
+                            spacing: 12,
                           ),
-                        ),
-                        gaph24,
-                        if (widget.type)
+                          horizontalIcon(
+                            imagePath: 'assets/images/fund.png',
+                            text: "Available fund:",
+                            extraText: fund,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/calendar.png',
+                            text: "Joined on:",
+                            extraText: formatDate(creationDate),
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/country.png',
+                            text: "Country of origin:",
+                            extraText: country,
+                            spacing: 12,
+                          ),
+                          horizontalIcon(
+                            imagePath: 'assets/images/address.png',
+                            text: "Address:",
+                            extraText: address,
+                            spacing: 24,
+                          ),
                           Center(
                             child: ElevatedButton(
                               onPressed: () {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (_) => MakeDonationPage(oid: id),
+                                    builder: (_) =>
+                                        ContributorLedgerPage(oid: id),
                                   ),
                                 );
                               },
-                              child: Text('Make Donation'),
+                              child: Text('View ledger'),
                             ),
                           ),
-                      ],
+                          gaph24,
+                          if (widget.type)
+                            Center(
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                      builder: (_) => MakeDonationPage(oid: id),
+                                    ),
+                                  );
+                                },
+                                child: Text('Make Donation'),
+                              ),
+                            ),
+                        ],
+                      ),
                     ),
-                  ),
-                  gaph24,
-                ],
+                    gaph24,
+                  ],
+                ),
               ),
             ),
     );

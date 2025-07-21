@@ -4,6 +4,7 @@ import 'empty_box.dart';
 
 class AvatarBox extends StatelessWidget {
   final String? imageUrl;
+  final double imgSize;
   final String orgName;
   final String? desc;
   final String? limit;
@@ -13,6 +14,7 @@ class AvatarBox extends StatelessWidget {
   const AvatarBox({
     super.key,
     this.imageUrl,
+    this.imgSize = 30,
     required this.orgName,
     this.desc,
     this.limit,
@@ -26,7 +28,7 @@ class AvatarBox extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
         CircleAvatar(
-          radius: 30,
+          radius: imgSize,
           backgroundImage:
               (imageUrl != null &&
                   imageUrl!.isNotEmpty &&
