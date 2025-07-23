@@ -46,7 +46,7 @@ class PostView extends StatelessWidget {
         if (date != null)
           Align(
             alignment: Alignment.centerRight,
-            child: Text(
+            child: SelectableText(
               date!,
               style: const TextStyle(fontSize: 12, color: Colors.grey),
             ),
