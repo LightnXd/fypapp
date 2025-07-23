@@ -3,7 +3,8 @@ The FYP App is designed for two primary user roles: Contributors and Organizatio
 
 Instalation:
 To install this app you can clone this project and do
-> flutter pub get 
+> flutter pub get
+
 To get the dependencies
 You can run this project from the lib/main.dart
 When running the app if the loading on launching is not resolved after a while that could mean the server is not hosted anymore, to address this issues you can clone the server from https://github.com/LightnXd/fyp_backend 
